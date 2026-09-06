@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "VN_app_5thang9project",
+    "name": "TIVI VIETNAMESE APP",
     "slug": "VN_app_5thang9project",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -32,7 +32,9 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ]
+      ],
+      "expo-audio",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,
