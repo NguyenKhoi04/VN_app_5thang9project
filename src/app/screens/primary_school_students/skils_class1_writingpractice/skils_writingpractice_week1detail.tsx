@@ -180,7 +180,7 @@ useEffect(() => {
           onPress={() => setShowLetterPicker(false)}
         >
           <View style={styles.letterPickerBox}>
-            <Text style={styles.pickerTitle}>Chọn chữ cái</Text>
+            <Text style={styles.pickerTitle}>Chọn bài học</Text>
             <FlatList
               data={LETTERS}
               keyExtractor={(item) => item}
