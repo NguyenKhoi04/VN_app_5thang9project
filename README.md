@@ -208,6 +208,9 @@ hoặc xóa achaer cũ
 npx expo start -c
 
 hoặc
+npx expo run:android
+
+hoặc
 
 Cách 2: Ép toàn bộ giao thông qua USB (Bỏ qua Wi-Fi)
 1.Thiết lập ADB Reverse cho cả Expo Bundler (cổng 8081): Mở terminal PowerShell thứ tư và chạy lệnh (thay bằng đường dẫn tuyệt đối đến adb.exe nếu cần):

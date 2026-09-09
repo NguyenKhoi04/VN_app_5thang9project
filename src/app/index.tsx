@@ -50,6 +50,11 @@ import ReadingWeekDetailsClass3Topic1 from "./screens/primary_school_students/sk
 import ReadingWeekDetailsClass3Topic1Bai2 from "./screens/primary_school_students/skills_reading_class3students/reading_topic1week3_class3details_bai2";
 import ReadingPronunciationClass3Bai2Week3 from "./screens/primary_school_students/skills_reading_class3students/readingpronunciation_bai2_week3class3";
 
+// Lớp 1 Writing Practice
+
+import WritingPracticeClass1Screen from "./screens/primary_school_students/skils_class1_writingpractice/writingpractice_class1";
+import skils_writingpractice_week1detail from "./screens/primary_school_students/skils_class1_writingpractice/skils_writingpractice_week1detail";
+
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -99,6 +104,10 @@ function App() {
         <Stack.Screen name="ReadingWeekDetailsClass3Topic1" component={ReadingWeekDetailsClass3Topic1} />
         <Stack.Screen name="ReadingWeekDetailsClass3Topic1Bai2" component={ReadingWeekDetailsClass3Topic1Bai2} />
         <Stack.Screen name="ReadingPronunciationClass3Bai2Week3" component={ReadingPronunciationClass3Bai2Week3} />
+
+        {/* Lớp 1 Writing Practice */}
+        <Stack.Screen name="WritingPracticeClass1" component={WritingPracticeClass1Screen} />
+        <Stack.Screen name="skils_writingpractice_week1detail" component={skils_writingpractice_week1detail} />
       </Stack.Navigator>
     </NavigationContainer>
   );
