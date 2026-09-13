@@ -55,6 +55,10 @@ import ReadingPronunciationClass3Bai2Week3 from "./screens/primary_school_studen
 import WritingPracticeClass1Screen from "./screens/primary_school_students/skils_class1_writingpractice/writingpractice_class1";
 import skils_writingpractice_week1detail from "./screens/primary_school_students/skils_class1_writingpractice/skils_writingpractice_week1detail";
 
+//Lớp 2 Writing Practice
+
+import WritingPracticeClass2Screen from "./screens/primary_school_students/skils_class2_writingpractice/writingpractice_class2";
+import skils_writingpractice_class2detail from "./screens/primary_school_students/skils_class2_writingpractice/skils_writingpractice_class2detail";
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -108,6 +112,10 @@ function App() {
         {/* Lớp 1 Writing Practice */}
         <Stack.Screen name="WritingPracticeClass1" component={WritingPracticeClass1Screen} />
         <Stack.Screen name="skils_writingpractice_week1detail" component={skils_writingpractice_week1detail} />
+
+        {/* Lớp 2 Writing Practice */}
+        <Stack.Screen name="WritingPracticeClass2" component={WritingPracticeClass2Screen} />
+        <Stack.Screen name="skils_writingpractice_class2detail" component={skils_writingpractice_class2detail} />
       </Stack.Navigator>
     </NavigationContainer>
   );
