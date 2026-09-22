@@ -47,7 +47,7 @@ const PracticeScreen = ({ navigation }: any) => {
         <TouchableOpacity
           style={[styles.continueButton, !selected && styles.disabledButton]}
           disabled={!selected}
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.navigate('HocTiengViet')}
         >
           <Text style={styles.continueText}>Hoàn thành</Text>
         </TouchableOpacity>

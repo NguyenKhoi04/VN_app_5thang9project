@@ -4,8 +4,9 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Scro
 
 const languages = [
   { flag: '🇻🇳', name: 'Tiếng Việt (VietNamese)' },
-  { flag: '🇰🇷', name: 'Tiếng Hàn (한국인)' },
   { flag: '🇬🇧', name: 'Tiếng Anh (English)' },
+  { flag: '🇰🇷', name: 'Tiếng Hàn (한국인)' },
+  { flag: '🇯🇵', name: 'Tiếng Nhật (日本語)' },
   // { flag: '🇹🇼', name: 'Tiếng Trung (中国人)' },
   // { flag: '🇸🇰', name: 'Tiếng Slovak (Slovenský jazyk)' },
   // { flag: '🇺🇦', name: 'Tiếng Ukraina (українська)' },
@@ -14,7 +15,7 @@ const languages = [
   // { flag: '🇩🇪', name: 'Tiếng Đức (Deutsch)' },
   // { flag: '🇮🇹', name: 'Tiếng Ý (Italiano)' },
   // { flag: '🇷🇺', name: 'Tiếng Nga (Русский)' },
-  { flag: '🇯🇵', name: 'Tiếng Nhật (日本語)' },
+  
 ];
 
 const LanguageScreen = ({ navigation }: any) => {
