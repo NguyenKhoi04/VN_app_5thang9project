@@ -43,7 +43,7 @@ const Stack = createNativeStackNavigator();
 const MenuSurvey = () => {
   return (
     <Stack.Navigator
-      initialRouteName="SurveyLanguage"
+      initialRouteName="Language"
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: '#2563EB' },
