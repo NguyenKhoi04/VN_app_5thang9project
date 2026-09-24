@@ -14,7 +14,7 @@ import Phan1Roadmap from './hoc_tieng_viet/phan1/index';
 import Phan1Bai1 from './hoc_tieng_viet/phan1/bai1';
 import Phan1Bai2 from './hoc_tieng_viet/phan1/bai2';
 import Phan1Bai3 from './hoc_tieng_viet/phan1/bai3';
-import Phan1Bai4 from './hoc_tieng_viet/phan1/bai4';
+
 import Phan2Roadmap from './hoc_tieng_viet/phan2/index';
 import Phan2Bai1 from './hoc_tieng_viet/phan2/bai1';
 import Phan2Bai2 from './hoc_tieng_viet/phan2/bai2';
@@ -66,7 +66,6 @@ const MenuSurvey = () => {
       <Stack.Screen name="Phan1Bai1" component={Phan1Bai1} />
       <Stack.Screen name="Phan1Bai2" component={Phan1Bai2} />
       <Stack.Screen name="Phan1Bai3" component={Phan1Bai3} />
-      <Stack.Screen name="Phan1Bai4" component={Phan1Bai4} />
 
       {/* Phần 2 */}
       <Stack.Screen name="Phan2Roadmap" component={Phan2Roadmap} />

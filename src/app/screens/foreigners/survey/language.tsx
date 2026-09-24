@@ -55,6 +55,7 @@ const LanguageScreen = ({ navigation }: any) => {
           ))}
         </ScrollView>
 
+        
         <TouchableOpacity 
           style={[styles.continueButton, !selected && styles.disabledButton]}
           disabled={!selected}

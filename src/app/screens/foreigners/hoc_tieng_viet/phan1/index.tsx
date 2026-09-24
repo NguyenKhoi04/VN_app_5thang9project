@@ -7,7 +7,7 @@ const THEME_COLOR = '#4F46E5';
 const lessons: LessonNode[] = [
   {
     id: 1,
-    title: 'Bảng chữ cái',
+    title: 'Bảng chữ cái tiếng Việt',
     subtitle: 'The Vietnamese Alphabet',
     emoji: '🔤',
     status: 'current',
@@ -23,19 +23,11 @@ const lessons: LessonNode[] = [
   },
   {
     id: 3,
-    title: 'Vần và ghép âm',
-    subtitle: 'Rhymes and Sound Blending',
-    emoji: '🧩',
+    title: '  Thanh diệu',
+    subtitle: 'Tones',
+    emoji: '🎵',
     status: 'current',
     screenName: 'Phan1Bai3',
-  },
-  {
-    id: 4,
-    title: 'Tập viết chữ',
-    subtitle: 'Writing Practice',
-    emoji: '✍️',
-    status: 'current',
-    screenName: 'Phan1Bai4',
   },
 ];
 

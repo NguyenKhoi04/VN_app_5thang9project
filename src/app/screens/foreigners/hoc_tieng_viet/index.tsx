@@ -80,8 +80,8 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
     },
     {
       number: 'PHẦN 2',
-      title: 'Phát âm',
-      subtitle: 'Pronunciation\n(Sounds & Tones)',
+      title: 'Luyện Phát âm',
+      subtitle: 'Pronunciation Drills\n(Sounds & Tones)',
       emoji: '🎙️',
       color: '#0891B2',
       bgColor: '#ECFEFF',

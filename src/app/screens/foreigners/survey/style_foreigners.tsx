@@ -50,6 +50,8 @@ const StyleForeignersScreen = ({ navigation }: any) => {
         >
           <Text style={styles.continueText}>Tiếp tục</Text>
         </TouchableOpacity>
+        {/* Nhấn skip bỏ qua */}
+        <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('HocTiengViet')}>Skip (Bỏ qua)</TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -131,6 +133,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  skipButton: {
+    color: '#FF4040',
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 10,
   },
 });
 
