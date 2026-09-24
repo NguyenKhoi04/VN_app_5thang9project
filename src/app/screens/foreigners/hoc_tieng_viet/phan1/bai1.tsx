@@ -8,8 +8,8 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import { Audio } from 'expo-av'; // hoặc thay bằng react-native-sound nếu bạn dùng thư viện khác
-
+import { useLocalSearchParams } from "expo-router";
+import { Audio } from 'expo-av';
 const THEME = '#4F46E5';
 const LESSON_ID = 1;
 
@@ -26,8 +26,8 @@ const alphabet: LetterItem[] = [
   { upper: 'Â', lower: 'â', hasSound: false },
   { upper: 'B', lower: 'b', hasSound: true, soundKey: 'b' },
   { upper: 'C', lower: 'c', hasSound: true, soundKey: 'c' },
-  { upper: 'D', lower: 'd', hasSound: false },
-  { upper: 'Đ', lower: 'đ', hasSound: true, soundKey: 'd' },
+  { upper: 'D', lower: 'd', hasSound: true, soundKey: 'd' },
+  { upper: 'Đ', lower: 'đ', hasSound: true, soundKey: 'd2' },
   { upper: 'E', lower: 'e', hasSound: true, soundKey: 'e' },
   { upper: 'Ê', lower: 'ê', hasSound: true, soundKey: 'e2' },
   { upper: 'G', lower: 'g', hasSound: true, soundKey: 'g' },
@@ -53,31 +53,32 @@ const alphabet: LetterItem[] = [
 
 // Map file âm thanh (bạn thay đường dẫn thật của mình)
 const SOUND_MAP: Record<string, any> = {
-  a: require('../../assets/sounds/alphabet/a.mp3'),
-  b: require('../../assets/sounds/alphabet/b.mp3'),
-  c: require('../../assets/sounds/alphabet/c.mp3'),
-  d: require('../../assets/sounds/alphabet/d.mp3'),
-  e: require('../../assets/sounds/alphabet/e.mp3'),
-  e2: require('../../assets/sounds/alphabet/e2.mp3'),
-  g: require('../../assets/sounds/alphabet/g.mp3'),
-  h: require('../../assets/sounds/alphabet/h.mp3'),
-  i: require('../../assets/sounds/alphabet/i.mp3'),
-  k: require('../../assets/sounds/alphabet/k.mp3'),
-  l: require('../../assets/sounds/alphabet/l.mp3'),
-  m: require('../../assets/sounds/alphabet/m.mp3'),
-  n: require('../../assets/sounds/alphabet/n.mp3'),
-  o: require('../../assets/sounds/alphabet/o.mp3'),
-  o2: require('../../assets/sounds/alphabet/o2.mp3'),
-  o3: require('../../assets/sounds/alphabet/o3.mp3'),
-  p: require('../../assets/sounds/alphabet/p.mp3'),
-  q: require('../../assets/sounds/alphabet/q.mp3'),
-  r: require('../../assets/sounds/alphabet/r.mp3'),
-  s: require('../../assets/sounds/alphabet/s.mp3'),
-  t: require('../../assets/sounds/alphabet/t.mp3'),
-  u2: require('../../assets/sounds/alphabet/u2.mp3'),
-  v: require('../../assets/sounds/alphabet/v.mp3'),
-  x: require('../../assets/sounds/alphabet/x.mp3'),
-  y: require('../../assets/sounds/alphabet/y.mp3'),
+  a: require('../../../../../../text-to-speech/alphabet_a.wav'),
+  b: require('../../../../../../text-to-speech/alphabet_b.wav'),
+  c: require('../../../../../../text-to-speech/alphabet_c.wav'),
+  d: require('../../../../../../text-to-speech/alphabet_d.wav'),
+  d2: require('../../../../../../text-to-speech/alphabet_d2.wav'),
+  e: require('../../../../../../text-to-speech/alphabet_e.wav'),
+  e2: require('../../../../../../text-to-speech/alphabet_e2.wav'),
+  g: require('../../../../../../text-to-speech/alphabet_g.wav'),
+  h: require('../../../../../../text-to-speech/alphabet_h.wav'),
+  i: require('../../../../../../text-to-speech/alphabet_i.wav'),
+  k: require('../../../../../../text-to-speech/alphabet_k.wav'),
+  l: require('../../../../../../text-to-speech/alphabet_l.wav'),
+  m: require('../../../../../../text-to-speech/alphabet_m.wav'),
+  n: require('../../../../../../text-to-speech/alphabet_n.wav'),
+  o: require('../../../../../../text-to-speech/alphabet_o.wav'),
+  o2: require('../../../../../../text-to-speech/alphabet_o2.wav'),
+  o3: require('../../../../../../text-to-speech/alphabet_o3.wav'),
+  // p: require('../../../../../../text-to-speech/alphabet_p.wav'),
+  // q: require('../../../../../../text-to-speech/alphabet_q.wav'),
+  // r: require('../../../../../../text-to-speech/alphabet_r.wav'),
+  // s: require('../../../../../../text-to-speech/alphabet_s.wav'),
+  // t: require('../../../../../../text-to-speech/alphabet.wav'),
+  // u2: require('../../../../../../text-to-speech/alphabet_u2.wav'),
+  // v: require('../../../../../../text-to-speech/alphabet_v.wav'),
+  // x: require('../../../../../../text-to-speech/alphabet_x.wav'),
+  // y: require('../../../../../../text-to-speech/alphabet_y.wav'),
 };
 
 interface Props {
