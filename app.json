@@ -42,7 +42,10 @@
       ],
       "expo-audio",
       "expo-font",
-      "expo-video"
+      "expo-video",
+      "expo-asset",
+      "expo-image",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

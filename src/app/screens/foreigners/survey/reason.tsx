@@ -54,7 +54,12 @@ const ReasonScreen = ({ navigation }: any) => {
         </TouchableOpacity>
 
         {/* Nhấn skip bỏ qua */}
-        <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('HocTiengViet')}>Skip (Bỏ qua)</TouchableOpacity>
+<TouchableOpacity
+  style={styles.skipButton}
+  onPress={() => navigation.navigate('HocTiengViet')}
+>
+  <Text style={styles.skipButtonText}>Skip (Bỏ qua)</Text>
+</TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -138,6 +143,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   skipButton: {
+    color: '#FF4040',
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  skipButtonText: {
     color: '#FF4040',
     fontSize: 15,
     fontWeight: '600',

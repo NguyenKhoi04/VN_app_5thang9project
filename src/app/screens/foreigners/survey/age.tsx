@@ -42,7 +42,12 @@ const AgeScreen = ({ navigation }: any) => {
         </TouchableOpacity>
         
         {/* Nhấn skip bỏ qua */}
-        <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('HocTiengViet')}>Skip (Bỏ qua)</TouchableOpacity>
+<TouchableOpacity
+  style={styles.skipButton}
+  onPress={() => navigation.navigate('HocTiengViet')}
+>
+  <Text style={styles.skipButtonText}>Skip (Bỏ qua)</Text>
+</TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -76,6 +81,12 @@ const styles = StyleSheet.create({
   disabledButton: { backgroundColor: '#94A3B8' },
   continueText: { color: 'white', fontSize: 18, fontWeight: '600', textAlign: 'center' },
   skipButton: { color: '#FF4040', fontSize: 15, fontWeight: '600', textAlign: 'center', marginTop: 10 },
+  skipButtonText: {
+  color: '#fff',          // hoặc màu bạn muốn
+  fontSize: 16,
+  fontWeight: '600',
+  textAlign: 'center',
+},
 });
 
 export default AgeScreen;

@@ -8,8 +8,8 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import { useLocalSearchParams } from "expo-router";
-import { Audio } from 'expo-av';
+import { useAudioPlayer } from 'expo-audio';
+
 const THEME = '#4F46E5';
 const LESSON_ID = 1;
 
@@ -87,22 +87,20 @@ interface Props {
 }
 
 const Phan1Bai1: React.FC<Props> = ({ navigation }) => {
+  // Tạo player một lần (hoặc tạo theo nhu cầu)
+  const player = useAudioPlayer();
+
   const playSound = useCallback(async (soundKey?: string) => {
     if (!soundKey || !SOUND_MAP[soundKey]) return;
 
     try {
-      const { sound } = await Audio.Sound.createAsync(SOUND_MAP[soundKey]);
-      await sound.playAsync();
-      // Tự unload sau khi phát xong
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (status.isLoaded && status.didJustFinish) {
-          sound.unloadAsync();
-        }
-      });
+      // Load file mới
+      player.replace(SOUND_MAP[soundKey]);
+      player.play();
     } catch (e) {
       console.warn('Không phát được âm thanh:', e);
     }
-  }, []);
+  }, [player]);
 
   const renderLetter = (item: LetterItem, index: number) => {
     const isRed = !item.hasSound;
@@ -121,7 +119,7 @@ const Phan1Bai1: React.FC<Props> = ({ navigation }) => {
             isRed && styles.letterTextRed,
           ]}
         >
-          {item.upper}
+          {item.upper} {''}
           {item.lower}
         </Text>
 
@@ -155,7 +153,7 @@ const Phan1Bai1: React.FC<Props> = ({ navigation }) => {
           onPress={() => navigation.goBack()}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Text style={styles.backIcon}>←</Text>
+          <Text style={styles.backIcon}>◀️</Text>
         </TouchableOpacity>
 
         <View style={styles.headerCenter}>
@@ -182,8 +180,8 @@ const Phan1Bai1: React.FC<Props> = ({ navigation }) => {
 
         {/* Bảng chữ cái */}
         <View style={styles.alphabetCard}>
-          <Text style={styles.sectionTitle}>Bảng chữ cái</Text>
-          <Text style={styles.sectionSub}>Nhấn vào chữ có loa để nghe phát âm</Text>
+          <Text style={styles.sectionTitle}>Bảng chữ cái tiếng Việt &nbsp;(Vietnamese Alphabet)</Text>
+          <Text style={styles.sectionSub}> Click on a letter to hear the sound (Nhấn vào chữ cái để nghe phát âm)</Text>
 
           <View style={styles.grid}>
             {rows.map((row, rowIndex) => (
@@ -251,13 +249,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '800',
     color: 'white',
     textAlign: 'center',
   },
   headerSub: {
-    fontSize: 12,
+    fontSize: 15,
     color: 'rgba(255,255,255,0.85)',
     marginTop: 2,
   },
@@ -321,10 +319,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   sectionTitle: {
-    fontSize: 17,
+    fontSize: 25,
     fontWeight: '800',
-    color: '#1E293B',
     marginBottom: 4,
+    textAlign: 'center',
+    color: THEME,
   },
   sectionSub: {
     fontSize: 13,
