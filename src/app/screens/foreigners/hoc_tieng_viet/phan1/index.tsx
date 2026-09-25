@@ -25,7 +25,7 @@ const lessons: LessonNode[] = [
     id: 3,
     title: '  Thanh diệu',
     subtitle: 'Tones',
-    emoji: '🎵',
+    emoji: ' 🎵',
     status: 'current',
     screenName: 'Phan1Bai3',
   },
