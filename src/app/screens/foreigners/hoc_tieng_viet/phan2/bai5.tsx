@@ -27,10 +27,10 @@ const tracNghiemData = [
   { id: 3, cat: '🔊 Phát âm', q: 'Từ "máy bay" có thanh điệu:', opts: ['A. ngang – huyền', 'B. sắc – nặng', 'C. sắc – huyền', 'D. hỏi – ngã', 'E. nặng – sắc'], ans: 'C' },
   { id: 4, cat: '📚 Từ vựng', q: '"Vé" trong "vé máy bay" nghĩa là gì?', opts: ['A. ticket', 'B. seat', 'C. gate', 'D. passport', 'E. luggage'], ans: 'A' },
   { id: 5, cat: '📖 Ngữ pháp', q: 'Câu nào đúng?', opts: ['A. Tôi muốn mua một vé.', 'B. Tôi một muốn mua vé.', 'C. Muốn tôi mua một vé.', 'D. Vé một tôi muốn mua.', 'E. Mua vé tôi muốn.'], ans: 'A' },
-  { id: 6, cat: '🔊 Phát âm', q: 'Từ "hải quan" phát âm đúng là:', opts: ['A. hải quân', 'B. hải quan', 'C. hải quyền', 'D. hải khẩu', 'E. hải bản'], ans: 'B' },
+  { id: 6, cat: '🔊 Phát âm', q: 'Từ "hải quan" phát âm đúng là:', opts: ['A. h-ai quyền hài quờ- u-a -quan', 'B. h-ai hỏi hải quờ -u -a -quan ', 'C. h-ai sắc hái hờ -u -a -quan', 'D. h-ai nặng hại hờ -u -a -quan', 'E. hải bản'], ans: 'B' },
   { id: 7, cat: '📚 Từ vựng', q: '"Khởi hành" nghĩa là gì?', opts: ['A. arrive', 'B. depart', 'C. transit', 'D. board', 'E. land'], ans: 'B' },
   { id: 8, cat: '📖 Ngữ pháp', q: '"Chuyến bay ___ mấy giờ?" – Chọn đúng:', opts: ['A. lúc', 'B. vào', 'C. ở', 'D. từ', 'E. đến'], ans: 'B' },
-  { id: 9, cat: '🔊 Phát âm', q: 'Thanh điệu của "huyền" là:', opts: ['A. dấu /', 'B. dấu \\', 'C. dấu ~', 'D. dấu ?', 'E. không dấu'], ans: 'B' },
+  { id: 9, cat: '🔊 Phát âm', q: 'Thanh điệu của "huyền" là:', opts: ['A. dấu  ´ ', 'B. dấu `', 'C. dấu ~', 'D. dấu ?', 'E. .'], ans: 'B' },
   { id: 10, cat: '📚 Từ vựng', q: '"Hành lý" nghĩa tiếng Anh là:', opts: ['A. boarding pass', 'B. check-in', 'C. luggage', 'D. customs', 'E. terminal'], ans: 'C' },
 ];
 
@@ -40,13 +40,13 @@ const dienTuDang1Data = [
   { id: 1, sentence: '___ tôi muốn mua một vé khứ hồi.', blank: 0, wordBank: ['Xin lỗi,', 'Cảm ơn,', 'Chào,', 'Hẹn gặp,'], ans: 'Xin lỗi,' },
   { id: 2, sentence: 'Chuyến bay ___ lúc 8 giờ sáng.', blank: 1, wordBank: ['khởi hành', 'đáp xuống', 'bay lên', 'chờ đợi'], ans: 'khởi hành' },
   { id: 3, sentence: 'Tôi cần ___ hành lý trước khi lên máy bay.', blank: 1, wordBank: ['ký gửi', 'mang về', 'bỏ lại', 'mở ra'], ans: 'ký gửi' },
-  { id: 4, sentence: 'Cổng số ___ là cổng của chuyến bay này.', blank: 1, wordBank: ['5', '10', '15', '20'], ans: '5' },
+  { id: 4, sentence: 'Cổng ___ là cổng của chuyến bay này.', blank: 1, wordBank: ['cửa số 5', 'số 5', 'cửa 15', 'số cửa 20'], ans: 'số 5' },
 ];
 
 // Dạng 2: Gõ từ (có gợi ý hình ảnh emoji)
 const dienTuDang2Data = [
   { id: 1, emoji: '✈️', hint: 'Phương tiện bay', ans: 'máy bay' },
-  { id: 2, emoji: '🎫', hint: 'Giấy tờ để lên tàu/xe/máy bay', ans: 'vé' },
+  { id: 2, emoji: '🎫', hint: 'Giấy tờ để lên tàu / xe / máy bay', ans: 'vé' },
   { id: 3, emoji: '🧳', hint: 'Đồ dùng mang theo khi đi du lịch', ans: 'hành lý' },
   { id: 4, emoji: '🛂', hint: 'Nơi kiểm tra hộ chiếu', ans: 'hải quan' },
 ];
@@ -62,8 +62,8 @@ const dienTuDang3Data = [
 // Dạng 1: Kéo thả điền vào câu
 const nguPhapDang1Data = [
   { id: 1, sentence: 'Tôi ___ đặt vé máy bay rồi.', wordBank: ['đã', 'sẽ', 'đang', 'chưa'], ans: 'đã' },
-  { id: 2, sentence: 'Chuyến bay ___ bị hoãn vì thời tiết xấu.', wordBank: ['bị', 'được', 'sẽ', 'phải'], ans: 'bị' },
-  { id: 3, sentence: 'Anh ấy ___ làm thủ tục check-in không?', wordBank: ['đã', 'sẽ', 'đang', 'sắp'], ans: 'đã' },
+  { id: 2, sentence: 'Chuyến bay ___ vì thời tiết xấu.', wordBank: ['bị hoãn', 'bị hủy', 'sẽ đi', 'đã hạ cánh'], ans: 'bị hoãn' },
+  { id: 3, sentence: 'Anh ấy ___ đi Đà Nẵng rồi phải không?', wordBank: ['đã', 'sẽ', 'đang', 'sắp'], ans: 'đã' },
 ];
 
 // Dạng 2: Viết lại câu
@@ -103,22 +103,22 @@ const hoiThoaiDang2Data = [
     title: 'Mua vé máy bay',
     lines: [
       { key: 'A', text: 'Nhân viên: Anh muốn mua vé đi đâu ạ?' },
-      { key: 'B', text: 'Khách: Tôi muốn mua vé đi Hà Nội.' },
+      { key: 'D', text: 'Khách: Tôi muốn mua vé đi Hà Nội.' },
       { key: 'C', text: 'Nhân viên: Anh muốn vé một chiều hay khứ hồi?' },
-      { key: 'D', text: 'Khách: Vé khứ hồi, ngày mai khởi hành.' },
+      { key: 'B', text: 'Khách: Vé khứ hồi, ngày mai khởi hành.' },
     ],
-    ans: ['A', 'B', 'C', 'D'],
+    ans: ['A', 'D', 'C', 'B'],
   },
   {
     id: 2,
     title: 'Check-in sân bay',
     lines: [
-      { key: 'A', text: 'NV: Xin cho xem vé và hộ chiếu ạ.' },
-      { key: 'B', text: 'Khách: Vâng, đây ạ.' },
-      { key: 'C', text: 'NV: Hành lý của anh nặng 18 kg, không cần phụ phí.' },
-      { key: 'D', text: 'Khách: Cảm ơn chị.' },
+      { key: 'D', text: 'NV: Xin cho xem vé và hộ chiếu ạ.' },
+      { key: 'A', text: 'Khách: Vâng, đây ạ.' },
+      { key: 'B', text: 'NV: Hành lý của anh nặng 18 kg, không cần phụ phí.' },
+      { key: 'C', text: 'Khách: Cảm ơn chị.' },
     ],
-    ans: ['A', 'B', 'C', 'D'],
+    ans: ['D', 'A', 'B', 'C'],
   },
 ];
 

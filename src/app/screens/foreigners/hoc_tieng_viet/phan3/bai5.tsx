@@ -86,22 +86,22 @@ const hoiThoaiDang2Data = [
   {
     id: 1, title: 'Tự giới thiệu',
     lines: [
-      { key: 'A', text: 'A: Xin lỗi, anh tên gì?' },
-      { key: 'B', text: 'B: Tôi tên là Pedro, tôi là người Tây Ban Nha.' },
+      { key: 'D', text: 'A: Xin lỗi, anh tên gì?' },
+      { key: 'A', text: 'B: Tôi tên là Pedro, tôi là người Tây Ban Nha.' },
       { key: 'C', text: 'A: Anh làm nghề gì?' },
-      { key: 'D', text: 'B: Tôi làm kỹ sư ở một công ty ở Hà Nội.' },
+      { key: 'B', text: 'B: Tôi làm kỹ sư ở một công ty ở Hà Nội.' },
     ],
-    ans: ['A', 'B', 'C', 'D'],
+    ans: ['D', 'A', 'C', 'B'],
   },
   {
     id: 2, title: 'Gặp nhau lần đầu',
     lines: [
-      { key: 'A', text: 'X: Chào! Tôi tên là Min. Còn bạn?' },
+      { key: 'C', text: 'X: Chào! Tôi tên là Min. Còn bạn?' },
       { key: 'B', text: 'Y: Tôi tên là Hana, tôi người Nhật.' },
-      { key: 'C', text: 'X: Bạn sống ở đâu?' },
+      { key: 'A', text: 'X: Bạn sống ở đâu?' },
       { key: 'D', text: 'Y: Tôi sống ở quận 1, TP.HCM.' },
     ],
-    ans: ['A', 'B', 'C', 'D'],
+    ans: ['C', 'B', 'A', 'D'],
   },
 ];
 
