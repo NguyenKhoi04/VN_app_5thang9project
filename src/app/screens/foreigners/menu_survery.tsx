@@ -20,11 +20,13 @@ import Phan2Bai1 from './hoc_tieng_viet/phan2/bai1';
 import Phan2Bai2 from './hoc_tieng_viet/phan2/bai2';
 import Phan2Bai3 from './hoc_tieng_viet/phan2/bai3';
 import Phan2Bai4 from './hoc_tieng_viet/phan2/bai4';
+import Phan2Bai5 from './hoc_tieng_viet/phan2/bai5';
 import Phan3Roadmap from './hoc_tieng_viet/phan3/index';
 import Phan3Bai1 from './hoc_tieng_viet/phan3/bai1';
 import Phan3Bai2 from './hoc_tieng_viet/phan3/bai2';
 import Phan3Bai3 from './hoc_tieng_viet/phan3/bai3';
 import Phan3Bai4 from './hoc_tieng_viet/phan3/bai4';
+import Phan3Bai5 from './hoc_tieng_viet/phan3/bai5';
 import TuVungIndex from './hoc_tieng_viet/tu_vung/index';
 import BangTuVung from './hoc_tieng_viet/tu_vung/bang_tu_vung';
 
@@ -73,6 +75,7 @@ const MenuSurvey = () => {
       <Stack.Screen name="Phan2Bai2" component={Phan2Bai2} />
       <Stack.Screen name="Phan2Bai3" component={Phan2Bai3} />
       <Stack.Screen name="Phan2Bai4" component={Phan2Bai4} />
+      <Stack.Screen name="Phan2Bai5" component={Phan2Bai5} />
 
       {/* Phần 3 */}
       <Stack.Screen name="Phan3Roadmap" component={Phan3Roadmap} />
@@ -80,6 +83,7 @@ const MenuSurvey = () => {
       <Stack.Screen name="Phan3Bai2" component={Phan3Bai2} />
       <Stack.Screen name="Phan3Bai3" component={Phan3Bai3} />
       <Stack.Screen name="Phan3Bai4" component={Phan3Bai4} />
+      <Stack.Screen name="Phan3Bai5" component={Phan3Bai5} />
 
       {/* Bảng từ vựng */}
       <Stack.Screen name="TuVungIndex" component={TuVungIndex} />

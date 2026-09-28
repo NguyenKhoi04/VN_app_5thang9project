@@ -34,19 +34,27 @@ const lessons = [
   },
   {
     id: 3,
-    titleVN: 'ANH LÀM NGHỀ GÌ?',
-    titleEN: 'What do you do?',
+    titleVN: 'DẠO NÀY BẠN LÀM GÌ?',
+    titleEN: 'What are you doing these days?',
     emoji: '💼',
     status: 'current' as const,
     screenName: 'Phan3Bai3',
   },
   {
     id: 4,
-    titleVN: 'NHÀ BẠN Ở ĐÂU?',
-    titleEN: 'Where do you live?',
+    titleVN: 'BÂY GIỜ CÔ SỐNG Ở ĐÂU?',
+    titleEN: 'Where do you live now?',
     emoji: '🏠',
     status: 'current' as const,
     screenName: 'Phan3Bai4',
+  },
+  {
+    id: 5,
+    titleVN: 'BÀI TẬP TỔNG HỢP PHẦN 3',
+    titleEN: 'Comprehensive Practice Part 3',
+    emoji: '🎯',
+    status: 'current' as const,
+    screenName: 'Phan3Bai5',
   },
 ];
 
