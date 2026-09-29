@@ -116,7 +116,7 @@ const ngheDang1Data = [
   { id: 1, audio: '🔊 "Xin lỗi, anh tên gì?"', opts: ['A. Hỏi tên', 'B. Hỏi tuổi', 'C. Hỏi địa chỉ', 'D. Hỏi quốc tịch', 'E. Hỏi nghề nghiệp'], ans: 'A' },
   { id: 2, audio: '🔊 "Cô là người Hàn Quốc."', opts: ['A. Nhật Bản', 'B. Hàn Quốc', 'C. Trung Quốc', 'D. Mỹ', 'E. Pháp'], ans: 'B' },
   { id: 3, audio: '🔊 "Anh ấy làm bác sĩ."', opts: ['A. Kỹ sư', 'B. Giáo viên', 'C. Bác sĩ', 'D. Luật sư', 'E. Kế toán'], ans: 'C' },
-  { id: 4, audio: '🔊 "Tôi đang sống ở Hà Nội."', opts: ['A. TP.HCM', 'B. Đà Nẵng', 'C. Huế', 'D. Hà Nội', 'E. Cần Thơ'], ans: 'D' },
+  { id: 4, audio: '🔊 "Tôi đang sống ở Hà Nội."', opts: ['A. Thành phố Hồ Chí Minh', 'B. Đà Nẵng', 'C. Huế', 'D. Hà Nội', 'E. Cần Thơ'], ans: 'D' },
 ];
 
 const ngheDang2Data = [
