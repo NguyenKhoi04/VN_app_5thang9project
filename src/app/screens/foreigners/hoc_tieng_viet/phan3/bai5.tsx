@@ -20,7 +20,7 @@ const tracNghiemData = [
   { id: 3, cat: '🔊 Phát âm', q: 'Từ "Việt Nam" có bao nhiêu thanh điệu?', opts: ['A. 1', 'B. 2', 'C. 3', 'D. 0', 'E. 4'], ans: 'B' },
   { id: 4, cat: '📚 Từ vựng', q: '"Nghề nghiệp" nghĩa tiếng Anh là:', opts: ['A. nationality', 'B. occupation', 'C. address', 'D. hobby', 'E. family'], ans: 'B' },
   { id: 5, cat: '📖 Ngữ pháp', q: 'Câu hỏi tên đúng là:', opts: ['A. Anh tên gì?', 'B. Anh gì tên?', 'C. Tên anh gì?', 'D. Gì tên anh?', 'E. Tên gì anh?'], ans: 'A' },
-  { id: 6, cat: '🔊 Phát âm', q: 'Từ "xin lỗi" phát âm đúng thanh điệu là:', opts: ['A. ngang – sắc', 'B. ngang – hỏi', 'C. hỏi – nặng', 'D. sắc – huyền', 'E. hỏi – sắc'], ans: 'B' },
+  { id: 6, cat: '🔊 Phát âm', q: 'Từ "xin lỗi" phát âm đúng thanh điệu là:', opts: ['A. ngang – sắc', 'B. ngang – ngã', 'C. hỏi – nặng', 'D. sắc – huyền', 'E. hỏi – sắc'], ans: 'B' },
   { id: 7, cat: '📚 Từ vựng', q: '"Quê hương" nghĩa là:', opts: ['A. hometown', 'B. workplace', 'C. school', 'D. country', 'E. street'], ans: 'A' },
   { id: 8, cat: '📖 Ngữ pháp', q: '"Cô ___ làm gì?" – Chọn đúng:', opts: ['A. đang', 'B. là', 'C. có', 'D. ở', 'E. muốn'], ans: 'A' },
   { id: 9, cat: '🔊 Phát âm', q: 'Từ "người" thuộc thanh điệu:', opts: ['A. ngang', 'B. huyền', 'C. sắc', 'D. nặng', 'E. hỏi'], ans: 'B' },
@@ -45,7 +45,7 @@ const dienTuDang2Data = [
 const dienTuDang3Data = [
   { id: 1, emoji: '👋', shuffled: ['I', 'S', 'N', 'L', 'Ỗ', ' ', 'X'], ans: 'XIN LỖI' },
   { id: 2, emoji: '🌍', shuffled: ['C', 'N', 'Ư', 'Ớ', 'C', ' ', 'N', 'À', 'O'], ans: 'NƯỚC NÀO' },
-  { id: 3, emoji: '💼', shuffled: ['N', 'G', 'H', 'Ề', ' ', 'G', 'H', 'Ề'], ans: 'NGHỀ NGHỀ' },
+  { id: 3, emoji: '💼', shuffled: ['N', 'G', 'H', 'Ệ', 'I','P',' ', 'G', 'H', 'Ề','N'], ans: 'NGHỀ NGHIỆP' },
 ];
 
 // 3. NGỮ PHÁP
@@ -120,15 +120,15 @@ const ngheDang1Data = [
 ];
 
 const ngheDang2Data = [
-  { id: 1, audio: '🔊 "Tôi ___ Pedro, người Tây Ban Nha."', ans: 'tên là' },
-  { id: 2, audio: '🔊 "Dạo này anh ___ gì?"', ans: 'làm' },
+  { id: 1, audio: '🔊 "Tôi ___ Pedro, mình sống ở nước Tây Ban Nha."', ans: 'tên là' },
+  { id: 2, audio: '🔊 "Dạo này anh ___ gì thế?"', ans: 'làm' },
   { id: 3, audio: '🔊 "Bây giờ tôi sống ___ Hà Nội."', ans: 'ở' },
 ];
 
 const ngheDang3Data = [
   { id: 1, audio: '🔊 "Đây là bác sĩ."', emojis: ['👨‍⚕️', '👨‍🏫', '👨‍💼', '👨‍🍳', '👮'], ans: '👨‍⚕️' },
   { id: 2, audio: '🔊 "Cô ấy là người Nhật Bản."', emojis: ['🇯🇵', '🇰🇷', '🇨🇳', '🇺🇸', '🇫🇷'], ans: '🇯🇵' },
-  { id: 3, audio: '🔊 "Anh sống ở đây."', emojis: ['🏠', '🏫', '🏥', '🏢', '✈️'], ans: '🏠' },
+  { id: 3, audio: '🔊 "Anh đi khám bệnh ở bệnh viện Từ Dũ Thành phố Hồ Chí Minh."', emojis: ['🏠', '🏫', '🏥', '🏢', '✈️'], ans: '🏥' },
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -160,7 +160,7 @@ const TracNghiemSection: React.FC = () => {
     setSubmitted(true);
     const ok = tracNghiemData.every(q => answers[q.id] === q.ans);
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 1000);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && tracNghiemData.every(q => answers[q.id] === q.ans);
@@ -208,7 +208,7 @@ const DienTuDang1: React.FC = () => {
     setSubmitted(true);
     const ok = dienTuDang1Data.every(q => answers[q.id] === q.ans);
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 12000);
   };
 
   const allCorrect = submitted && dienTuDang1Data.every(q => answers[q.id] === q.ans);
@@ -259,7 +259,7 @@ const DienTuDang2: React.FC = () => {
     setSubmitted(true);
     const ok = dienTuDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && dienTuDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
@@ -333,7 +333,7 @@ const DienTuDang3: React.FC = () => {
       setSubmitted(false); setShowResult(false);
       setArranged(Object.fromEntries(dienTuDang3Data.map(q => [q.id, [...q.shuffled].sort(() => Math.random() - 0.5)])));
       setAnswers(Object.fromEntries(dienTuDang3Data.map(q => [q.id, []])));
-    }, 2200);
+    }, 120000);
   };
 
   const allCorrect = submitted && dienTuDang3Data.every(q => answers[q.id].join('') === q.ans.replace(/ /g, ''));
@@ -394,7 +394,7 @@ const NguPhapDang1: React.FC = () => {
     setSubmitted(true);
     const ok = nguPhapDang1Data.every(q => answers[q.id] === q.ans);
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && nguPhapDang1Data.every(q => answers[q.id] === q.ans);
@@ -443,7 +443,7 @@ const NguPhapDang2: React.FC = () => {
     setSubmitted(true);
     const ok = nguPhapDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && nguPhapDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
@@ -513,7 +513,7 @@ const NguPhapDang3: React.FC = () => {
     if (!ok) setTimeout(() => {
       setSubmitted(false); setShowResult(false);
       setArrangements(Object.fromEntries(nguPhapDang3Data.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }])));
-    }, 2200);
+    }, 120000);
   };
 
   const allCorrect = submitted && nguPhapDang3Data.every(q => arrangements[q.id].answer.join(' ') === q.ans);
@@ -591,7 +591,7 @@ const NguPhapDang4: React.FC = () => {
     if (!ok) setTimeout(() => {
       setSubmitted(false); setShowResult(false);
       setArrangements(Object.fromEntries(nguPhapDang4Data.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }])));
-    }, 2200);
+    }, 120000);
   };
 
   const allCorrect = submitted && nguPhapDang4Data.every(q => arrangements[q.id].answer.join(' ') === q.ans);
@@ -651,7 +651,7 @@ const HoiThoaiDang1: React.FC = () => {
     setSubmitted(true);
     const ok = hoiThoaiDang1Data.every(q => answers[q.id] === q.ans);
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && hoiThoaiDang1Data.every(q => answers[q.id] === q.ans);
@@ -719,7 +719,7 @@ const HoiThoaiDang2: React.FC = () => {
     if (!ok) setTimeout(() => {
       setSubmitted(false); setShowResult(false);
       setOrders(Object.fromEntries(hoiThoaiDang2Data.map(d => [d.id, [...d.lines.map(l => l.key)].sort(() => Math.random() - 0.5)])));
-    }, 2200);
+    }, 120000);
   };
 
   const allCorrect = submitted && hoiThoaiDang2Data.every(d => orders[d.id].join('') === d.ans.join(''));
@@ -772,7 +772,7 @@ const HoiThoaiDang3: React.FC = () => {
     setSubmitted(true);
     const ok = hoiThoaiDang3Data.every(q => answers[q.id] === q.blank);
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && hoiThoaiDang3Data.every(q => answers[q.id] === q.blank);
@@ -822,7 +822,7 @@ const NgheDang1: React.FC = () => {
     setSubmitted(true);
     const ok = ngheDang1Data.every(q => answers[q.id] === q.ans);
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && ngheDang1Data.every(q => answers[q.id] === q.ans);
@@ -867,7 +867,7 @@ const NgheDang2: React.FC = () => {
     setSubmitted(true);
     const ok = ngheDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && ngheDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
@@ -916,7 +916,7 @@ const NgheDang3: React.FC = () => {
     setSubmitted(true);
     const ok = ngheDang3Data.every(q => answers[q.id] === q.ans);
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && ngheDang3Data.every(q => answers[q.id] === q.ans);

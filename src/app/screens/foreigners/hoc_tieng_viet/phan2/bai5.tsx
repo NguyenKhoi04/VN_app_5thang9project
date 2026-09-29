@@ -22,9 +22,9 @@ interface Props { navigation: any; }
 
 // 1. TRẮC NGHIỆM (10 câu: từ vựng, ngữ pháp, phát âm)
 const tracNghiemData = [
-  { id: 1, cat: '📚 Từ vựng', q: 'Từ nào có nghĩa là "sân bay"?', opts: ['A. bệnh viện', 'B. sân bay', 'C. trường học', 'D. nhà hàng', 'E. khách sạn'], ans: 'B' },
+  { id: 1, cat: '📚 Từ vựng', q: 'Từ nào có nghĩa là "airport"?', opts: ['A. bệnh viện', 'B. sân bay', 'C. trường học', 'D. nhà hàng', 'E. khách sạn'], ans: 'B' },
   { id: 2, cat: '📖 Ngữ pháp', q: '"Anh ___ mua vé máy bay chưa?" – Chọn từ đúng:', opts: ['A. đã', 'B. sẽ', 'C. đang', 'D. vừa', 'E. mới'], ans: 'A' },
-  { id: 3, cat: '🔊 Phát âm', q: 'Từ "máy bay" có thanh điệu:', opts: ['A. ngang – huyền', 'B. sắc – nặng', 'C. sắc – huyền', 'D. hỏi – ngã', 'E. nặng – sắc'], ans: 'C' },
+  { id: 3, cat: '🔊 Phát âm', q: 'Từ "máy bay" có thanh điệu:', opts: ['A. ngang – huyền', 'B. sắc – nặng', 'C. sắc – ngang', 'D. hỏi – ngã', 'E. nặng – sắc'], ans: 'C' },
   { id: 4, cat: '📚 Từ vựng', q: '"Vé" trong "vé máy bay" nghĩa là gì?', opts: ['A. ticket', 'B. seat', 'C. gate', 'D. passport', 'E. luggage'], ans: 'A' },
   { id: 5, cat: '📖 Ngữ pháp', q: 'Câu nào đúng?', opts: ['A. Tôi muốn mua một vé.', 'B. Tôi một muốn mua vé.', 'C. Muốn tôi mua một vé.', 'D. Vé một tôi muốn mua.', 'E. Mua vé tôi muốn.'], ans: 'A' },
   { id: 6, cat: '🔊 Phát âm', q: 'Từ "hải quan" phát âm đúng là:', opts: ['A. h-ai quyền hài quờ- u-a -quan', 'B. h-ai hỏi hải quờ -u -a -quan ', 'C. h-ai sắc hái hờ -u -a -quan', 'D. h-ai nặng hại hờ -u -a -quan', 'E. hải bản'], ans: 'B' },
@@ -191,7 +191,7 @@ const TracNghiemSection: React.FC = () => {
     setSubmitted(true);
     const allCorrect = tracNghiemData.every(q => answers[q.id] === q.ans);
     setShowResult(true);
-    if (!allCorrect) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2000);
+    if (!allCorrect) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && tracNghiemData.every(q => answers[q.id] === q.ans);
@@ -254,7 +254,7 @@ const DienTuDang1: React.FC = () => {
     setSubmitted(true);
     const allCorrect = dienTuDang1Data.every(q => answers[q.id] === q.ans);
     setShowResult(true);
-    if (!allCorrect) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!allCorrect) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && dienTuDang1Data.every(q => answers[q.id] === q.ans);
@@ -309,7 +309,7 @@ const DienTuDang2: React.FC = () => {
     setSubmitted(true);
     const allCorrect = dienTuDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
     setShowResult(true);
-    if (!allCorrect) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!allCorrect) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && dienTuDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
@@ -390,7 +390,7 @@ const DienTuDang3: React.FC = () => {
         setSubmitted(false); setShowResult(false);
         setArranged(Object.fromEntries(dienTuDang3Data.map(q => [q.id, [...q.shuffled].sort(() => Math.random() - 0.5)])));
         setAnswers(Object.fromEntries(dienTuDang3Data.map(q => [q.id, []])));
-      }, 2200);
+      }, 120000);
     }
   };
 
@@ -455,7 +455,7 @@ const NguPhapDang1: React.FC = () => {
     setSubmitted(true);
     const ok = nguPhapDang1Data.every(q => answers[q.id] === q.ans);
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && nguPhapDang1Data.every(q => answers[q.id] === q.ans);
@@ -506,7 +506,7 @@ const NguPhapDang2: React.FC = () => {
     setSubmitted(true);
     const ok = nguPhapDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && nguPhapDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
@@ -578,7 +578,7 @@ const NguPhapDang3: React.FC = () => {
     if (!ok) setTimeout(() => {
       setSubmitted(false); setShowResult(false);
       setArrangements(Object.fromEntries(nguPhapDang3Data.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }])));
-    }, 2200);
+    }, 120000);
   };
 
   const allCorrect = submitted && nguPhapDang3Data.every(q => arrangements[q.id].answer.join(' ') === q.ans);
@@ -658,7 +658,7 @@ const NguPhapDang4: React.FC = () => {
     if (!ok) setTimeout(() => {
       setSubmitted(false); setShowResult(false);
       setArrangements(Object.fromEntries(nguPhapDang4Data.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }])));
-    }, 2200);
+    }, 120000);
   };
 
   const allCorrect = submitted && nguPhapDang4Data.every(q => arrangements[q.id].answer.join(' ') === q.ans);
@@ -718,7 +718,7 @@ const HoiThoaiDang1: React.FC = () => {
     setSubmitted(true);
     const ok = hoiThoaiDang1Data.every(q => answers[q.id] === q.ans);
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && hoiThoaiDang1Data.every(q => answers[q.id] === q.ans);
@@ -786,7 +786,7 @@ const HoiThoaiDang2: React.FC = () => {
     if (!ok) setTimeout(() => {
       setSubmitted(false); setShowResult(false);
       setOrders(Object.fromEntries(hoiThoaiDang2Data.map(d => [d.id, [...d.lines.map(l => l.key)].sort(() => Math.random() - 0.5)])));
-    }, 2200);
+    }, 120000);
   };
 
   const allCorrect = submitted && hoiThoaiDang2Data.every(d => orders[d.id].join('') === d.ans.join(''));
@@ -839,7 +839,7 @@ const HoiThoaiDang3: React.FC = () => {
     setSubmitted(true);
     const ok = hoiThoaiDang3Data.every(q => answers[q.id] === q.blank);
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && hoiThoaiDang3Data.every(q => answers[q.id] === q.blank);
@@ -889,7 +889,7 @@ const NgheDang1: React.FC = () => {
     setSubmitted(true);
     const ok = ngheDang1Data.every(q => answers[q.id] === q.ans);
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && ngheDang1Data.every(q => answers[q.id] === q.ans);
@@ -934,7 +934,7 @@ const NgheDang2: React.FC = () => {
     setSubmitted(true);
     const ok = ngheDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 1000);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && ngheDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
@@ -982,7 +982,7 @@ const NgheDang3: React.FC = () => {
     setSubmitted(true);
     const ok = ngheDang3Data.every(q => answers[q.id] === q.ans);
     setShowResult(true);
-    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 2200);
+    if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
   const allCorrect = submitted && ngheDang3Data.every(q => answers[q.id] === q.ans);
