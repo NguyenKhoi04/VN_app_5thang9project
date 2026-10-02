@@ -9,7 +9,7 @@ const Footer = () => {
   return (
     <View style={styles.footer}>
       <TouchableOpacity style={styles.footerItem} onPress={() => {
-        navigation.navigate('HomePrimary');
+        navigation.navigate('RoleSelection', { user: null });
       }}>
         <Text style={styles.footerIcon}>🏠</Text>
         <Text style={styles.footerTextActive}>Trang chủ</Text>

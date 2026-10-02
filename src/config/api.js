@@ -21,4 +21,5 @@ export const API_ENDPOINTS = {
     GET_SKILLS: `${BASE_URL}/api/skills`,
     GET_SKILLS_BY_CLASS: `${BASE_URL}/api/skills-by-class`,
     GET_DATA: `${BASE_URL}/api/data`
+    
 };
