@@ -1,6 +1,6 @@
 // Kỹ năng 2: Nghe và lập lại
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native-safe-area-context;
 import BaseSkillContent, { ContentCard, PlayButton } from '../BaseSkillContent';
 
 interface Props { navigation: any; route: any; }

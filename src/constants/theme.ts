@@ -5,7 +5,7 @@
 
 import '@/global.css';
 
-import { Platform } from 'react-native';
+import { Platform } from 'react-native-safe-area-context;
 
 export const Colors = {
   light: {

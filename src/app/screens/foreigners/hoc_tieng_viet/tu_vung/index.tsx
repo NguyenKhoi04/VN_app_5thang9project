@@ -7,7 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
-} from 'react-native';
+} from 'react-native-safe-area-context;
 
 const LESSONS = [
   { id: 1, titleVN: 'Xin lỗi, anh tên gì?', titleEN: 'Excuse me, What is your name?', emoji: '👋', count: 12 },

@@ -5,13 +5,14 @@ import {
   Dimensions,
   Image,
   ImageBackground,
-  SafeAreaView,
+
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Footer from "../Footer";
 import Header, { ClassInfo } from "../Header";
 

@@ -10,7 +10,7 @@ import {
   ScrollView,
   Animated,
   Dimensions,
-} from 'react-native';
+} from 'react-native-safe-area-context;
 
 const { width } = Dimensions.get('window');
 const THEME = '#059669';

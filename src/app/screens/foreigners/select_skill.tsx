@@ -1,6 +1,6 @@
 // Lựa chọn 1 trong 4 kỹ năng: Nghe, Nói, Đọc, Viết
 import React from 'react';
-import { View, Text, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, SafeAreaView } from 'react-native-safe-area-context;
 // import { useNavigation } from '@react-navigation/native';
 
 import { useRouter } from 'expo-router';

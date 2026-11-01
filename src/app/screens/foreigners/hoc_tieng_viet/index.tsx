@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
   Animated,
-} from 'react-native';
+} from 'react-native-safe-area-context;
 
 interface SectionCardProps {
   number: string;

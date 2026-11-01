@@ -8,7 +8,7 @@ import {
   Pressable,
   StatusBar,
   Platform,
-} from 'react-native';
+} from 'react-native-safe-area-context;
 import { Audio } from 'expo-av';
 
 const THEME = '#4F46E5';

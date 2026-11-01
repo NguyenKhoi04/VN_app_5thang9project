@@ -7,7 +7,7 @@ import {
   TabListProps,
 } from 'expo-router/ui';
 import { SymbolView } from 'expo-symbols';
-import { Pressable, useColorScheme, View, StyleSheet } from 'react-native';
+import { Pressable, useColorScheme, View, StyleSheet } from 'react-native-safe-area-context;
 
 import { ExternalLink } from './external-link';
 import { ThemedText } from './themed-text';

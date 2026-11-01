@@ -1,4 +1,4 @@
-import { Platform, StyleSheet, Text, type TextProps } from 'react-native';
+import { Platform, StyleSheet, Text, type TextProps } from 'react-native-safe-area-context;
 
 import { Fonts, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';

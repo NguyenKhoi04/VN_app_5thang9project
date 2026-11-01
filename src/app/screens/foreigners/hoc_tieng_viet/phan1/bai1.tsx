@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   StatusBar,
   Platform,
-} from 'react-native';
+} from 'react-native-safe-area-context;
 import { useAudioPlayer } from 'expo-audio';
 
 const THEME = '#4F46E5';

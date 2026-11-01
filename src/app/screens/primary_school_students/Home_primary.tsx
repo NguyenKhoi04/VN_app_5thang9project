@@ -3,13 +3,14 @@ import {
   Alert,
   Dimensions,
   ImageBackground,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+// 1. Sửa SafeAreaView từ react-native-safe-area-context để hết Warning
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import Footer from "./Footer";
 import Header from "./Header";
@@ -55,7 +56,18 @@ const HomePrimary = ({ navigation, route }: any) => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await fetch(API_ENDPOINTS.GET_CLASSES);
+        const response = await fetch(API_ENDPOINTS.GET_CLASSES, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Lỗi HTTP ${response.status} khi lấy danh sách lớp:`, errorText);
+          return;
+        }
+
         const data = await response.json();
 
         if (Array.isArray(data) && data.length > 0) {
@@ -80,15 +92,42 @@ const HomePrimary = ({ navigation, route }: any) => {
     const lopNumber = selectedClass.replace("Lớp ", "").trim();
 
     const fetchSkillsData = async () => {
+      const url = `${API_ENDPOINTS.GET_SKILLS_BY_CLASS}?lop=${lopNumber}`;
+      console.log("👉 Đang gọi API kỹ năng:", url);
+
       try {
-        // Dùng endpoint GET_SKILLS_BY_CLASS
-        const response = await fetch(
-          `${API_ENDPOINTS.GET_SKILLS_BY_CLASS}?lop=${lopNumber}`,
-        );
-        const data: Feature[] = await response.json();
+        const response = await fetch(url, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
+
+        // Đọc dữ liệu dạng text để kiểm tra xem server trả về HTML hay JSON
+        const rawText = await response.text();
+
+        if (!response.ok) {
+          console.error(
+            `❌ Server báo lỗi HTTP ${response.status} khi lấy kỹ năng:`,
+            rawText.substring(0, 300) // In ra 300 ký tự đầu để xem lỗi HTML
+          );
+          setProgramName("");
+          setFeatures([]);
+          return;
+        }
+
+        // Kiểm tra nếu nội dung bắt đầu bằng thẻ HTML '<'
+        if (rawText.trim().startsWith("<")) {
+          console.error(
+            "❌ Server trả về trang HTML thay vì JSON. Kiểm tra lại đường dẫn API:",
+            rawText.substring(0, 300)
+          );
+          return;
+        }
+
+        const data: Feature[] = JSON.parse(rawText);
 
         if (Array.isArray(data) && data.length > 0) {
-          // Lấy tên chương trình của lớp đó gán vào banner
           setProgramName(data[0]?.ten_chuong_trinh || "");
           const formattedFeatures = data.map((item, index) => ({
             ...item,
@@ -107,31 +146,15 @@ const HomePrimary = ({ navigation, route }: any) => {
     fetchSkillsData();
   }, [selectedClass]);
 
-  // Điều hướng bằng router của expo-router
-  // const handleNavigate = (url?: string, tenKyNang?: string) => {
-  //   if (url) {
-  //     router.push({
-  //       pathname: url as any,
-  //       params: {
-  //         ho_ten: name,
-  //         ten_ky_nang: tenKyNang || '',
-  //       },
-  //     });
-  //   } else {
-  //     Alert.alert('Thông báo', `Tính năng "${tenKyNang}" đang được phát triển!`);
-  //   }
-  // };
-
   const handleNavigate = (url?: string, tenKyNang?: string) => {
     if (!url) {
       Alert.alert(
         "Thông báo",
-        `Tính năng "${tenKyNang}" đang được phát triển!`,
+        `Tính năng "${tenKyNang}" đang được phát triển!`
       );
       return;
     }
 
-    // Dùng navigation prop từ React Navigation Stack
     navigation.navigate(url, {
       ho_ten: name,
       ten_ky_nang: tenKyNang || "",
@@ -164,36 +187,6 @@ const HomePrimary = ({ navigation, route }: any) => {
           </View>
         </ImageBackground>
       </View>
-
-      {/* NÚT CHỌN LỚP (Gắn vào đây để người dùng bấm chọn) */}
-      {/* <View style={styles.classContainer}>
-        <View style={styles.classGrid}>
-          {classes.map((cls, index) => {
-            const classLabel = `Lớp ${cls.lop}`;
-            const isActive = selectedClass === classLabel;
-
-            return (
-              <TouchableOpacity
-                key={cls.lop ?? index}
-                style={[
-                  styles.classButton,
-                  isActive && styles.classButtonActive,
-                ]}
-                onPress={() => setSelectedClass(classLabel)}
-              >
-                <Text
-                  style={[
-                    styles.classText,
-                    isActive && styles.classTextActive,
-                  ]}
-                >
-                  {classLabel}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </View> */}
 
       {/* Danh sách kỹ năng của lớp được chọn */}
       <ScrollView
@@ -294,7 +287,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  /* Grid cải tiến - đẹp và vừa màn hình */
   featuresGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -341,7 +333,6 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
 
-  /* Banner Chương trình */
   bannerContainer: {
     alignItems: "center",
     marginHorizontal: 5,

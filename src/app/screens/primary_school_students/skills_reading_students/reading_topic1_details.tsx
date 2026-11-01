@@ -5,13 +5,14 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
+
   ScrollView,
   Dimensions,
   ImageBackground,
   Image,
   TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 // import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useLocalSearchParams } from 'expo-router';

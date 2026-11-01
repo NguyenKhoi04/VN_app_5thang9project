@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, SafeAreaView,
   ScrollView, TextInput, Alert,
-} from 'react-native';
+} from 'react-native-safe-area-context;
 
 const THEME = '#059669';
 type SectionKey = 'tracNghiem' | 'dienTu' | 'nguPhap' | 'hoiThoai' | 'nghe';

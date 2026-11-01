@@ -1,7 +1,7 @@
 //Lựa chọn phong cách học cho người nước ngoài
 // Lựa chọn phong cách học cho người nước ngoài
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native-safe-area-context;
 
 const learningStyles = [
   { id: 'speaking', text: 'Mình thích nói và trò chuyện', icon: '🗣️' },

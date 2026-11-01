@@ -1,6 +1,6 @@
 // Kỹ năng 6: Viết chính tả
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native-safe-area-context;
 import BaseSkillContent, { ContentCard, PlayButton } from '../BaseSkillContent';
 
 interface Props { navigation: any; route: any; }

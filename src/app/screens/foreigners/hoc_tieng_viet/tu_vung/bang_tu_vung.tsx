@@ -9,7 +9,7 @@ import {
   SafeAreaView,
   ScrollView,
   FlatList,
-} from 'react-native';
+} from 'react-native-safe-area-context;
 
 interface VocabWord {
   vn: string;

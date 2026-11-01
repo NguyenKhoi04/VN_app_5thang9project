@@ -1,6 +1,6 @@
 //Chọn độ tuổi
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native-safe-area-context;
 
 const ageOptions = [
   { emoji: '😊', label: '18-24' },

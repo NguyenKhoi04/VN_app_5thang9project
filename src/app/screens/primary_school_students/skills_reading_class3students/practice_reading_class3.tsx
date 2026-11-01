@@ -5,7 +5,7 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
+
   ScrollView,
   Dimensions,
   ImageBackground,
@@ -14,6 +14,7 @@ import {
   Alert,
 } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Header, { ClassInfo } from '../Header';
 import Footer from '../Footer';

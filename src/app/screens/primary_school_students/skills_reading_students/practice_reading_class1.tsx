@@ -6,7 +6,7 @@ import {
   Dimensions,
   Image,
   ImageBackground,
-  SafeAreaView,
+  
   ScrollView,
   StyleSheet,
   Text,
@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 
+import { SafeAreaView } from "react-native-safe-area-context";
 import Footer from "../Footer";
 import Header, { ClassInfo } from "../Header";
 

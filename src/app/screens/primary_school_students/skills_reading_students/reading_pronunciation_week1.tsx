@@ -10,12 +10,13 @@ import {
   Image,
   ImageBackground,
   Pressable,
-  SafeAreaView,
+  
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Footer from "../Footer";
 import Header, { ClassInfo } from "../Header";
 
