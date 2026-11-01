@@ -1,6 +1,6 @@
 // Kỹ năng 1: Phát âm (1.1 Tập phát âm, 1.2 Tập ghép và đọc, 1.3 Thanh điệu)
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native-safe-area-context;
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import BaseSkillContent, { ContentCard, ItemRow, PlayButton } from '../BaseSkillContent';
 
 interface Props {

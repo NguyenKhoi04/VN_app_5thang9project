@@ -1,6 +1,7 @@
 // Lý do chính đáng học tiếng Việt cho người nước ngoài
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native-safe-area-context;
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const reasons = [
   { id: 'academic', text: 'Học thuật và nghiên cứu', icon: '📚' },

@@ -1,14 +1,6 @@
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Pressable,
-  StatusBar,
-  Platform,
-} from 'react-native-safe-area-context;
+import { View, Text, TouchableOpacity, StyleSheet,ScrollView,StatusBar,Platform, Pressable, } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Audio } from 'expo-av';
 
 const THEME = '#4F46E5';
@@ -89,7 +81,7 @@ const Phan1Bai3: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={THEME} />
+      <StatusBar barStyle="light-content" />
 
       {/* Header */}
       <View style={[styles.header, { backgroundColor: THEME }]}>

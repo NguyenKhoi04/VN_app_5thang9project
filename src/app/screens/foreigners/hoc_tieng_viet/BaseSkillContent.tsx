@@ -7,7 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
-} from 'react-native-safe-area-context;
+} from 'react-native';
 
 interface BaseSkillProps {
   navigation: any;

@@ -1,16 +1,18 @@
-import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  StatusBar,
-  Platform,
-} from 'react-native-safe-area-context;
-import { useAudioPlayer } from 'expo-audio';
+import React, { useCallback } from "react";
 
-const THEME = '#4F46E5';
+import { StatusBar } from "expo-status-bar";
+import {
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
+
+import { useAudioPlayer } from "expo-audio";
+
+const THEME = "#4F46E5";
 const LESSON_ID = 1;
 
 interface LetterItem {
@@ -21,55 +23,55 @@ interface LetterItem {
 }
 
 const alphabet: LetterItem[] = [
-  { upper: 'A', lower: 'a', hasSound: true, soundKey: 'a' },
-  { upper: 'Ă', lower: 'ă', hasSound: false },
-  { upper: 'Â', lower: 'â', hasSound: false },
-  { upper: 'B', lower: 'b', hasSound: true, soundKey: 'b' },
-  { upper: 'C', lower: 'c', hasSound: true, soundKey: 'c' },
-  { upper: 'D', lower: 'd', hasSound: true, soundKey: 'd' },
-  { upper: 'Đ', lower: 'đ', hasSound: true, soundKey: 'd2' },
-  { upper: 'E', lower: 'e', hasSound: true, soundKey: 'e' },
-  { upper: 'Ê', lower: 'ê', hasSound: true, soundKey: 'e2' },
-  { upper: 'G', lower: 'g', hasSound: true, soundKey: 'g' },
-  { upper: 'H', lower: 'h', hasSound: true, soundKey: 'h' },
-  { upper: 'I', lower: 'i', hasSound: true, soundKey: 'i' },
-  { upper: 'K', lower: 'k', hasSound: true, soundKey: 'k' },
-  { upper: 'L', lower: 'l', hasSound: true, soundKey: 'l' },
-  { upper: 'M', lower: 'm', hasSound: true, soundKey: 'm' },
-  { upper: 'N', lower: 'n', hasSound: true, soundKey: 'n' },
-  { upper: 'O', lower: 'o', hasSound: true, soundKey: 'o' },
-  { upper: 'Ô', lower: 'ô', hasSound: true, soundKey: 'o2' },
-  { upper: 'Ơ', lower: 'ơ', hasSound: true, soundKey: 'o3' },
-  { upper: 'P', lower: 'p', hasSound: true, soundKey: 'p' },
-  { upper: 'Q', lower: 'q', hasSound: true, soundKey: 'q' },
-  { upper: 'R', lower: 'r', hasSound: true, soundKey: 'r' },
-  { upper: 'S', lower: 's', hasSound: true, soundKey: 's' },
-  { upper: 'T', lower: 't', hasSound: true, soundKey: 't' },
-  { upper: 'Ư', lower: 'ư', hasSound: true, soundKey: 'u2' },
-  { upper: 'V', lower: 'v', hasSound: true, soundKey: 'v' },
-  { upper: 'X', lower: 'x', hasSound: true, soundKey: 'x' },
-  { upper: 'Y', lower: 'y', hasSound: true, soundKey: 'y' },
+  { upper: "A", lower: "a", hasSound: true, soundKey: "a" },
+  { upper: "Ă", lower: "ă", hasSound: false },
+  { upper: "Â", lower: "â", hasSound: false },
+  { upper: "B", lower: "b", hasSound: true, soundKey: "b" },
+  { upper: "C", lower: "c", hasSound: true, soundKey: "c" },
+  { upper: "D", lower: "d", hasSound: true, soundKey: "d" },
+  { upper: "Đ", lower: "đ", hasSound: true, soundKey: "d2" },
+  { upper: "E", lower: "e", hasSound: true, soundKey: "e" },
+  { upper: "Ê", lower: "ê", hasSound: true, soundKey: "e2" },
+  { upper: "G", lower: "g", hasSound: true, soundKey: "g" },
+  { upper: "H", lower: "h", hasSound: true, soundKey: "h" },
+  { upper: "I", lower: "i", hasSound: true, soundKey: "i" },
+  { upper: "K", lower: "k", hasSound: true, soundKey: "k" },
+  { upper: "L", lower: "l", hasSound: true, soundKey: "l" },
+  { upper: "M", lower: "m", hasSound: true, soundKey: "m" },
+  { upper: "N", lower: "n", hasSound: true, soundKey: "n" },
+  { upper: "O", lower: "o", hasSound: true, soundKey: "o" },
+  { upper: "Ô", lower: "ô", hasSound: true, soundKey: "o2" },
+  { upper: "Ơ", lower: "ơ", hasSound: true, soundKey: "o3" },
+  { upper: "P", lower: "p", hasSound: true, soundKey: "p" },
+  { upper: "Q", lower: "q", hasSound: true, soundKey: "q" },
+  { upper: "R", lower: "r", hasSound: true, soundKey: "r" },
+  { upper: "S", lower: "s", hasSound: true, soundKey: "s" },
+  { upper: "T", lower: "t", hasSound: true, soundKey: "t" },
+  { upper: "Ư", lower: "ư", hasSound: true, soundKey: "u2" },
+  { upper: "V", lower: "v", hasSound: true, soundKey: "v" },
+  { upper: "X", lower: "x", hasSound: true, soundKey: "x" },
+  { upper: "Y", lower: "y", hasSound: true, soundKey: "y" },
 ];
 
 // Map file âm thanh (bạn thay đường dẫn thật của mình)
 const SOUND_MAP: Record<string, any> = {
-  a: require('../../../../../../text-to-speech/alphabet_a.wav'),
-  b: require('../../../../../../text-to-speech/alphabet_b.wav'),
-  c: require('../../../../../../text-to-speech/alphabet_c.wav'),
-  d: require('../../../../../../text-to-speech/alphabet_d.wav'),
-  d2: require('../../../../../../text-to-speech/alphabet_d2.wav'),
-  e: require('../../../../../../text-to-speech/alphabet_e.wav'),
-  e2: require('../../../../../../text-to-speech/alphabet_e2.wav'),
-  g: require('../../../../../../text-to-speech/alphabet_g.wav'),
-  h: require('../../../../../../text-to-speech/alphabet_h.wav'),
-  i: require('../../../../../../text-to-speech/alphabet_i.wav'),
-  k: require('../../../../../../text-to-speech/alphabet_k.wav'),
-  l: require('../../../../../../text-to-speech/alphabet_l.wav'),
-  m: require('../../../../../../text-to-speech/alphabet_m.wav'),
-  n: require('../../../../../../text-to-speech/alphabet_n.wav'),
-  o: require('../../../../../../text-to-speech/alphabet_o.wav'),
-  o2: require('../../../../../../text-to-speech/alphabet_o2.wav'),
-  o3: require('../../../../../../text-to-speech/alphabet_o3.wav'),
+  a: require("../../../../../../text-to-speech/alphabet_a.wav"),
+  b: require("../../../../../../text-to-speech/alphabet_b.wav"),
+  c: require("../../../../../../text-to-speech/alphabet_c.wav"),
+  d: require("../../../../../../text-to-speech/alphabet_d.wav"),
+  d2: require("../../../../../../text-to-speech/alphabet_d2.wav"),
+  e: require("../../../../../../text-to-speech/alphabet_e.wav"),
+  e2: require("../../../../../../text-to-speech/alphabet_e2.wav"),
+  g: require("../../../../../../text-to-speech/alphabet_g.wav"),
+  h: require("../../../../../../text-to-speech/alphabet_h.wav"),
+  i: require("../../../../../../text-to-speech/alphabet_i.wav"),
+  k: require("../../../../../../text-to-speech/alphabet_k.wav"),
+  l: require("../../../../../../text-to-speech/alphabet_l.wav"),
+  m: require("../../../../../../text-to-speech/alphabet_m.wav"),
+  n: require("../../../../../../text-to-speech/alphabet_n.wav"),
+  o: require("../../../../../../text-to-speech/alphabet_o.wav"),
+  o2: require("../../../../../../text-to-speech/alphabet_o2.wav"),
+  o3: require("../../../../../../text-to-speech/alphabet_o3.wav"),
   // p: require('../../../../../../text-to-speech/alphabet_p.wav'),
   // q: require('../../../../../../text-to-speech/alphabet_q.wav'),
   // r: require('../../../../../../text-to-speech/alphabet_r.wav'),
@@ -90,17 +92,20 @@ const Phan1Bai1: React.FC<Props> = ({ navigation }) => {
   // Tạo player một lần (hoặc tạo theo nhu cầu)
   const player = useAudioPlayer();
 
-  const playSound = useCallback(async (soundKey?: string) => {
-    if (!soundKey || !SOUND_MAP[soundKey]) return;
+  const playSound = useCallback(
+    async (soundKey?: string) => {
+      if (!soundKey || !SOUND_MAP[soundKey]) return;
 
-    try {
-      // Load file mới
-      player.replace(SOUND_MAP[soundKey]);
-      player.play();
-    } catch (e) {
-      console.warn('Không phát được âm thanh:', e);
-    }
-  }, [player]);
+      try {
+        // Load file mới
+        player.replace(SOUND_MAP[soundKey]);
+        player.play();
+      } catch (e) {
+        console.warn("Không phát được âm thanh:", e);
+      }
+    },
+    [player],
+  );
 
   const renderLetter = (item: LetterItem, index: number) => {
     const isRed = !item.hasSound;
@@ -113,13 +118,8 @@ const Phan1Bai1: React.FC<Props> = ({ navigation }) => {
         onPress={() => item.hasSound && playSound(item.soundKey)}
         disabled={!item.hasSound}
       >
-        <Text
-          style={[
-            styles.letterText,
-            isRed && styles.letterTextRed,
-          ]}
-        >
-          {item.upper} {''}
+        <Text style={[styles.letterText, isRed && styles.letterTextRed]}>
+          {item.upper} {""}
           {item.lower}
         </Text>
 
@@ -144,7 +144,7 @@ const Phan1Bai1: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={THEME} />
+      <StatusBar style="light" />
 
       {/* Header */}
       <View style={[styles.header, { backgroundColor: THEME }]}>
@@ -174,19 +174,29 @@ const Phan1Bai1: React.FC<Props> = ({ navigation }) => {
           <View style={styles.goalText}>
             <Text style={styles.goalTitle}>BÀI 1 · PHẦN 1</Text>
             <Text style={styles.goalDesc}>Học bảng chữ cái & phát âm</Text>
-            <Text style={styles.goalDescEn}>Learn the alphabet & pronunciation</Text>
+            <Text style={styles.goalDescEn}>
+              Learn the alphabet & pronunciation
+            </Text>
           </View>
         </View>
 
         {/* Bảng chữ cái */}
         <View style={styles.alphabetCard}>
-          <Text style={styles.sectionTitle}>Bảng chữ cái tiếng Việt &nbsp;(Vietnamese Alphabet)</Text>
-          <Text style={styles.sectionSub}> Click on a letter to hear the sound (Nhấn vào chữ cái để nghe phát âm)</Text>
+          <Text style={styles.sectionTitle}>
+            Bảng chữ cái tiếng Việt &nbsp;(Vietnamese Alphabet)
+          </Text>
+          <Text style={styles.sectionSub}>
+            {" "}
+            Click on a letter to hear the sound (Nhấn vào chữ cái để nghe phát
+            âm)
+          </Text>
 
           <View style={styles.grid}>
             {rows.map((row, rowIndex) => (
               <View key={rowIndex} style={styles.row}>
-                {row.map((item, colIndex) => renderLetter(item, rowIndex * 3 + colIndex))}
+                {row.map((item, colIndex) =>
+                  renderLetter(item, rowIndex * 3 + colIndex),
+                )}
                 {/* Điền ô trống nếu hàng cuối thiếu */}
                 {row.length < 3 &&
                   Array.from({ length: 3 - row.length }).map((_, i) => (
@@ -220,43 +230,43 @@ const Phan1Bai1: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: "#F8FAFC",
   },
 
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === 'ios' ? 54 : 36,
+    paddingTop: Platform.OS === "ios" ? 54 : 36,
     paddingBottom: 16,
   },
   backBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   backIcon: {
     fontSize: 22,
-    color: 'white',
-    fontWeight: '600',
+    color: "white",
+    fontWeight: "600",
   },
   headerCenter: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: '800',
-    color: 'white',
-    textAlign: 'center',
+    fontWeight: "800",
+    color: "white",
+    textAlign: "center",
   },
   headerSub: {
     fontSize: 15,
-    color: 'rgba(255,255,255,0.85)',
+    color: "rgba(255,255,255,0.85)",
     marginTop: 2,
   },
 
@@ -266,16 +276,16 @@ const styles = StyleSheet.create({
   },
 
   goalBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: "#E2E8F0",
     gap: 14,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -289,30 +299,30 @@ const styles = StyleSheet.create({
   },
   goalTitle: {
     fontSize: 12,
-    fontWeight: '800',
+    fontWeight: "800",
     color: THEME,
     letterSpacing: 0.5,
     marginBottom: 2,
   },
   goalDesc: {
     fontSize: 15,
-    fontWeight: '700',
-    color: '#1E293B',
+    fontWeight: "700",
+    color: "#1E293B",
   },
   goalDescEn: {
     fontSize: 12,
-    color: '#94A3B8',
-    fontStyle: 'italic',
+    color: "#94A3B8",
+    fontStyle: "italic",
     marginTop: 2,
   },
 
   alphabetCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     padding: 18,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000',
+    borderColor: "#E2E8F0",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -320,14 +330,14 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 25,
-    fontWeight: '800',
+    fontWeight: "800",
     marginBottom: 4,
-    textAlign: 'center',
+    textAlign: "center",
     color: THEME,
   },
   sectionSub: {
     fontSize: 13,
-    color: '#64748B',
+    color: "#64748B",
     marginBottom: 18,
   },
 
@@ -335,36 +345,36 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
   },
   letterCell: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: "#F1F5F9",
     borderRadius: 14,
     paddingVertical: 14,
     paddingHorizontal: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     minHeight: 78,
     borderWidth: 1.5,
-    borderColor: '#E2E8F0',
+    borderColor: "#E2E8F0",
   },
   letterCellRed: {
-    backgroundColor: '#FEF2F2',
-    borderColor: '#FECACA',
+    backgroundColor: "#FEF2F2",
+    borderColor: "#FECACA",
   },
   letterText: {
     fontSize: 20,
-    fontWeight: '700',
-    color: '#1E293B',
+    fontWeight: "700",
+    color: "#1E293B",
     marginBottom: 6,
   },
   letterTextRed: {
-    color: '#DC2626',
+    color: "#DC2626",
   },
   speakerBadge: {
-    backgroundColor: '#EEF2FF',
+    backgroundColor: "#EEF2FF",
     borderRadius: 20,
     paddingHorizontal: 8,
     paddingVertical: 3,
@@ -373,15 +383,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   noSoundBadge: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: "#FEE2E2",
     borderRadius: 20,
     paddingHorizontal: 10,
     paddingVertical: 3,
   },
   noSoundText: {
     fontSize: 12,
-    color: '#DC2626',
-    fontWeight: '600',
+    color: "#DC2626",
+    fontWeight: "600",
   },
   emptyCell: {
     flex: 1,
@@ -389,11 +399,11 @@ const styles = StyleSheet.create({
 
   noteBox: {
     marginTop: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: "#E2E8F0",
   },
   noteEn: {
     fontSize: 13,
@@ -401,16 +411,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   noteEnLabel: {
-    color: '#DC2626',
-    fontWeight: '700',
+    color: "#DC2626",
+    fontWeight: "700",
   },
   noteEnBody: {
-    color: '#1E293B',
-    fontStyle: 'italic',
+    color: "#1E293B",
+    fontStyle: "italic",
   },
   noteVi: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: "#94A3B8",
     lineHeight: 18,
   },
 });

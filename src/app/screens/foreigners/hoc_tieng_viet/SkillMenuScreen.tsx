@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
   Animated,
-} from 'react-native-safe-area-context;
+} from 'react-native';
 
 export interface SkillItem {
   id: number;

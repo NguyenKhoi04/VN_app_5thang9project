@@ -1,6 +1,6 @@
 // Kỹ năng 3: Tập đọc (3.1 Đọc các chữ, 3.2 Tập đối thoại)
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native-safe-area-context;
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import BaseSkillContent, { ContentCard, PlayButton } from '../BaseSkillContent';
 
 interface Props { navigation: any; route: any; }

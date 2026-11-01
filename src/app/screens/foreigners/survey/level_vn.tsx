@@ -1,6 +1,7 @@
 //Trình độ Tiếng Việt cho Người Nước Ngoài
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native-safe-area-context;
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const levels = [
   { name: 'Nhập môn', code: 'A1', icon: '📊' },

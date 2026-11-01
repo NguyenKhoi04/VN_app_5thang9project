@@ -1,6 +1,7 @@
 // Bạn muốn luyện tập thường xuyên như thế nào
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native-safe-area-context;
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const practiceOptions = [
   { id: '5min', text: '5 phút mỗi ngày', icon: '🤔' },

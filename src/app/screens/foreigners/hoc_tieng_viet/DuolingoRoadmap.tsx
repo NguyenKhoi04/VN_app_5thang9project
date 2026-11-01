@@ -10,7 +10,7 @@ import {
   ScrollView,
   Animated,
   Dimensions,
-} from 'react-native-safe-area-context;
+} from 'react-native';
 
 const { width } = Dimensions.get('window');
 

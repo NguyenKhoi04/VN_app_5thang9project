@@ -1,6 +1,7 @@
 // Bạn muốn đạt được điều gì khi học tiếng Việt
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native-safe-area-context;
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const desires = [
   { id: 'basic', text: ' Mình muốn học những điều cơ bản', icon: '📚' },

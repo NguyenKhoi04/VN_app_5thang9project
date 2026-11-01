@@ -4,7 +4,7 @@ import {
   View, Text, TouchableOpacity, StyleSheet, SafeAreaView,
   ScrollView, TextInput, Animated, Alert, Modal, PanResponder,
   Dimensions,
-} from 'react-native-safe-area-context;
+} from 'react-native';
 
 const { width } = Dimensions.get('window');
 const THEME = '#0891B2';

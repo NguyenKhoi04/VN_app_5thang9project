@@ -1,6 +1,6 @@
 // Kỹ năng 4: Ngữ pháp
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native-safe-area-context;
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import BaseSkillContent, { ContentCard } from '../BaseSkillContent';
 
 interface Props { navigation: any; route: any; }
