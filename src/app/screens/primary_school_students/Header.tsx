@@ -24,10 +24,17 @@ interface HeaderProps {
 
 const Header = ({
   name,
-  classes,
-  selectedClass,
+  classes = [],
+  selectedClass = 'Lớp 1',
   setSelectedClass,
 }: HeaderProps) => {
+  const displayClasses = classes && classes.length > 0 
+    ? classes 
+    : [{ lop: 1 }, { lop: 2 }, { lop: 3 }];
+  const currentClass = selectedClass && !selectedClass.includes('undefined')
+    ? selectedClass 
+    : 'Lớp 1';
+
   return (
     <View style={styles.container}>
       {/* Cấu hình hiển thị chữ trắng trên nền xanh của Status Bar */}
@@ -36,7 +43,7 @@ const Header = ({
       {/* Tiêu đề chào hỏi */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>
-          Chào {name ? `con ${name}` : 'con'} đang học {selectedClass || 'Lớp 1'}! 👋
+          Chào {name ? `con ${name}` : 'con'} đang học {currentClass}! 👋
         </Text>
         <Text style={styles.headerSubtitle}>
           Hôm nay con muốn luyện kỹ năng gì nào?
@@ -46,18 +53,19 @@ const Header = ({
       {/* Cụm nút chọn lớp */}
       <View style={styles.classContainer}>
         <View style={styles.classGrid}>
-          {classes.map((cls, index) => {
-            const classLabel = `Lớp ${cls.lop ?? (index + 1)}`;
-            const isActive = selectedClass === classLabel;
+          {displayClasses.map((cls, index) => {
+            const lopVal = cls && typeof cls === 'object' ? (cls.lop ?? (index + 1)) : cls;
+            const classLabel = `Lớp ${lopVal}`;
+            const isActive = currentClass === classLabel;
 
             return (
               <TouchableOpacity
-                key={cls.lop ?? index}
+                key={lopVal ?? index}
                 style={[
                   styles.classButton,
                   isActive && styles.classButtonActive,
                 ]}
-                onPress={() => setSelectedClass(classLabel)}
+                onPress={() => setSelectedClass && setSelectedClass(classLabel)}
                 activeOpacity={0.7}
               >
                 <Text

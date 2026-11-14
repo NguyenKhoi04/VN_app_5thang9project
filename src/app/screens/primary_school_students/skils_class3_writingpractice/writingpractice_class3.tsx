@@ -19,22 +19,28 @@ import Header, { ClassInfo } from "../Header";
 const { width } = Dimensions.get("window");
 
 export default function WritingPracticeClass3Screen({ navigation, route }: any) {
-  const [name, setName] = useState<string>(route?.params?.ho_ten || "");
-  const [selectedClass, setSelectedClass] = useState<string>("Lớp 3");
-  const [classes] = useState<ClassInfo[]>([
-    { lop: 1 },
-    { lop: 2 },
-    { lop: 3 },
-  ]);
-
+  const [name, setName] = useState<string>(
+    route?.params?.ho_ten || route?.params?.name || "Mai Thanh An"
+  );
+  const [selectedClass, setSelectedClass] = useState<string>(
+    route?.params?.selectedClass || "Lớp 3"
+  );
+  const [classes, setClasses] = useState<ClassInfo[]>(
+    route?.params?.classes && route.params.classes.length > 0
+      ? route.params.classes
+      : [{ lop: 1 }, { lop: 2 }, { lop: 3 }]
+  );
   const [tenKyNang, setTenKyNang] = useState<string>(
-    route?.params?.ten_ky_nang || "Luyện viết lớp 3",
+    route?.params?.ten_ky_nang || "Luyện viết lớp 3"
   );
 
   useEffect(() => {
-    if (route?.params?.ho_ten) setName(route.params.ho_ten);
+    const incomingName = route?.params?.ho_ten || route?.params?.name;
+    if (incomingName) setName(incomingName);
+    if (route?.params?.selectedClass) setSelectedClass(route.params.selectedClass);
+    if (route?.params?.classes && route.params.classes.length > 0) setClasses(route.params.classes);
     if (route?.params?.ten_ky_nang) setTenKyNang(route.params.ten_ky_nang);
-  }, [route?.params?.ho_ten, route?.params?.ten_ky_nang]);
+  }, [route?.params]);
 
   return (
     <SafeAreaView style={styles.container}>

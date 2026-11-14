@@ -45,14 +45,35 @@ const LETTER_LABELS: Record<string, string> = {
 
 const LETTERS = Object.keys(VIDEO_MAP);
 
-export default function WritingPracticeWeek1Detail() {
-  const params = useLocalSearchParams<{ ho_ten?: string }>();
-  const [name, setName] = useState(params.ho_ten || "");
-  const [selectedClass, setSelectedClass] = useState("");
-  const [classes, setClasses] = useState<ClassInfo[]>([]);
+export default function WritingPracticeWeek1Detail({ navigation, route }: any) {
+  const params = useLocalSearchParams<{ ho_ten?: string; ten_ky_nang?: string }>();
+  const [name, setName] = useState<string>(
+    route?.params?.ho_ten || route?.params?.name || params?.ho_ten || "Mai Thanh An"
+  );
+  const [selectedClass, setSelectedClass] = useState<string>(
+    route?.params?.selectedClass || "Lớp 1"
+  );
+  const [classes, setClasses] = useState<ClassInfo[]>(
+    route?.params?.classes && route.params.classes.length > 0
+      ? route.params.classes
+      : [{ lop: 1 }, { lop: 2 }, { lop: 3 }]
+  );
+  const [tenKyNang, setTenKyNang] = useState<string>(
+    route?.params?.ten_ky_nang || params?.ten_ky_nang || "Luyện viết lớp 1"
+  );
 
   const [currentLetter, setCurrentLetter] = useState("a");
   const [showLetterPicker, setShowLetterPicker] = useState(false);
+
+  useEffect(() => {
+    const incomingName = route?.params?.ho_ten || route?.params?.name || params?.ho_ten;
+    if (incomingName) setName(incomingName);
+    if (route?.params?.selectedClass) setSelectedClass(route.params.selectedClass);
+    if (route?.params?.classes && route.params.classes.length > 0) setClasses(route.params.classes);
+    if (route?.params?.ten_ky_nang || params?.ten_ky_nang) {
+      setTenKyNang(route?.params?.ten_ky_nang || params?.ten_ky_nang);
+    }
+  }, [route?.params, (params as any)?.ho_ten, (params as any)?.ten_ky_nang]);
 
   // ===== Tạo player =====
 const player = useVideoPlayer(VIDEO_MAP[currentLetter], (player) => {
@@ -105,9 +126,11 @@ useEffect(() => {
         classes={classes}
         selectedClass={selectedClass}
         setSelectedClass={setSelectedClass}
+        navigation={navigation}
+        route={route}
       />
 
-      {/* Banner */}
+      {/* Banner Kỹ năng - ĐÃ SỬA */}
       <View style={styles.bannerContainer}>
         <ImageBackground
           source={require("@/assets/images/banner-chuong-trinh.png")}
@@ -115,8 +138,8 @@ useEffect(() => {
           resizeMode="contain"
         >
           <View style={styles.bannerTextContainer}>
-            <Text style={styles.bannerTitle}>Bài học</Text>
-            <Text style={styles.bannerSubtitle}>Luyện viết chữ</Text>
+            <Text style={styles.bannerTitle}>KỸ NĂNG</Text>
+            <Text style={styles.bannerSubtitle}>{tenKyNang}</Text>
           </View>
         </ImageBackground>
       </View>

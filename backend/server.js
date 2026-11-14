@@ -168,7 +168,7 @@ app.get('/api/classes', (req, res) => {
 app.get('/api/program-name', (req, res) => {
   const lop = req.query.lop;
 
-  const sql = 'SELECT ten_chuong_trinh FROM chuong_trinh WHERE lop = ?';
+  const sql = "SELECT ten_chuong_trinh FROM chuong_trinh WHERE lop = ? AND (doi_tuong = 'hoc_sinh_tieu_hoc' OR doi_tuong IS NULL) LIMIT 1";
 
   db.query(sql, [lop], (err, results) => {
     if (err) {
@@ -195,7 +195,7 @@ app.get('/api/skills', (req, res) => {
       ky_nang.url_link,
       chuong_trinh.ten_chuong_trinh
     FROM ky_nang
-    JOIN chuong_trinh ON ky_nang.lop = chuong_trinh.id_chuong_trinh
+    LEFT JOIN chuong_trinh ON ky_nang.lop = chuong_trinh.lop AND chuong_trinh.doi_tuong = 'hoc_sinh_tieu_hoc'
   `;
   const params = [];
 
@@ -219,14 +219,17 @@ app.get('/api/skills-by-class', (req, res) => {
   const sql = `
     SELECT 
       ky_nang.id_ky_nang,
+      ky_nang.ma_ky_nang,
       ky_nang.ten_ky_nang,
       ky_nang.mo_ta,
       ky_nang.icon,
+      ky_nang.lop,
       ky_nang.url_link,
       chuong_trinh.ten_chuong_trinh
     FROM ky_nang
-    JOIN chuong_trinh ON ky_nang.lop = chuong_trinh.id_chuong_trinh
+    LEFT JOIN chuong_trinh ON ky_nang.lop = chuong_trinh.lop AND chuong_trinh.doi_tuong = 'hoc_sinh_tieu_hoc'
     WHERE ky_nang.lop = ?
+    ORDER BY ky_nang.id_ky_nang ASC
   `;
   db.query(sql, [lop], (err, results) => {
     if (err) {

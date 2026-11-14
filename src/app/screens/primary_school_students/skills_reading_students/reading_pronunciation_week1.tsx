@@ -22,24 +22,47 @@ import Header, { ClassInfo } from "../Header";
 
 const { width } = Dimensions.get("window");
 
-export default function PracticeReadingScreen() {
-  // const router = useRouter();
-  const navigation = useNavigation();
+export default function PracticeReadingScreen({ navigation, route }: any) {
   const params = useLocalSearchParams<{
     ho_ten?: string;
     ten_ky_nang?: string;
   }>();
 
-  const [name, setName] = useState(params.ho_ten || "");
-  const [tenKyNang, setTenKyNang] = useState(params.ten_ky_nang || "Tập Đọc");
+  const [name, setName] = useState<string>(
+    route?.params?.ho_ten || route?.params?.name || params?.ho_ten || "Mai Thanh An"
+  );
+  const [selectedClass, setSelectedClass] = useState<string>(
+    route?.params?.selectedClass || "Lớp 1"
+  );
+  const [classes, setClasses] = useState<ClassInfo[]>(
+    route?.params?.classes && route.params.classes.length > 0
+      ? route.params.classes
+      : [{ lop: 1 }, { lop: 2 }, { lop: 3 }]
+  );
+  const [tenKyNang, setTenKyNang] = useState<string>(
+    route?.params?.ten_ky_nang || params?.ten_ky_nang || "Tập đọc lớp 1"
+  );
   const [tenBaiHoc] = useState("ba    bà    ca    cá");
 
-  const [selectedClass, setSelectedClass] = useState<string>("");
-  const [classes, setClasses] = useState<ClassInfo[]>([]);
   useEffect(() => {
-    if (params.ho_ten) setName(params.ho_ten);
-    if (params.ten_ky_nang) setTenKyNang(params.ten_ky_nang);
-  }, [params.ho_ten, params.ten_ky_nang]);
+    const incomingName = route?.params?.ho_ten || route?.params?.name || params?.ho_ten;
+    if (incomingName) setName(incomingName);
+    if (route?.params?.selectedClass) setSelectedClass(route.params.selectedClass);
+    if (route?.params?.classes && route.params.classes.length > 0) setClasses(route.params.classes);
+    if (route?.params?.ten_ky_nang || params?.ten_ky_nang) {
+      setTenKyNang(route?.params?.ten_ky_nang || params?.ten_ky_nang);
+    }
+  }, [route?.params, (params as any)?.ho_ten, (params as any)?.ten_ky_nang]);
+
+  const navParams = {
+    ho_ten: name,
+    name: name,
+    selectedClass: selectedClass,
+    classes: classes,
+    ten_ky_nang: tenKyNang,
+    user: route?.params?.user || null,
+    id_nguoi_dung: route?.params?.id_nguoi_dung || 1,
+  };
 
   const AUDIO_MAP: Record<string, any> = {
     a: require("../../../../../text-to-speech/speech_a.wav"),
@@ -79,9 +102,11 @@ export default function PracticeReadingScreen() {
         classes={classes}
         selectedClass={selectedClass}
         setSelectedClass={setSelectedClass}
+        navigation={navigation}
+        route={route}
       />
 
-      {/* Banner */}
+      {/* Banner Kỹ năng - ĐÃ SỬA */}
       <View style={styles.bannerContainer}>
         <ImageBackground
           source={require("@/assets/images/banner-chuong-trinh.png")}
@@ -89,13 +114,16 @@ export default function PracticeReadingScreen() {
           resizeMode="contain"
         >
           <View style={styles.bannerTextContainer}>
-            <Text style={styles.bannerTitle}>Bài học</Text>
-            <Text style={styles.bannerSubtitle}>{tenBaiHoc}</Text>
+            <Text style={styles.bannerTitle}>KỸ NĂNG</Text>
+            <Text style={styles.bannerSubtitle}>{tenKyNang}</Text>
           </View>
         </ImageBackground>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={{ fontSize: 16, fontWeight: '700', color: '#1E40AF', textAlign: 'center', marginVertical: 8 }}>
+          Bài học: {tenBaiHoc}
+        </Text>
         {/* ===== Dòng chữ cái a b c ===== */}
         <View style={styles.letterRow}>
           {["a", "b", "c"].map((letter) => (

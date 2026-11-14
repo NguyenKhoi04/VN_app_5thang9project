@@ -61,17 +61,38 @@ const MODE1_LETTERS = ["A", "Ă", "Â", "B", "C", "D"];
 const MODE2_LETTERS = ["a_ungdung"];
 const MODE3_LETTERS = ["lat_xat", "xuyt_xoa"];
 
-export default function WritingPracticeClass2Detail() {
-  const params = useLocalSearchParams<{ ho_ten?: string }>();
-  const [name, setName] = useState(params.ho_ten || "");
-  const [selectedClass, setSelectedClass] = useState("");
-  const [classes, setClasses] = useState<ClassInfo[]>([]);
+export default function WritingPracticeClass2Detail({ navigation, route }: any) {
+  const params = useLocalSearchParams<{ ho_ten?: string; ten_ky_nang?: string }>();
+  const [name, setName] = useState<string>(
+    route?.params?.ho_ten || route?.params?.name || params?.ho_ten || "Mai Thanh An"
+  );
+  const [selectedClass, setSelectedClass] = useState<string>(
+    route?.params?.selectedClass || "Lớp 2"
+  );
+  const [classes, setClasses] = useState<ClassInfo[]>(
+    route?.params?.classes && route.params.classes.length > 0
+      ? route.params.classes
+      : [{ lop: 1 }, { lop: 2 }, { lop: 3 }]
+  );
+  const [tenKyNang, setTenKyNang] = useState<string>(
+    route?.params?.ten_ky_nang || params?.ten_ky_nang || "Luyện viết lớp 2"
+  );
 
   // Mode chính: 1 = Chữ hoa, 2 = Ứng dụng, 3 = Từ khó
   const [mode, setMode] = useState<1 | 2 | 3>(1);
 
   // Chữ / từ đang chọn
   const [currentLetter, setCurrentLetter] = useState("A");
+
+  useEffect(() => {
+    const incomingName = route?.params?.ho_ten || route?.params?.name || params?.ho_ten;
+    if (incomingName) setName(incomingName);
+    if (route?.params?.selectedClass) setSelectedClass(route.params.selectedClass);
+    if (route?.params?.classes && route.params.classes.length > 0) setClasses(route.params.classes);
+    if (route?.params?.ten_ky_nang || params?.ten_ky_nang) {
+      setTenKyNang(route?.params?.ten_ky_nang || params?.ten_ky_nang);
+    }
+  }, [route?.params, (params as any)?.ho_ten, (params as any)?.ten_ky_nang]);
 
   // ===== Player =====
   const player = useVideoPlayer(VIDEO_MAP[currentLetter], (p) => {
@@ -121,9 +142,11 @@ export default function WritingPracticeClass2Detail() {
         classes={classes}
         selectedClass={selectedClass}
         setSelectedClass={setSelectedClass}
+        navigation={navigation}
+        route={route}
       />
 
-      {/* Banner */}
+      {/* Banner Kỹ năng - ĐÃ SỬA */}
       <View style={styles.bannerContainer}>
         <ImageBackground
           source={require("@/assets/images/banner-chuong-trinh.png")}
@@ -131,8 +154,8 @@ export default function WritingPracticeClass2Detail() {
           resizeMode="contain"
         >
           <View style={styles.bannerTextContainer}>
-            <Text style={styles.bannerTitle}>Bài học</Text>
-            <Text style={styles.bannerSubtitle}>Luyện viết chữ</Text>
+            <Text style={styles.bannerTitle}>KỸ NĂNG</Text>
+            <Text style={styles.bannerSubtitle}>{tenKyNang}</Text>
           </View>
         </ImageBackground>
       </View>

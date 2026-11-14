@@ -56,22 +56,39 @@ interface ScoringResult {
   errors: WordError[];
 }
 
-export default function SkillsSpellingClass2StudentsScreen() {
+export default function SkillsSpellingClass2StudentsScreen({ navigation, route }: any) {
   const params = useLocalSearchParams<{
     ho_ten?: string;
     ten_ky_nang?: string;
     id_nguoi_dung?: string;
   }>();
 
-  const [name, setName] = useState(params.ho_ten || "");
-  const [selectedClass, setSelectedClass] = useState<string>("Lớp 2");
-  const [classes] = useState<ClassInfo[]>([
-    { lop: 1 },
-    { lop: 2 },
-    { lop: 3 },
-  ]);
+  const [name, setName] = useState<string>(
+    route?.params?.ho_ten || route?.params?.name || params?.ho_ten || "Mai Thanh An"
+  );
+  const [selectedClass, setSelectedClass] = useState<string>(
+    route?.params?.selectedClass || "Lớp 2"
+  );
+  const [classes, setClasses] = useState<ClassInfo[]>(
+    route?.params?.classes && route.params.classes.length > 0
+      ? route.params.classes
+      : [{ lop: 1 }, { lop: 2 }, { lop: 3 }]
+  );
+  const [tenKyNang, setTenKyNang] = useState<string>(
+    route?.params?.ten_ky_nang || params?.ten_ky_nang || "Chính tả lớp 2"
+  );
   const [targetPrompt, setTargetPrompt] = useState<string>(TARGET_TEXT);
   const [baiChinhTaId, setBaiChinhTaId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const incomingName = route?.params?.ho_ten || route?.params?.name || params?.ho_ten;
+    if (incomingName) setName(incomingName);
+    if (route?.params?.selectedClass) setSelectedClass(route.params.selectedClass);
+    if (route?.params?.classes && route.params.classes.length > 0) setClasses(route.params.classes);
+    if (route?.params?.ten_ky_nang || params?.ten_ky_nang) {
+      setTenKyNang(route?.params?.ten_ky_nang || params?.ten_ky_nang);
+    }
+  }, [route?.params, (params as any)?.ho_ten, (params as any)?.ten_ky_nang]);
 
   useEffect(() => {
     // Tải đề bài gốc từ bảng bai_chinh_ta_hs trong MySQL
@@ -434,9 +451,11 @@ export default function SkillsSpellingClass2StudentsScreen() {
         classes={classes}
         selectedClass={selectedClass}
         setSelectedClass={setSelectedClass}
+        navigation={navigation}
+        route={route}
       />
 
-      {/* Banner bài học */}
+      {/* Banner Kỹ năng - ĐÃ SỬA */}
       <View style={styles.bannerContainer}>
         <ImageBackground
           source={require("@/assets/images/banner-chuong-trinh.png")}
@@ -444,8 +463,8 @@ export default function SkillsSpellingClass2StudentsScreen() {
           resizeMode="contain"
         >
           <View style={styles.bannerTextContainer}>
-            <Text style={styles.bannerTitle}>Luyện chính tả - Lớp 2</Text>
-            <Text style={styles.bannerSubtitle}>Nghe - Viết & Chấm điểm chữ viết tay</Text>
+            <Text style={styles.bannerTitle}>KỸ NĂNG</Text>
+            <Text style={styles.bannerSubtitle}>{tenKyNang}</Text>
           </View>
         </ImageBackground>
       </View>

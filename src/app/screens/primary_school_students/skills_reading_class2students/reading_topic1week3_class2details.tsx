@@ -33,24 +33,42 @@ interface Feature {
 
 const BG_COLORS = ['#E0F7FA', '#FFF3E0', '#E8F5E9', '#E0F2FE', '#CCCCFF'];
 
-export default function ReadingTopicDetailsScreen() {
-  // Lấy params trực tiếp từ expo-router
-  const params = useLocalSearchParams<{ ho_ten?: string; ten_ky_nang?: string }>();
-
-  const [name, setName] = useState<string>(params.ho_ten || '');
-  const [selectedClass, setSelectedClass] = useState<string>('');
-  const [classes, setClasses] = useState<ClassInfo[]>([]);
+export default function ReadingTopicDetailsScreen({ navigation, route }: any) {
+  const [name, setName] = useState<string>(
+    route?.params?.ho_ten || route?.params?.name || 'Mai Thanh An'
+  );
+  const [selectedClass, setSelectedClass] = useState<string>(
+    route?.params?.selectedClass || 'Lớp 2'
+  );
+  const [classes, setClasses] = useState<ClassInfo[]>(
+    route?.params?.classes && route.params.classes.length > 0
+      ? route.params.classes
+      : [{ lop: 1 }, { lop: 2 }, { lop: 3 }]
+  );
   const [tenKyNang, setTenKyNang] = useState<string>(
-    params.ten_ky_nang || 'Tập Đọc'
+    route?.params?.ten_ky_nang || 'Tập đọc lớp 2'
   );
 
   useEffect(() => {
-    if (params.ho_ten) setName(params.ho_ten);
-    if (params.ten_ky_nang) setTenKyNang(params.ten_ky_nang);
-  }, [params.ho_ten, params.ten_ky_nang]);
+    const incomingName = route?.params?.ho_ten || route?.params?.name;
+    if (incomingName) setName(incomingName);
+    if (route?.params?.selectedClass) setSelectedClass(route.params.selectedClass);
+    if (route?.params?.classes && route.params.classes.length > 0) setClasses(route.params.classes);
+    if (route?.params?.ten_ky_nang) setTenKyNang(route.params.ten_ky_nang);
+  }, [route?.params]);
 
-  const handleNavigate = (route: string) => {
-    router.push(route as any);
+  const navParams = {
+    ho_ten: name,
+    name: name,
+    selectedClass: selectedClass,
+    classes: classes,
+    ten_ky_nang: tenKyNang,
+    user: route?.params?.user || null,
+    id_nguoi_dung: route?.params?.id_nguoi_dung || 1,
+  };
+
+  const handleNavigate = (targetScreen: string) => {
+    navigation.navigate(targetScreen, navParams);
   };
 
   return (
@@ -60,6 +78,8 @@ export default function ReadingTopicDetailsScreen() {
         classes={classes}
         selectedClass={selectedClass}
         setSelectedClass={setSelectedClass}
+        navigation={navigation}
+        route={route}
       />
 
       {/* Banner Kỹ năng */}

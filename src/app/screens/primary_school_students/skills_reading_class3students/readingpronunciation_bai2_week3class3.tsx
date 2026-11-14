@@ -20,12 +20,25 @@ import Header, { ClassInfo } from "../Header";
 
 const { width } = Dimensions.get("window");
 
-export default function PracticeReadingScreen() {
+export default function PracticeReadingScreen({ navigation, route }: any) {
   const params = useLocalSearchParams<{
     ho_ten?: string;
     ten_ky_nang?: string;
   }>();
-  const [name, setName] = useState(params.ho_ten || "");
+  const [name, setName] = useState<string>(
+    route?.params?.ho_ten || route?.params?.name || params?.ho_ten || "Mai Thanh An"
+  );
+  const [selectedClass, setSelectedClass] = useState<string>(
+    route?.params?.selectedClass || "Lớp 3"
+  );
+  const [classes, setClasses] = useState<ClassInfo[]>(
+    route?.params?.classes && route.params.classes.length > 0
+      ? route.params.classes
+      : [{ lop: 1 }, { lop: 2 }, { lop: 3 }]
+  );
+  const [tenKyNang, setTenKyNang] = useState<string>(
+    route?.params?.ten_ky_nang || params?.ten_ky_nang || "Tập đọc lớp 3"
+  );
   const [tenBaiHoc] = useState("Về thăm quê");
   const [showAnswer1, setShowAnswer1] = useState(false);
   const [showAnswer2, setShowAnswer2] = useState(false);
@@ -35,12 +48,15 @@ export default function PracticeReadingScreen() {
   const [explainWord, setExplainWord] = useState("");
   const [explainText, setExplainText] = useState("");
 
-  const [selectedClass, setSelectedClass] = useState<string>("");
-  const [classes, setClasses] = useState<ClassInfo[]>([]);
-
   useEffect(() => {
-    if (params.ho_ten) setName(params.ho_ten);
-  }, [params.ho_ten]);
+    const incomingName = route?.params?.ho_ten || route?.params?.name || params?.ho_ten;
+    if (incomingName) setName(incomingName);
+    if (route?.params?.selectedClass) setSelectedClass(route.params.selectedClass);
+    if (route?.params?.classes && route.params.classes.length > 0) setClasses(route.params.classes);
+    if (route?.params?.ten_ky_nang || params?.ten_ky_nang) {
+      setTenKyNang(route?.params?.ten_ky_nang || params?.ten_ky_nang);
+    }
+  }, [route?.params, (params as any)?.ho_ten, (params as any)?.ten_ky_nang]);
 
   const AUDIO_MAP: Record<string, any> = {
     doc_mau: require("../../../../../text-to-speech/speech_docmau_bai2_week3class3.wav"),
@@ -414,9 +430,11 @@ export default function PracticeReadingScreen() {
         classes={classes}
         selectedClass={selectedClass}
         setSelectedClass={setSelectedClass}
+        navigation={navigation}
+        route={route}
       />
 
-      {/* Banner */}
+      {/* Banner Kỹ năng - ĐÃ SỬA */}
       <View style={styles.bannerContainer}>
         <ImageBackground
           source={require("@/assets/images/banner-chuong-trinh.png")}
@@ -424,8 +442,8 @@ export default function PracticeReadingScreen() {
           resizeMode="contain"
         >
           <View style={styles.bannerTextContainer}>
-            <Text style={styles.bannerTitle}>Bài học</Text>
-            <Text style={styles.bannerSubtitle}>{tenBaiHoc}</Text>
+            <Text style={styles.bannerTitle}>KỸ NĂNG</Text>
+            <Text style={styles.bannerSubtitle}>{tenKyNang}</Text>
           </View>
         </ImageBackground>
       </View>

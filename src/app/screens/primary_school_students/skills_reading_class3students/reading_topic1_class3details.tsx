@@ -34,17 +34,38 @@ interface Feature {
 const BG_COLORS = ['#E0F7FA', '#FFF3E0', '#E8F5E9', '#E0F2FE', '#CCCCFF'];
 
 export default function ReadingTopicDetailsScreen({ navigation, route }: any) {
-  const [name, setName] = useState<string>(route?.params?.ho_ten || '');
-  const [selectedClass, setSelectedClass] = useState<string>('');
-  const [classes, setClasses] = useState<ClassInfo[]>([]);
+  const [name, setName] = useState<string>(
+    route?.params?.ho_ten || route?.params?.name || 'Mai Thanh An'
+  );
+  const [selectedClass, setSelectedClass] = useState<string>(
+    route?.params?.selectedClass || 'Lớp 3'
+  );
+  const [classes, setClasses] = useState<ClassInfo[]>(
+    route?.params?.classes && route.params.classes.length > 0
+      ? route.params.classes
+      : [{ lop: 1 }, { lop: 2 }, { lop: 3 }]
+  );
   const [tenKyNang, setTenKyNang] = useState<string>(
-    route?.params?.ten_ky_nang || 'Tập Đọc'
+    route?.params?.ten_ky_nang || 'Tập đọc lớp 3'
   );
 
   useEffect(() => {
-    if (route?.params?.ho_ten) setName(route.params.ho_ten);
+    const incomingName = route?.params?.ho_ten || route?.params?.name;
+    if (incomingName) setName(incomingName);
+    if (route?.params?.selectedClass) setSelectedClass(route.params.selectedClass);
+    if (route?.params?.classes && route.params.classes.length > 0) setClasses(route.params.classes);
     if (route?.params?.ten_ky_nang) setTenKyNang(route.params.ten_ky_nang);
-  }, [route?.params?.ho_ten, route?.params?.ten_ky_nang]);
+  }, [route?.params]);
+
+  const navParams = {
+    ho_ten: name,
+    name: name,
+    selectedClass: selectedClass,
+    classes: classes,
+    ten_ky_nang: tenKyNang,
+    user: route?.params?.user || null,
+    id_nguoi_dung: route?.params?.id_nguoi_dung || 1,
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -82,7 +103,7 @@ export default function ReadingTopicDetailsScreen({ navigation, route }: any) {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() =>
-                navigation.navigate('ReadingWeekDetailsClass3Topic1Bai2' as never)
+                navigation.navigate('ReadingWeekDetailsClass3Topic1Bai2', navParams)
               }
             >
               <Image

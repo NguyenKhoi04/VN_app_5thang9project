@@ -39,18 +39,35 @@ interface Feature {
 const BG_COLORS = ["#E0F7FA", "#FFF3E0", "#E8F5E9", "#E0F2FE", "#CCCCFF"];
 
 const HomePrimary = ({ navigation, route }: any) => {
-  const [name, setName] = useState<string>(route?.params?.ho_ten || "");
+  const [name, setName] = useState<string>(
+    route?.params?.ho_ten || route?.params?.name || "Mai Thanh An"
+  );
 
-  const [classes, setClasses] = useState<ClassInfo[]>([]);
-  const [selectedClass, setSelectedClass] = useState<string>("");
-  const [ten_chuong_trinh, setProgramName] = useState<string>("");
+  const [classes, setClasses] = useState<ClassInfo[]>([
+    { lop: 1 },
+    { lop: 2 },
+    { lop: 3 },
+  ]);
+  const [selectedClass, setSelectedClass] = useState<string>(
+    route?.params?.selectedClass || "Lớp 1"
+  );
+  const [ten_chuong_trinh, setProgramName] = useState<string>(
+    route?.params?.ten_chuong_trinh || ""
+  );
   const [features, setFeatures] = useState<Feature[]>([]);
 
   useEffect(() => {
-    if (route?.params?.ho_ten) {
-      setName(route.params.ho_ten);
+    const incomingName = route?.params?.ho_ten || route?.params?.name;
+    if (incomingName) {
+      setName(incomingName);
     }
-  }, [route?.params?.ho_ten]);
+    if (route?.params?.selectedClass) {
+      setSelectedClass(route.params.selectedClass);
+    }
+    if (route?.params?.classes && route.params.classes.length > 0) {
+      setClasses(route.params.classes);
+    }
+  }, [route?.params]);
 
   // 1. Lấy danh sách lớp khi mở màn hình
   useEffect(() => {
@@ -183,7 +200,11 @@ const HomePrimary = ({ navigation, route }: any) => {
 
     navigation.navigate(url, {
       ho_ten: name,
+      name: name,
       ten_ky_nang: tenKyNang || "",
+      selectedClass: selectedClass,
+      classes: classes,
+      ten_chuong_trinh: ten_chuong_trinh,
       user: route?.params?.user || null,
       id_nguoi_dung: route?.params?.user?.id_nguoi_dung || route?.params?.user?.id || 1,
     });
