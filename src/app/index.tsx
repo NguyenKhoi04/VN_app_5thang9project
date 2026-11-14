@@ -1,7 +1,6 @@
-import React from "react";
-import { registerRootComponent } from "expo";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { registerRootComponent } from "expo";
 
 // Import các màn hình của bạn
 import LoginScreen from "./screens/LoginScreen";
@@ -10,7 +9,6 @@ import RoleSelectionScreen from "./screens/RoleSelectionScreen";
 import WelcomeScreen from "./screens/WelcomeScreen";
 import MenuSurvey from "./screens/foreigners/menu_survery";
 import Footer from "./screens/primary_school_students/Footer";
-import Header from "./screens/primary_school_students/Header";
 import HomePrimary from "./screens/primary_school_students/Home_primary";
 import PracticeReadingclass1 from "./screens/primary_school_students/skills_reading_students/practice_reading_class1";
 
@@ -18,11 +16,11 @@ import PracticeReadingclass2 from "./screens/primary_school_students/skills_read
 
 import PracticeReadingclass3 from "./screens/primary_school_students/skills_reading_class3students/practice_reading_class3";
 
+import ReadingPronunciationTopic1 from "./screens/primary_school_students/skills_reading_students/reading_pronunciation_topic1";
+import ReadingTopicDetails_Topic1Class1Screen from "./screens/primary_school_students/skills_reading_students/reading_topic1_details";
 import ReadingWeekDetailsclass1week1 from "./screens/primary_school_students/skills_reading_students/reading_week1_details";
 import ReadingWeekDetailsclass1week3 from "./screens/primary_school_students/skills_reading_students/reading_week3_details";
 import ReadingWeekDetailsclass1week5 from "./screens/primary_school_students/skills_reading_students/reading_week5_details";
-import ReadingTopicDetails_Topic1Class1Screen from "./screens/primary_school_students/skills_reading_students/reading_topic1_details";
-import ReadingPronunciationTopic1 from "./screens/primary_school_students/skills_reading_students/reading_pronunciation_topic1";
 
 // pronunciation lớp 1
 import ReadingPronunciationWeek1 from "./screens/primary_school_students/skills_reading_students/reading_pronunciation_week1";
@@ -40,10 +38,10 @@ import ReadingWeekDetailsClass2Topic2week5Bai9 from "./screens/primary_school_st
 import ReadingWeekDetailsClass2Topic2week6Bai11 from "./screens/primary_school_students/skills_reading_class2students/reading_topic2week6_class2details_bai11";
 
 // Lớp 2 - pronunciation
+import ReadingPronunciation_bai11_week6 from "./screens/primary_school_students/skills_reading_class2students/readingpronunciation_bai11_week6";
 import ReadingPronunciation_bai5_week3 from "./screens/primary_school_students/skills_reading_class2students/readingpronunciation_bai5_week3";
 import ReadingPronunciation_bai6_week3 from "./screens/primary_school_students/skills_reading_class2students/readingpronunciation_bai6_week3";
 import ReadingPronunciation_bai9_week5 from "./screens/primary_school_students/skills_reading_class2students/readingpronunciation_bai9_week5";
-import ReadingPronunciation_bai11_week6 from "./screens/primary_school_students/skills_reading_class2students/readingpronunciation_bai11_week6";
 
 // Lớp 3 - detail screens
 import ReadingWeekDetailsClass3Topic1 from "./screens/primary_school_students/skills_reading_class3students/reading_topic1_class3details";
@@ -52,13 +50,24 @@ import ReadingPronunciationClass3Bai2Week3 from "./screens/primary_school_studen
 
 // Lớp 1 Writing Practice
 
-import WritingPracticeClass1Screen from "./screens/primary_school_students/skils_class1_writingpractice/writingpractice_class1";
 import skils_writingpractice_week1detail from "./screens/primary_school_students/skils_class1_writingpractice/skils_writingpractice_week1detail";
+import WritingPracticeClass1Screen from "./screens/primary_school_students/skils_class1_writingpractice/writingpractice_class1";
 
 //Lớp 2 Writing Practice
 
-import WritingPracticeClass2Screen from "./screens/primary_school_students/skils_class2_writingpractice/writingpractice_class2";
 import skils_writingpractice_class2detail from "./screens/primary_school_students/skils_class2_writingpractice/skils_writingpractice_class2detail";
+import WritingPracticeClass2Screen from "./screens/primary_school_students/skils_class2_writingpractice/writingpractice_class2";
+
+// Lớp 3 Writing Practice
+import WritingPracticeClass3Screen from "./screens/primary_school_students/skils_class3_writingpractice/writingpractice_class3";
+
+// Lớp 1 spelling
+import SkillsSpellingClass1Students from "./screens/primary_school_students/skills_spelling_students/skills_spelling_class1_students";
+// Lớp 2 spelling
+import SkillsSpellingClass2Students from "./screens/primary_school_students/skills_spelling_students/skills_spelling_class2_students";
+// Lớp 3 spelling
+import SkillsSpellingClass3Students from "./screens/primary_school_students/skills_spelling_students/skills_spelling_class3_students";
+
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -73,7 +82,7 @@ function App() {
       >
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Footer" component={Footer} />        
+        <Stack.Screen name="Footer" component={Footer} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} />
         <Stack.Screen name="MenuSurvey" component={MenuSurvey} />
@@ -116,6 +125,29 @@ function App() {
         {/* Lớp 2 Writing Practice */}
         <Stack.Screen name="WritingPracticeClass2" component={WritingPracticeClass2Screen} />
         <Stack.Screen name="skils_writingpractice_class2detail" component={skils_writingpractice_class2detail} />
+
+        {/* Lớp 3 Writing Practice */}
+        <Stack.Screen name="WritingPracticeClass3" component={WritingPracticeClass3Screen} />
+
+                {/* Lớp 1 Spelling */}
+        <Stack.Screen 
+          name="SkillsSpellingClass1Students" 
+          component={SkillsSpellingClass1Students} 
+        />
+
+        {/* Lớp 2 Spelling */}
+        <Stack.Screen 
+          name="SkillsSpellingClass2Students" 
+          component={SkillsSpellingClass2Students} 
+        />
+
+        {/* Lớp 3 Spelling */}
+        <Stack.Screen 
+          name="SkillsSpellingClass3Students" 
+          component={SkillsSpellingClass3Students} 
+        />
+              
+
       </Stack.Navigator>
     </NavigationContainer>
   );

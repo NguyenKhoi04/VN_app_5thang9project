@@ -72,10 +72,11 @@ const HomePrimary = ({ navigation, route }: any) => {
 
         if (Array.isArray(data) && data.length > 0) {
           setClasses(data);
-          // Mặc định chọn lớp đầu tiên
-          setSelectedClass(`Lớp ${data[0].lop}`);
+          const firstLop = data[0].lop ?? 1;
+          setSelectedClass(`Lớp ${firstLop}`);
         } else {
-          setClasses([]);
+          setClasses([{ lop: 1 }, { lop: 2 }, { lop: 3 }]);
+          setSelectedClass("Lớp 1");
         }
       } catch (error) {
         console.error("Lỗi lấy danh sách lớp:", error);
@@ -128,14 +129,39 @@ const HomePrimary = ({ navigation, route }: any) => {
         const data: Feature[] = JSON.parse(rawText);
 
         if (Array.isArray(data) && data.length > 0) {
-          setProgramName(data[0]?.ten_chuong_trinh || "");
+          let programTitle = data[0]?.ten_chuong_trinh || "";
+          if (!programTitle) {
+            try {
+              const resProg = await fetch(`${API_ENDPOINTS.GET_PROGRAM_NAME}?lop=${lopNumber}`);
+              if (resProg.ok) {
+                const progData = await resProg.json();
+                if (Array.isArray(progData) && progData.length > 0) {
+                  programTitle = progData[0]?.ten_chuong_trinh || "";
+                }
+              }
+            } catch (_) {}
+          }
+          setProgramName(programTitle);
           const formattedFeatures = data.map((item, index) => ({
             ...item,
             bgColor: BG_COLORS[index % BG_COLORS.length],
           }));
           setFeatures(formattedFeatures);
         } else {
-          setProgramName("");
+          // Nếu chưa có kỹ năng, vẫn thử lấy tên chương trình theo lớp
+          try {
+            const resProg = await fetch(`${API_ENDPOINTS.GET_PROGRAM_NAME}?lop=${lopNumber}`);
+            if (resProg.ok) {
+              const progData = await resProg.json();
+              if (Array.isArray(progData) && progData.length > 0) {
+                setProgramName(progData[0]?.ten_chuong_trinh || "");
+              } else {
+                setProgramName("");
+              }
+            }
+          } catch (_) {
+            setProgramName("");
+          }
           setFeatures([]);
         }
       } catch (error) {
@@ -158,6 +184,8 @@ const HomePrimary = ({ navigation, route }: any) => {
     navigation.navigate(url, {
       ho_ten: name,
       ten_ky_nang: tenKyNang || "",
+      user: route?.params?.user || null,
+      id_nguoi_dung: route?.params?.user?.id_nguoi_dung || route?.params?.user?.id || 1,
     });
   };
 

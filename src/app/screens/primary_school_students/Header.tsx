@@ -36,7 +36,7 @@ const Header = ({
       {/* Tiêu đề chào hỏi */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>
-          Chào {name ? `con ${name}` : 'con'} đang học {selectedClass}! 👋
+          Chào {name ? `con ${name}` : 'con'} đang học {selectedClass || 'Lớp 1'}! 👋
         </Text>
         <Text style={styles.headerSubtitle}>
           Hôm nay con muốn luyện kỹ năng gì nào?
@@ -47,7 +47,7 @@ const Header = ({
       <View style={styles.classContainer}>
         <View style={styles.classGrid}>
           {classes.map((cls, index) => {
-            const classLabel = `Lớp ${cls.lop}`;
+            const classLabel = `Lớp ${cls.lop ?? (index + 1)}`;
             const isActive = selectedClass === classLabel;
 
             return (

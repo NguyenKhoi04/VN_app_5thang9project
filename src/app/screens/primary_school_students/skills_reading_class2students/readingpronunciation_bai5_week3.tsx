@@ -1,8 +1,8 @@
 import { createAudioPlayer } from "expo-audio";
-// import { router, useLocalSearchParams } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { API_ENDPOINTS } from "@/config/api";
 import {
   Dimensions,
   ImageBackground,
@@ -27,7 +27,9 @@ export default function ReadingPronunciationbai5week3Screen() {
     ten_ky_nang?: string;
   }>();
   const [name, setName] = useState(params.ho_ten || "");
-  const [tenBaiHoc] = useState("Em có xinh không?"); // Tên bài học, có thể thay đổi nếu cần
+  const [tenBaiHoc, setTenBaiHoc] = useState("Em có xinh không?");
+  const [tacGia, setTacGia] = useState("Theo Ấu Phúc, Voi em đi tìm tự tin");
+  const [dbCauHoi, setDbCauHoi] = useState<any[]>([]);
   const [mode, setMode] = useState<1 | 2 | 3 | 4>(1); // 1: mẫu, 2: từ khó, 3: từng câu
   const [showExplain, setShowExplain] = useState(false);
   const [explainWord, setExplainWord] = useState("");
@@ -41,6 +43,33 @@ export default function ReadingPronunciationbai5week3Screen() {
 
   useEffect(() => {
     if (params.ho_ten) setName(params.ho_ten);
+
+    // Lấy dữ liệu bài đọc và câu hỏi từ MySQL
+    const fetchReadingData = async () => {
+      try {
+        const resDoc = await fetch(`${API_ENDPOINTS.GET_BAI_DOC}?lop_id=2&tuan_so=3&bai_so=5`);
+        if (resDoc.ok) {
+          const docs = await resDoc.json();
+          if (Array.isArray(docs) && docs.length > 0) {
+            const doc = docs[0];
+            if (doc.ten_bai) setTenBaiHoc(doc.ten_bai);
+            if (doc.tac_gia) setTacGia(`Theo ${doc.tac_gia}`);
+
+            // Lấy câu hỏi đọc hiểu từ bảng cau_hoi_bai_doc
+            const resQ = await fetch(`${API_ENDPOINTS.GET_CAU_HOI_BAI_DOC}?bai_doc_id=${doc.id}`);
+            if (resQ.ok) {
+              const questions = await resQ.json();
+              if (Array.isArray(questions) && questions.length > 0) {
+                setDbCauHoi(questions);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log("Sử dụng dữ liệu bài đọc mặc định:", err);
+      }
+    };
+    fetchReadingData();
   }, [params.ho_ten]);
 
   const AUDIO_MAP: Record<string, any> = {
@@ -85,7 +114,7 @@ export default function ReadingPronunciationbai5week3Screen() {
         </Pressable>
       </View>
 
-      <Text style={styles.title}>EM CÓ XINH KHÔNG?</Text>
+      <Text style={styles.title}>{tenBaiHoc.toUpperCase()}</Text>
 
       <Text style={styles.paragraph}>
         {/* \u00A0\u00A0\u00A0\u00A0 : 4 khoang trang và thụt câu */}
@@ -154,7 +183,7 @@ export default function ReadingPronunciationbai5week3Screen() {
         đây, voi em hiểu rằng mình chỉ xinh đẹp khi đúng là voi.
       </Text>
 
-      <Text style={styles.author}>(Theo Ấu Phúc, Voi em đi tìm tự tin)</Text>
+      <Text style={styles.author}>({tacGia})</Text>
     </View>
   );
 
@@ -241,7 +270,7 @@ export default function ReadingPronunciationbai5week3Screen() {
           Giờ đây, voi em hiểu rằng mình chỉ xinh đẹp khi đúng là voi.
         </Text>
       </Pressable>
-      <Text style={styles.author}>(Theo Ấu Phúc, Voi em đi tìm tự tin)</Text>
+      <Text style={styles.author}>({tacGia})</Text>
     </View>
   );
 
@@ -253,7 +282,7 @@ export default function ReadingPronunciationbai5week3Screen() {
         <View style={styles.tabHeader}>
           <Text style={styles.tabTitle}>Tìm hiểu bài và rút ra đại ý</Text>
         </View>
-        <Text style={styles.title}>EM CÓ XINH KHÔNG?</Text>
+        <Text style={styles.title}>{tenBaiHoc.toUpperCase()}</Text>
 
         <Text style={styles.paragraph}>
           {/* \u00A0\u00A0\u00A0\u00A0 : 4 khoang trang và thụt câu */}
@@ -322,7 +351,7 @@ export default function ReadingPronunciationbai5week3Screen() {
           Giờ đây, voi em hiểu rằng mình chỉ xinh đẹp khi đúng là voi.
         </Text>
 
-        <Text style={styles.author}>(Theo Ấu Phúc, Voi em đi tìm tự tin)</Text>
+        <Text style={styles.author}>({tacGia})</Text>
       </View>
 
       {/* ===== PHẦN CÂU HỎI ===== */}
@@ -339,7 +368,7 @@ export default function ReadingPronunciationbai5week3Screen() {
           {/* Ô câu hỏi */}
           <View style={styles.questionBox}>
             <Text style={styles.questionText}>
-              Voi em đã hỏi voi anh, hươu và dê điều gì?
+              {dbCauHoi[0]?.noi_dung_cau || "Voi em đã hỏi voi anh, hươu và dê điều gì?"}
             </Text>
           </View>
 
@@ -358,7 +387,7 @@ export default function ReadingPronunciationbai5week3Screen() {
           {showAnswer1 && (
             <View style={styles.answerBox}>
               <Text style={styles.answerContent}>
-                Voi em đã hỏi voi anh, hươu và dê “Em có xinh không?”
+                {dbCauHoi[0]?.dap_an || "Voi em đã hỏi voi anh, hươu và dê “Em có xinh không?”"}
               </Text>
               <Pressable onPress={() => playSound("dap_an_1")}>
                 <Text style={styles.speaker}>🔊</Text>
@@ -378,7 +407,7 @@ export default function ReadingPronunciationbai5week3Screen() {
 
           <View style={styles.questionBox}>
             <Text style={styles.questionText}>
-              Trước sự thay đổi của voi em, voi anh đã nói gì?
+              {dbCauHoi[1]?.noi_dung_cau || "Trước sự thay đổi của voi em, voi anh đã nói gì?"}
             </Text>
           </View>
 
@@ -395,8 +424,7 @@ export default function ReadingPronunciationbai5week3Screen() {
           {showAnswer2 && (
             <View style={styles.answerBox}>
               <Text style={styles.answerContent}>
-                Trước sự thay đổi của voi em, voi anh đã nói: “Trời ơi, sao em
-                lại thêm sừng và râu thế này? Xấu lắm!”
+                {dbCauHoi[1]?.dap_an || "Trước sự thay đổi của voi em, voi anh đã nói: “Trời ơi, sao em lại thêm sừng và râu thế này? Xấu lắm!”"}
               </Text>
               <Pressable onPress={() => playSound("dap_an_2")}>
                 <Text style={styles.speaker}>🔊</Text>
