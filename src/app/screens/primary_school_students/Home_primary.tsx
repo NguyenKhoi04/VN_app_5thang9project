@@ -12,7 +12,7 @@ import {
 // 1. Sửa SafeAreaView từ react-native-safe-area-context để hết Warning
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import Footer from "./Footer";
+import Footer from "../Footer";
 import Header from "./Header";
 
 import { API_ENDPOINTS } from "@/config/api";
@@ -38,7 +38,164 @@ interface Feature {
 
 const BG_COLORS = ["#E0F7FA", "#FFF3E0", "#E8F5E9", "#E0F2FE", "#CCCCFF"];
 
+// Dữ liệu chuẩn từ bảng chuong_trinh (hình 3)
+const DEFAULT_PROGRAMS: Record<number, string> = {
+  1: "Tiếng Việt lớp 1 - Kết nối tri thức với cuộc sống",
+  2: "Tiếng Việt lớp 2 - Kết nối tri thức với cuộc sống",
+  3: "Tiếng Việt lớp 3 - Kết nối tri thức với cuộc sống",
+};
+
+// Dữ liệu chuẩn từ bảng ky_nang (hình 2)
+const DEFAULT_SKILLS_BY_CLASS: Record<number, Feature[]> = {
+  1: [
+    {
+      id_ky_nang: 6,
+      ma_ky_nang: "hsdoc1",
+      ten_ky_nang: "Tập đọc lớp 1",
+      mo_ta: "Đọc và hiểu nghĩa",
+      icon: "📖",
+      lop: 1,
+      ten_chuong_trinh: "Tiếng Việt lớp 1 - Kết nối tri thức với cuộc sống",
+      url_link: "PracticeReadingClass1",
+      bgColor: "#E0F7FA",
+    },
+    {
+      id_ky_nang: 7,
+      ma_ky_nang: "hsviet1",
+      ten_ky_nang: "Luyện viết lớp 1",
+      mo_ta: "Viết chữ cái, viết từ, câu",
+      icon: "✍️",
+      lop: 1,
+      ten_chuong_trinh: "Tiếng Việt lớp 1 - Kết nối tri thức với cuộc sống",
+      url_link: "WritingPracticeClass1",
+      bgColor: "#FFF3E0",
+    },
+    {
+      id_ky_nang: 8,
+      ma_ky_nang: "hscta1",
+      ten_ky_nang: "Chính tả lớp 1",
+      mo_ta: "Nghe và viết đúng chính tả",
+      icon: "📝",
+      lop: 1,
+      ten_chuong_trinh: "Tiếng Việt lớp 1 - Kết nối tri thức với cuộc sống",
+      url_link: "SkillsSpellingClass1Students",
+      bgColor: "#E8F5E9",
+    },
+    {
+      id_ky_nang: 9,
+      ma_ky_nang: "hsontap1",
+      ten_ky_nang: "Ôn tập lớp 1",
+      mo_ta: "Ôn lại kiến thức đã học lớp 1",
+      icon: "📚",
+      lop: 1,
+      ten_chuong_trinh: "Tiếng Việt lớp 1 - Kết nối tri thức với cuộc sống",
+      url_link: "",
+      bgColor: "#E0F2FE",
+    },
+  ],
+  2: [
+    {
+      id_ky_nang: 10,
+      ma_ky_nang: "hsdoc2",
+      ten_ky_nang: "Tập đọc lớp 2",
+      mo_ta: "Đọc và hiểu nghĩa",
+      icon: "📖",
+      lop: 2,
+      ten_chuong_trinh: "Tiếng Việt lớp 2 - Kết nối tri thức với cuộc sống",
+      url_link: "PracticeReadingClass2",
+      bgColor: "#E0F7FA",
+    },
+    {
+      id_ky_nang: 11,
+      ma_ky_nang: "hsviet2",
+      ten_ky_nang: "Luyện viết lớp 2",
+      mo_ta: "Viết chữ cái, viết từ, câu",
+      icon: "✍️",
+      lop: 2,
+      ten_chuong_trinh: "Tiếng Việt lớp 2 - Kết nối tri thức với cuộc sống",
+      url_link: "WritingPracticeClass2",
+      bgColor: "#FFF3E0",
+    },
+    {
+      id_ky_nang: 12,
+      ma_ky_nang: "hscta2",
+      ten_ky_nang: "Chính tả lớp 2",
+      mo_ta: "Nghe và viết đúng chính tả",
+      icon: "📝",
+      lop: 2,
+      ten_chuong_trinh: "Tiếng Việt lớp 2 - Kết nối tri thức với cuộc sống",
+      url_link: "SkillsSpellingClass2Students",
+      bgColor: "#E8F5E9",
+    },
+    {
+      id_ky_nang: 13,
+      ma_ky_nang: "hsontap2",
+      ten_ky_nang: "Ôn tập lớp 2",
+      mo_ta: "Ôn lại kiến thức đã học lớp 2",
+      icon: "📚",
+      lop: 2,
+      ten_chuong_trinh: "Tiếng Việt lớp 2 - Kết nối tri thức với cuộc sống",
+      url_link: "",
+      bgColor: "#E0F2FE",
+    },
+  ],
+  3: [
+    {
+      id_ky_nang: 14,
+      ma_ky_nang: "hsdoc3",
+      ten_ky_nang: "Tập đọc lớp 3",
+      mo_ta: "Đọc và hiểu nghĩa",
+      icon: "📖",
+      lop: 3,
+      ten_chuong_trinh: "Tiếng Việt lớp 3 - Kết nối tri thức với cuộc sống",
+      url_link: "PracticeReadingClass3",
+      bgColor: "#E0F7FA",
+    },
+    {
+      id_ky_nang: 15,
+      ma_ky_nang: "hsviet3",
+      ten_ky_nang: "Luyện viết lớp 3",
+      mo_ta: "Viết chữ, từ, câu và đoạn văn ngắn",
+      icon: "✍️",
+      lop: 3,
+      ten_chuong_trinh: "Tiếng Việt lớp 3 - Kết nối tri thức với cuộc sống",
+      url_link: "WritingPracticeClass3",
+      bgColor: "#FFF3E0",
+    },
+    {
+      id_ky_nang: 16,
+      ma_ky_nang: "hscta3",
+      ten_ky_nang: "Chính tả lớp 3",
+      mo_ta: "Nghe và viết đúng chính tả",
+      icon: "📝",
+      lop: 3,
+      ten_chuong_trinh: "Tiếng Việt lớp 3 - Kết nối tri thức với cuộc sống",
+      url_link: "SkillsSpellingClass3Students",
+      bgColor: "#E8F5E9",
+    },
+    {
+      id_ky_nang: 17,
+      ma_ky_nang: "hsontap3",
+      ten_ky_nang: "Ôn tập lớp 3",
+      mo_ta: "Ôn lại kiến thức đã học lớp 3",
+      icon: "📚",
+      lop: 3,
+      ten_chuong_trinh: "Tiếng Việt lớp 3 - Kết nối tri thức với cuộc sống",
+      url_link: "",
+      bgColor: "#E0F2FE",
+    },
+  ],
+};
+
+const getLopNumber = (clsStr?: string | number): number => {
+  if (typeof clsStr === "number") return clsStr;
+  if (!clsStr) return 1;
+  const num = parseInt(String(clsStr).replace(/\D/g, ""), 10);
+  return !isNaN(num) && num > 0 ? num : 1;
+};
+
 const HomePrimary = ({ navigation, route }: any) => {
+  const initialLop = getLopNumber(route?.params?.selectedClass);
   const [name, setName] = useState<string>(
     route?.params?.ho_ten || route?.params?.name || "Mai Thanh An"
   );
@@ -48,21 +205,22 @@ const HomePrimary = ({ navigation, route }: any) => {
     { lop: 2 },
     { lop: 3 },
   ]);
-  const [selectedClass, setSelectedClass] = useState<string>(
-    route?.params?.selectedClass || "Lớp 1"
-  );
+  const [selectedClass, setSelectedClass] = useState<string>(`Lớp ${initialLop}`);
   const [ten_chuong_trinh, setProgramName] = useState<string>(
-    route?.params?.ten_chuong_trinh || ""
+    route?.params?.ten_chuong_trinh || DEFAULT_PROGRAMS[initialLop]
   );
-  const [features, setFeatures] = useState<Feature[]>([]);
+  const [features, setFeatures] = useState<Feature[]>(
+    DEFAULT_SKILLS_BY_CLASS[initialLop] || DEFAULT_SKILLS_BY_CLASS[1]
+  );
 
   useEffect(() => {
     const incomingName = route?.params?.ho_ten || route?.params?.name;
-    if (incomingName) {
+    if (incomingName && !incomingName.includes("undefined")) {
       setName(incomingName);
     }
-    if (route?.params?.selectedClass) {
-      setSelectedClass(route.params.selectedClass);
+    if (route?.params?.selectedClass && !route.params.selectedClass.includes("undefined")) {
+      const num = getLopNumber(route.params.selectedClass);
+      setSelectedClass(`Lớp ${num}`);
     }
     if (route?.params?.classes && route.params.classes.length > 0) {
       setClasses(route.params.classes);
@@ -79,24 +237,17 @@ const HomePrimary = ({ navigation, route }: any) => {
           },
         });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Lỗi HTTP ${response.status} khi lấy danh sách lớp:`, errorText);
-          return;
-        }
+        if (!response.ok) return;
 
         const data = await response.json();
-
         if (Array.isArray(data) && data.length > 0) {
-          setClasses(data);
-          const firstLop = data[0].lop ?? 1;
-          setSelectedClass(`Lớp ${firstLop}`);
-        } else {
-          setClasses([{ lop: 1 }, { lop: 2 }, { lop: 3 }]);
-          setSelectedClass("Lớp 1");
+          const parsedClasses = data.map((item: any, idx: number) => ({
+            lop: getLopNumber(item.lop ?? item ?? idx + 1),
+          }));
+          setClasses(parsedClasses);
         }
       } catch (error) {
-        console.error("Lỗi lấy danh sách lớp:", error);
+        console.log("Dùng danh sách lớp mặc định [1, 2, 3]");
       }
     };
 
@@ -105,9 +256,11 @@ const HomePrimary = ({ navigation, route }: any) => {
 
   // 2. Tự động lấy danh sách kỹ năng & chương trình khi selectedClass thay đổi
   useEffect(() => {
-    if (!selectedClass) return;
+    const lopNumber = getLopNumber(selectedClass);
 
-    const lopNumber = selectedClass.replace("Lớp ", "").trim();
+    // Cập nhật ngay lập tức giao diện với dữ liệu chuẩn theo hình 2 & 3
+    setProgramName(DEFAULT_PROGRAMS[lopNumber] || `Tiếng Việt lớp ${lopNumber} - Kết nối tri thức với cuộc sống`);
+    setFeatures(DEFAULT_SKILLS_BY_CLASS[lopNumber] || DEFAULT_SKILLS_BY_CLASS[1]);
 
     const fetchSkillsData = async () => {
       const url = `${API_ENDPOINTS.GET_SKILLS_BY_CLASS}?lop=${lopNumber}`;
@@ -121,68 +274,24 @@ const HomePrimary = ({ navigation, route }: any) => {
           },
         });
 
-        // Đọc dữ liệu dạng text để kiểm tra xem server trả về HTML hay JSON
+        if (!response.ok) return;
+
         const rawText = await response.text();
-
-        if (!response.ok) {
-          console.error(
-            `❌ Server báo lỗi HTTP ${response.status} khi lấy kỹ năng:`,
-            rawText.substring(0, 300) // In ra 300 ký tự đầu để xem lỗi HTML
-          );
-          setProgramName("");
-          setFeatures([]);
-          return;
-        }
-
-        // Kiểm tra nếu nội dung bắt đầu bằng thẻ HTML '<'
-        if (rawText.trim().startsWith("<")) {
-          console.error(
-            "❌ Server trả về trang HTML thay vì JSON. Kiểm tra lại đường dẫn API:",
-            rawText.substring(0, 300)
-          );
-          return;
-        }
+        if (rawText.trim().startsWith("<")) return;
 
         const data: Feature[] = JSON.parse(rawText);
 
         if (Array.isArray(data) && data.length > 0) {
-          let programTitle = data[0]?.ten_chuong_trinh || "";
-          if (!programTitle) {
-            try {
-              const resProg = await fetch(`${API_ENDPOINTS.GET_PROGRAM_NAME}?lop=${lopNumber}`);
-              if (resProg.ok) {
-                const progData = await resProg.json();
-                if (Array.isArray(progData) && progData.length > 0) {
-                  programTitle = progData[0]?.ten_chuong_trinh || "";
-                }
-              }
-            } catch (_) {}
-          }
+          const programTitle = data[0]?.ten_chuong_trinh || DEFAULT_PROGRAMS[lopNumber];
           setProgramName(programTitle);
           const formattedFeatures = data.map((item, index) => ({
             ...item,
             bgColor: BG_COLORS[index % BG_COLORS.length],
           }));
           setFeatures(formattedFeatures);
-        } else {
-          // Nếu chưa có kỹ năng, vẫn thử lấy tên chương trình theo lớp
-          try {
-            const resProg = await fetch(`${API_ENDPOINTS.GET_PROGRAM_NAME}?lop=${lopNumber}`);
-            if (resProg.ok) {
-              const progData = await resProg.json();
-              if (Array.isArray(progData) && progData.length > 0) {
-                setProgramName(progData[0]?.ten_chuong_trinh || "");
-              } else {
-                setProgramName("");
-              }
-            }
-          } catch (_) {
-            setProgramName("");
-          }
-          setFeatures([]);
         }
       } catch (error) {
-        console.error("Lỗi lấy danh sách kỹ năng:", error);
+        console.log("Sử dụng dữ liệu offline lớp:", lopNumber);
       }
     };
 
@@ -231,7 +340,7 @@ const HomePrimary = ({ navigation, route }: any) => {
           <View style={styles.bannerTextContainer}>
             <Text style={styles.bannerTitle}>CHƯƠNG TRÌNH</Text>
             <Text style={styles.bannerSubtitle}>
-              {ten_chuong_trinh || "Chưa có chương trình"}
+              {ten_chuong_trinh || DEFAULT_PROGRAMS[getLopNumber(selectedClass)]}
             </Text>
           </View>
         </ImageBackground>

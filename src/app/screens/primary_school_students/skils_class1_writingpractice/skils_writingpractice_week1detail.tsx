@@ -1,8 +1,10 @@
+import { useEvent } from "expo";
 import { useLocalSearchParams } from "expo-router";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useEffect, useState } from "react";
 import {
   Dimensions,
+  FlatList,
   ImageBackground,
   Modal,
   Pressable,
@@ -10,12 +12,10 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context"; // ← đổi ở đây
-import Footer from "../Footer";
+import Footer from "../../Footer";
 import Header, { ClassInfo } from "../Header";
-import { useEvent } from "expo";
 
 const { width } = Dimensions.get("window");
 
@@ -76,27 +76,27 @@ export default function WritingPracticeWeek1Detail({ navigation, route }: any) {
   }, [route?.params, (params as any)?.ho_ten, (params as any)?.ten_ky_nang]);
 
   // ===== Tạo player =====
-const player = useVideoPlayer(VIDEO_MAP[currentLetter], (player) => {
-  player.loop = false;
-});
+  const player = useVideoPlayer(VIDEO_MAP[currentLetter], (player) => {
+    player.loop = false;
+  });
 
-// Lắng nghe trạng thái playing để cập nhật UI
-const { isPlaying } = useEvent(player, "playingChange", {
-  isPlaying: player.playing,
-});
+  // Lắng nghe trạng thái playing để cập nhật UI
+  const { isPlaying } = useEvent(player, "playingChange", {
+    isPlaying: player.playing,
+  });
 
-// Khi đổi chữ cái
-useEffect(() => {
-  const changeVideo = async () => {
-    try {
-      await player.replaceAsync(VIDEO_MAP[currentLetter]);
-      player.pause(); // dừng khi đổi video
-    } catch (e) {
-      console.log("Lỗi đổi video:", e);
-    }
-  };
-  changeVideo();
-}, [currentLetter]);
+  // Khi đổi chữ cái
+  useEffect(() => {
+    const changeVideo = async () => {
+      try {
+        await player.replaceAsync(VIDEO_MAP[currentLetter]);
+        player.pause(); // dừng khi đổi video
+      } catch (e) {
+        console.log("Lỗi đổi video:", e);
+      }
+    };
+    changeVideo();
+  }, [currentLetter]);
 
   // Khi đổi chữ cái → dùng replaceAsync (tránh warning iOS)
   useEffect(() => {

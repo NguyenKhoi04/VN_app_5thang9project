@@ -1,21 +1,19 @@
 // Danh mục đọc - Tuần 5
 
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  
-  ScrollView,
   Dimensions,
-  ImageBackground,
   Image,
+  ImageBackground,
+  ScrollView,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import Footer from '../../Footer';
 import Header, { ClassInfo } from '../Header';
-import Footer from '../Footer';
 
 const { width } = Dimensions.get('window');
 

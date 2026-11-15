@@ -1,24 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
+import { API_ENDPOINTS } from "@/config/api";
+import { createAudioPlayer } from "expo-audio";
+import * as ImagePicker from "expo-image-picker";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Dimensions,
   Image,
   ImageBackground,
-  Modal,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { createAudioPlayer } from "expo-audio";
-import * as ImagePicker from "expo-image-picker";
-import { useLocalSearchParams } from "expo-router";
-import { API_ENDPOINTS } from "@/config/api";
 
-import Footer from "../Footer";
+import Footer from "../../Footer";
 import Header, { ClassInfo } from "../Header";
 
 const { width } = Dimensions.get("window");
@@ -127,7 +126,7 @@ export default function SkillsSpellingClass2StudentsScreen({ navigation, route }
       if (playerRef.current) {
         try {
           playerRef.current.pause();
-        } catch (_) {}
+        } catch (_) { }
       }
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
@@ -141,7 +140,7 @@ export default function SkillsSpellingClass2StudentsScreen({ navigation, route }
         if (playerRef.current) {
           try {
             playerRef.current.pause();
-          } catch (_) {}
+          } catch (_) { }
         }
         setIsPlaying(false);
         if (timerIntervalRef.current) {
@@ -153,7 +152,7 @@ export default function SkillsSpellingClass2StudentsScreen({ navigation, route }
         } else {
           try {
             playerRef.current.seekTo(0);
-          } catch (_) {}
+          } catch (_) { }
         }
 
         playerRef.current.play();

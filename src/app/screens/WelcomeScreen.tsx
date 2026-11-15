@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  Image, 
-  StyleSheet, 
-  Dimensions 
+import { useEffect, useState } from 'react';
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 
 import { API_ENDPOINTS } from '@/config/api';
 
@@ -58,8 +58,8 @@ export default function WelcomeScreen({ navigation }: any) {
       <View style={styles.content}>
         {/* Illustration */}
         <View style={styles.illustrationContainer}>
-          <Image 
-            source={require('../../../assets/images/welcome-illustration.png')} 
+          <Image
+            source={require('../../../assets/images/welcome-illustration.png')}
             style={styles.illustration}
             resizeMode="contain"
           />
@@ -67,13 +67,13 @@ export default function WelcomeScreen({ navigation }: any) {
 
         <Text style={styles.title}>Luyện Viết Chính Tả</Text>
         <Text style={styles.title}>và Tập Đọc Tiếng Việt</Text>
-        
+
         <Text style={styles.subtitle}>
           Cải thiện kỹ năng tiếng Việt qua các bài tập vui nhộn và hiệu quả
         </Text>
 
         {/* Nút Đăng Nhập */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.primaryButton}
           onPress={() => navigation.navigate('Login')}
         >
@@ -81,14 +81,14 @@ export default function WelcomeScreen({ navigation }: any) {
         </TouchableOpacity>
 
         {/* Nút Đăng Ký */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.secondaryButton}
           onPress={() => navigation.navigate('Register')}
         >
           <Text style={styles.secondaryButtonText}>Đăng Ký</Text>
-        </TouchableOpacity> 
+        </TouchableOpacity>
       </View>
-     
+
       {/* Hiển thị trạng thái kết nối Database/Backend (Tự ẩn sau 10s) */}
       {showStatus && (
         <View style={styles.statusBadge}>
@@ -97,7 +97,7 @@ export default function WelcomeScreen({ navigation }: any) {
           </Text>
         </View>
       )}
-
+     
     </SafeAreaView>
   );
 }

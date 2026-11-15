@@ -1,11 +1,12 @@
 import React from 'react';
+import { StatusBar } from 'expo-status-bar';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   Platform,
-  StatusBar,
+  StatusBar as RNStatusBar,
 } from 'react-native';
 
 export interface ClassInfo {
@@ -17,9 +18,9 @@ interface HeaderProps {
   navigation?: any;
   route?: any;
   name?: string;
-  classes: ClassInfo[];
-  selectedClass: string;
-  setSelectedClass: (cls: string) => void;
+  classes?: ClassInfo[] | any[];
+  selectedClass?: string;
+  setSelectedClass?: (cls: string) => void;
 }
 
 const Header = ({
@@ -28,57 +29,82 @@ const Header = ({
   selectedClass = 'Lớp 1',
   setSelectedClass,
 }: HeaderProps) => {
-  const displayClasses = classes && classes.length > 0 
-    ? classes 
-    : [{ lop: 1 }, { lop: 2 }, { lop: 3 }];
-  const currentClass = selectedClass && !selectedClass.includes('undefined')
-    ? selectedClass 
-    : 'Lớp 1';
+  // Xử lý danh sách lớp an toàn tuyệt đối, không bao giờ sinh ra "Lớp undefined"
+  const normalizedClasses = React.useMemo(() => {
+    const list = Array.isArray(classes) && classes.length > 0
+      ? classes
+      : [{ lop: 1 }, { lop: 2 }, { lop: 3 }];
+
+    return list.map((cls: any, index: number) => {
+      let num = index + 1;
+      if (typeof cls === 'number') {
+        num = cls;
+      } else if (typeof cls === 'string') {
+        const parsed = parseInt(cls.replace(/\D/g, ''), 10);
+        num = !isNaN(parsed) && parsed > 0 ? parsed : index + 1;
+      } else if (cls && typeof cls === 'object') {
+        const parsed = typeof cls.lop === 'number'
+          ? cls.lop
+          : parseInt(String(cls.lop || '').replace(/\D/g, ''), 10);
+        num = !isNaN(parsed) && parsed > 0 ? parsed : index + 1;
+      }
+      return { lop: num, label: `Lớp ${num}` };
+    });
+  }, [classes]);
+
+  // Làm sạch selectedClass (loại bỏ hoàn toàn 'undefined')
+  const currentClass = React.useMemo(() => {
+    if (!selectedClass || selectedClass.includes('undefined')) {
+      return 'Lớp 1';
+    }
+    const cleanNum = selectedClass.replace(/\D/g, '');
+    return cleanNum ? `Lớp ${cleanNum}` : 'Lớp 1';
+  }, [selectedClass]);
+
+  const displayName = !name || name.includes('undefined') ? 'Mai Thanh An' : name;
 
   return (
     <View style={styles.container}>
       {/* Cấu hình hiển thị chữ trắng trên nền xanh của Status Bar */}
-      <StatusBar barStyle="light-content" backgroundColor="#2563EB" />
+      <StatusBar style="light" />
 
-      {/* Tiêu đề chào hỏi */}
+      {/* Toàn bộ khối tiêu đề chào hỏi và các nút lớp nằm trong nền xanh dương theo hình 1 */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>
-          Chào {name ? `con ${name}` : 'con'} đang học {currentClass}! 👋
+          Chào con {displayName} đang học {currentClass}! 👋
         </Text>
         <Text style={styles.headerSubtitle}>
           Hôm nay con muốn luyện kỹ năng gì nào?
         </Text>
-      </View>
 
-      {/* Cụm nút chọn lớp */}
-      <View style={styles.classContainer}>
-        <View style={styles.classGrid}>
-          {displayClasses.map((cls, index) => {
-            const lopVal = cls && typeof cls === 'object' ? (cls.lop ?? (index + 1)) : cls;
-            const classLabel = `Lớp ${lopVal}`;
-            const isActive = currentClass === classLabel;
+        {/* Cụm nút chọn lớp màu xanh dương chuẩn theo hình 1 */}
+        <View style={styles.classContainer}>
+          <View style={styles.classGrid}>
+            {normalizedClasses.map((item, index) => {
+              const isActive = currentClass === item.label;
 
-            return (
-              <TouchableOpacity
-                key={lopVal ?? index}
-                style={[
-                  styles.classButton,
-                  isActive && styles.classButtonActive,
-                ]}
-                onPress={() => setSelectedClass && setSelectedClass(classLabel)}
-                activeOpacity={0.7}
-              >
-                <Text
+              return (
+                <TouchableOpacity
+                  key={`lop-${item.lop}-${index}`}
                   style={[
-                    styles.classText,
-                    isActive && styles.classTextActive,
+                    styles.classButton,
+                    isActive ? styles.classButtonActive : styles.classButtonInactive,
                   ]}
+                  onPress={() => setSelectedClass && setSelectedClass(item.label)}
+                  activeOpacity={0.7}
                 >
-                  {classLabel}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+                  <Text
+                    style={[
+                      styles.classText,
+                      isActive ? styles.classTextActive : styles.classTextInactive,
+                    ]}
+                  >
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
       </View>
     </View>
@@ -86,58 +112,69 @@ const Header = ({
 };
 
 const styles = StyleSheet.create({
-  container: { 
-    backgroundColor: '#F8FAFF',
+  container: {
+    backgroundColor: '#2563EB',
   },
   header: {
     backgroundColor: '#2563EB',
     paddingHorizontal: 20,
     // Tự động thụt lề bằng chiều cao Status Bar của Android + 16px khoảng đệm
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 20,
-    paddingBottom: 20,
+    paddingTop: Platform.OS === 'android' ? (RNStatusBar.currentHeight || 0) + 16 : 20,
+    paddingBottom: 18,
   },
-  headerTitle: { 
-    fontSize: 22, 
-    fontWeight: '700', 
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '700',
     color: 'white',
     lineHeight: 30,
   },
-  headerSubtitle: { 
-    fontSize: 15, 
-    color: '#BAE6FD', 
+  headerSubtitle: {
+    fontSize: 15,
+    color: '#BAE6FD',
     marginTop: 6,
   },
   classContainer: {
-    backgroundColor: 'white',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    marginTop: 16,
   },
   classGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 12,
     justifyContent: 'center',
   },
   classButton: {
-    paddingHorizontal: 18,
-    paddingVertical: 8,
+    paddingHorizontal: 22,
+    paddingVertical: 9,
     borderRadius: 25,
-    backgroundColor: '#F1F5F9',
-    minWidth: 70,
+    minWidth: 85,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   classButtonActive: {
-    backgroundColor: '#2563EB',
+    backgroundColor: '#1D4ED8',
+    borderWidth: 2,
+    borderColor: '#93C5FD',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+  },
+  classButtonInactive: {
+    backgroundColor: '#1E40AF',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
   },
   classText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#64748B',
   },
   classTextActive: {
-    color: 'white',
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  classTextInactive: {
+    color: '#E0E7FF',
   },
 });
 

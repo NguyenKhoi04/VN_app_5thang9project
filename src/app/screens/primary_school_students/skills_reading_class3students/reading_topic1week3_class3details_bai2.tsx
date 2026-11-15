@@ -1,20 +1,19 @@
 //Danh mục đọc - Lớp 3 Tuần 3 Bài 2
 
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-
-  ScrollView,
   Dimensions,
-  ImageBackground,
   Image,
+  ImageBackground,
+  ScrollView,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Footer from '../../Footer';
 import Header, { ClassInfo } from '../Header';
-import Footer from '../Footer';
 
 const { width } = Dimensions.get('window');
 
@@ -77,7 +76,7 @@ export default function ReadingTopicDetailsScreen({ navigation, route }: any) {
         </ImageBackground>
       </View>
 
-      
+
       <ScrollView
         style={styles.mainContent}
         contentContainerStyle={styles.scrollContent}
@@ -99,7 +98,7 @@ export default function ReadingTopicDetailsScreen({ navigation, route }: any) {
             </TouchableOpacity>
           </View>
         </View>
-      
+
       </ScrollView>
       <Footer />
     </SafeAreaView>
@@ -149,7 +148,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-    sectionTitle: {
+  sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
     color: '#1E40AF',
@@ -162,18 +161,18 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   imageGrid: {
-  marginVertical: 12,
-  gap: 12,                    // khoảng cách giữa 2 hàng
-},
-imageRow: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  gap: 12,                    // khoảng cách giữa 2 ảnh trong 1 hàng
-},
-imageBox: {
-  width: (width - 16 * 2 - 12) / 2,   // tính đúng 2 cột
-  height: (width - 16 * 2 - 12) / 2,  // vuông
-  borderRadius: 12,
-  backgroundColor: '#E5E7EB',
-},
+    marginVertical: 12,
+    gap: 12,                    // khoảng cách giữa 2 hàng
+  },
+  imageRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,                    // khoảng cách giữa 2 ảnh trong 1 hàng
+  },
+  imageBox: {
+    width: (width - 16 * 2 - 12) / 2,   // tính đúng 2 cột
+    height: (width - 16 * 2 - 12) / 2,  // vuông
+    borderRadius: 12,
+    backgroundColor: '#E5E7EB',
+  },
 });

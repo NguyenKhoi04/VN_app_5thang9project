@@ -6,7 +6,7 @@ import {
   Dimensions,
   Image,
   ImageBackground,
- 
+
   ScrollView,
   StyleSheet,
   Text,
@@ -15,7 +15,7 @@ import {
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
-import Footer from "../Footer";
+import Footer from "../../Footer";
 import Header, { ClassInfo } from "../Header";
 
 const { width } = Dimensions.get("window");
@@ -128,7 +128,7 @@ export default function PracticeReadingClass1Screen({ navigation, route }: any) 
                 resizeMode="cover"
               />
             </TouchableOpacity>
-            </View>
+          </View>
         </View>
       </ScrollView>
       <Footer />

@@ -8,6 +8,12 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// Middleware tự động nhận diện vùng miền từ Header 'x-region' hoặc query 'region'
+app.use((req, res, next) => {
+  req.region = req.headers['x-region'] || req.query.region || 'nam';
+  next();
+});
+
 // 1. Cấu hình thông tin kết nối MySQL
 const db = mysql.createPool({
   host: 'localhost',
@@ -156,9 +162,8 @@ app.get('/api/classes', (req, res) => {
   const sql = 'SELECT DISTINCT lop FROM chuong_trinh WHERE lop IN (1, 2, 3) ORDER BY lop ASC';
 
   db.query(sql, (err, results) => {
-    if (err) {
-      console.error('Lỗi SQL:', err);
-      return res.status(500).json({ error: err.message });
+    if (err || !results || results.length === 0) {
+      return res.json([{ lop: 1 }, { lop: 2 }, { lop: 3 }]);
     }
     res.json(results);
   });
@@ -167,13 +172,13 @@ app.get('/api/classes', (req, res) => {
 // 10. API lấy tên chương trình dựa trên lớp
 app.get('/api/program-name', (req, res) => {
   const lop = req.query.lop;
+  const lopNum = parseInt(String(lop || '1').replace(/\D/g, ''), 10) || 1;
 
   const sql = "SELECT ten_chuong_trinh FROM chuong_trinh WHERE lop = ? AND (doi_tuong = 'hoc_sinh_tieu_hoc' OR doi_tuong IS NULL) LIMIT 1";
 
-  db.query(sql, [lop], (err, results) => {
-    if (err) {
-      console.error('Lỗi SQL:', err);
-      return res.status(500).json({ error: err.message });
+  db.query(sql, [lopNum], (err, results) => {
+    if (err || !results || results.length === 0) {
+      return res.json([{ ten_chuong_trinh: `Tiếng Việt lớp ${lopNum} - Kết nối tri thức với cuộc sống` }]);
     }
     res.json(results);
   });
@@ -200,8 +205,9 @@ app.get('/api/skills', (req, res) => {
   const params = [];
 
   if (lop) {
+    const lopNum = parseInt(String(lop).replace(/\D/g, ''), 10) || 1;
     sql += ` WHERE ky_nang.lop = ?`;
-    params.push(lop);
+    params.push(lopNum);
   }
 
   db.query(sql, params, (err, results) => {
@@ -216,6 +222,7 @@ app.get('/api/skills', (req, res) => {
 // API lớp nào theo kỹ năng lớp đó
 app.get('/api/skills-by-class', (req, res) => {
   const { lop } = req.query;
+  const lopNum = parseInt(String(lop || '1').replace(/\D/g, ''), 10) || 1;
   const sql = `
     SELECT 
       ky_nang.id_ky_nang,
@@ -231,7 +238,7 @@ app.get('/api/skills-by-class', (req, res) => {
     WHERE ky_nang.lop = ?
     ORDER BY ky_nang.id_ky_nang ASC
   `;
-  db.query(sql, [lop], (err, results) => {
+  db.query(sql, [lopNum], (err, results) => {
     if (err) {
       console.error('Lỗi SQL:', err);
       return res.status(500).json({ error: err.message });
@@ -498,9 +505,11 @@ app.get('/api/doan-van', (req, res) => {
   });
 });
 
-// Danh sách từ khó của bài đọc
+// Danh sách từ khó của bài đọc (tự động quy đổi từ ngữ theo vùng miền x-region)
 app.get('/api/tu-kho', (req, res) => {
   const { bai_doc_id } = req.query;
+  const currentRegion = req.headers['x-region'] || req.query.region || req.region || 'nam';
+
   let sql = 'SELECT id, bai_doc_id, tu, giai_thich, am_thanh, ma_key, thu_tu FROM tu_kho';
   const params = [];
   if (bai_doc_id) {
@@ -508,9 +517,55 @@ app.get('/api/tu-kho', (req, res) => {
     params.push(bai_doc_id);
   }
   sql += ' ORDER BY thu_tu ASC';
+
   db.query(sql, params, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
+
+    // Tra cứu đối chiếu với bảng tu_vung_vung_mien
+    db.query('SELECT * FROM tu_vung_vung_mien', (dictErr, dict) => {
+      if (dictErr || !dict || dict.length === 0) {
+        return res.json(results);
+      }
+
+      const formatted = results.map((row) => {
+        const cleanTu = (row.tu || '').trim().toLowerCase();
+        const matched = dict.find(
+          (d) =>
+            d.tu_mien_bac.toLowerCase() === cleanTu ||
+            d.tu_mien_trung.toLowerCase() === cleanTu ||
+            d.tu_mien_nam.toLowerCase() === cleanTu
+        );
+
+        if (matched) {
+          let tu_hien_thi = matched.tu_mien_nam;
+          let chu_thich_vung_mien = '';
+
+          if (currentRegion === 'bac') {
+            tu_hien_thi = matched.tu_mien_bac;
+            chu_thich_vung_mien = `(Miền Trung: ${matched.tu_mien_trung} — Miền Nam: ${matched.tu_mien_nam})`;
+          } else if (currentRegion === 'trung') {
+            tu_hien_thi = matched.tu_mien_trung;
+            chu_thich_vung_mien = `(Miền Bắc: ${matched.tu_mien_bac} — Miền Nam: ${matched.tu_mien_nam})`;
+          } else {
+            tu_hien_thi = matched.tu_mien_nam;
+            chu_thich_vung_mien = `(Miền Bắc: ${matched.tu_mien_bac} — Miền Trung: ${matched.tu_mien_trung})`;
+          }
+
+          return {
+            ...row,
+            tu_goc: row.tu,
+            tu: tu_hien_thi,
+            tu_hien_thi,
+            chu_thich_vung_mien,
+            region: currentRegion,
+          };
+        }
+
+        return row;
+      });
+
+      res.json(formatted);
+    });
   });
 });
 
@@ -720,6 +775,8 @@ app.get('/api/phan-bai-nn', (req, res) => {
 
 app.get('/api/tu-vung', (req, res) => {
   const { bai_hoc_id } = req.query;
+  const currentRegion = req.headers['x-region'] || req.query.region || req.region || 'nam';
+
   let sql = 'SELECT * FROM tu_vung';
   const params = [];
   if (bai_hoc_id) {
@@ -727,9 +784,54 @@ app.get('/api/tu-vung', (req, res) => {
     params.push(bai_hoc_id);
   }
   sql += ' ORDER BY thu_tu ASC';
+
   db.query(sql, params, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
+
+    db.query('SELECT * FROM tu_vung_vung_mien', (dictErr, dict) => {
+      if (dictErr || !dict || dict.length === 0) {
+        return res.json(results);
+      }
+
+      const formatted = results.map((row) => {
+        const cleanTu = (row.tu_tv || '').trim().toLowerCase();
+        const matched = dict.find(
+          (d) =>
+            d.tu_mien_bac.toLowerCase() === cleanTu ||
+            d.tu_mien_trung.toLowerCase() === cleanTu ||
+            d.tu_mien_nam.toLowerCase() === cleanTu
+        );
+
+        if (matched) {
+          let tu_hien_thi = matched.tu_mien_nam;
+          let chu_thich_vung_mien = '';
+
+          if (currentRegion === 'bac') {
+            tu_hien_thi = matched.tu_mien_bac;
+            chu_thich_vung_mien = `(Miền Trung: ${matched.tu_mien_trung} — Miền Nam: ${matched.tu_mien_nam})`;
+          } else if (currentRegion === 'trung') {
+            tu_hien_thi = matched.tu_mien_trung;
+            chu_thich_vung_mien = `(Miền Bắc: ${matched.tu_mien_bac} — Miền Nam: ${matched.tu_mien_nam})`;
+          } else {
+            tu_hien_thi = matched.tu_mien_nam;
+            chu_thich_vung_mien = `(Miền Bắc: ${matched.tu_mien_bac} — Miền Trung: ${matched.tu_mien_trung})`;
+          }
+
+          return {
+            ...row,
+            tu_tv_goc: row.tu_tv,
+            tu_tv: tu_hien_thi,
+            tu_hien_thi,
+            chu_thich_vung_mien,
+            region: currentRegion,
+          };
+        }
+
+        return row;
+      });
+
+      res.json(formatted);
+    });
   });
 });
 
@@ -746,6 +848,260 @@ app.get('/api/cau-hoi-nn', (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);
   });
+});
+
+// ============================================================
+// NHÓM API: TỪ VỰNG VÙNG MIỀN (tu_vung_vung_mien.sql)
+// ============================================================
+
+// Tự động khởi tạo bảng tu_vung_vung_mien và chèn dữ liệu mẫu nếu chưa có
+const initTuVungVungMien = () => {
+  const createTableSql = `
+    CREATE TABLE IF NOT EXISTS tu_vung_vung_mien (
+      id int unsigned NOT NULL AUTO_INCREMENT,
+      danh_muc varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+      tu_mien_bac varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+      tu_mien_trung varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+      tu_mien_nam varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+      tu_dong_nghia_khac varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+      ghi_chu_ngu_canh varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+      PRIMARY KEY (id),
+      KEY idx_mien_bac (tu_mien_bac),
+      KEY idx_mien_trung (tu_mien_trung),
+      KEY idx_mien_nam (tu_mien_nam)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `;
+
+  db.query(createTableSql, (err) => {
+    if (err) {
+      console.warn('⚠️ Kiểm tra bảng tu_vung_vung_mien:', err.message);
+      return;
+    }
+
+    // Kiểm tra số lượng bản ghi
+    db.query('SELECT COUNT(*) AS total FROM tu_vung_vung_mien', (errCount, results) => {
+      if (errCount) return;
+      if (results[0]?.total === 0) {
+        console.log('🌱 Đang chèn dữ liệu từ điển 3 miền từ tu_vung_vung_mien.sql...');
+        const sampleData = [
+          ['Gia đình', 'Bố', 'Ba', 'Ba', 'Tía, Thầy', 'Cách gọi người cha trong gia đình'],
+          ['Gia đình', 'Mẹ', 'Mạ', 'Má', 'U, Bầm, Đẻ', 'Cách gọi người mẹ trong gia đình'],
+          ['Gia đình', 'Anh cả', 'Anh cả', 'Anh hai', null, 'Con trai đầu trong gia đình'],
+          ['Gia đình', 'Chị cả', 'Chị cả', 'Chị hai', null, 'Con gái đầu trong gia đình'],
+          ['Gia đình', 'Ông nội', 'Ông nội', 'Ông nội', 'Ông cố (đời trên)', 'Cha của bố/ba'],
+          ['Gia đình', 'Trẻ con', 'Con nít', 'Con nít', 'Trẻ nhỏ', 'Chỉ thiếu nhi, em nhỏ'],
+          ['Ẩm thực', 'Quả dứa', 'Quả thơm', 'Trái khóm', 'Trái thơm', 'Loại quả nhiệt đới nhiều mắt'],
+          ['Ẩm thực', 'Quả na', 'Quả mãng cầu', 'Trái mãng cầu ta', 'Mãng cầu dai', 'Phân biệt với mãng cầu xiêm'],
+          ['Ẩm thực', 'Củ sắn', 'Củ sắn', 'Củ khoai mì', null, 'Loại củ làm bột năng, luộc ăn'],
+          ['Ẩm thực', 'Củ đậu', 'Củ sắn nước', 'Củ sắn', null, 'Củ vỏ nâu ruột trắng, ăn sống mát'],
+          ['Ẩm thực', 'Ngô', 'Bắp', 'Bắp', null, 'Cây lương thực hạt vàng/trắng'],
+          ['Ẩm thực', 'Lạc', 'Đậu phụng', 'Đậu phộng', null, 'Hạt dùng ép dầu, rang muối'],
+          ['Ẩm thực', 'Vừng', 'Mè', 'Mè', null, 'Hạt nhỏ dùng làm muối vừng/muối mè'],
+          ['Ẩm thực', 'Mỳ chính', 'Bột ngọt', 'Bột ngọt', null, 'Gia vị điều vị trong nấu ăn'],
+          ['Ẩm thực', 'Nước chè', 'Nước chè', 'Nước trà', 'Trà đá', 'Thức uống nấu từ lá trà'],
+          ['Ẩm thực', 'Quả roi', 'Quả đào lộn hột', 'Trái mận', null, 'Quả màu đỏ/hồng, mọng nước'],
+          ['Ẩm thực', 'Quả mận', 'Quả mận Bắc', 'Trái mận Hà Nội', null, 'Quả vùng ôn đới phía Bắc'],
+          ['Ẩm thực', 'Đỗ đen', 'Đậu đen', 'Đậu đen', null, 'Miền Bắc hay gọi các loại đậu là đỗ'],
+          ['Ẩm thực', 'Thịt lợn', 'Thịt heo', 'Thịt heo', null, 'Thực phẩm phổ biến'],
+          ['Đồ vật', 'Bát', 'Đọi', 'Chén', 'Cái chén', 'Dùng để ăn cơm hằng ngày'],
+          ['Đồ vật', 'Bát tô', 'Tô', 'Tô', null, 'Bát cỡ lớn dùng đựng canh, bún, phở'],
+          ['Đồ vật', 'Thìa', 'Muỗng', 'Muỗng', null, 'Dụng cụ xúc thức ăn'],
+          ['Đồ vật', 'Cốc', 'Ly', 'Ly', null, 'Dụng cụ đựng nước uống'],
+          ['Đồ vật', 'Ô', 'Dù', 'Dù', null, 'Vật dụng che nắng, che mưa'],
+          ['Đồ vật', 'Chăn', 'Mền', 'Mền', null, 'Dùng để đắp khi ngủ'],
+          ['Đồ vật', 'Cái chậu', 'Cái thau', 'Cái thau', null, 'Vật dụng đựng nước rửa mặt, giặt đồ'],
+          ['Đồ vật', 'Túi bóng', 'Bì ni-lông', 'Bịch ni-lông', 'Túi ni-lông', 'Túi nhựa dùng đựng đồ'],
+          ['Đồ vật', 'Giấy ăn', 'Khăn giấy', 'Khăn giấy', null, 'Giấy lau miệng trên bàn ăn'],
+          ['Đồ vật', 'Xe máy', 'Xe máy', 'Xe gắn máy', 'Xe hon-đa', 'Phương tiện giao thông hai bánh'],
+          ['Đồ vật', 'Ngõ', 'Kiệt', 'Hẻm', null, 'Đường nhỏ dẫn vào khu dân cư'],
+          ['Động vật', 'Con lợn', 'Con heo', 'Con heo', null, 'Gia súc nuôi lấy thịt'],
+          ['Động vật', 'Con ngan', 'Con vịt xiêm', 'Con vịt xiêm', null, 'Gia cầm họ vịt, mỏ có mào đỏ'],
+          ['Động vật', 'Cá quả', 'Cá tràu', 'Cá lóc', 'Cá chuối', 'Loài cá nước ngọt phổ biến'],
+          ['Động vật', 'Con gián', 'Con gián', 'Con gián', 'Con dán', 'Côn trùng trong nhà'],
+          ['Tự nhiên', 'Mưa rào', 'Mưa dông', 'Mưa đám mây', 'Mưa bất chợt', 'Cơn mưa đến nhanh và tạnh nhanh'],
+          ['Giao tiếp', 'Ngã', 'Té', 'Té', null, 'Bị mất thăng bằng và rơi xuống đất'],
+          ['Giao tiếp', 'Ốm', 'Đau', 'Bệnh', 'Đau ốm', 'Trạng thái sức khỏe không tốt'],
+          ['Giao tiếp', 'Bẩn', 'Dơ', 'Dơ', null, 'Không sạch sẽ'],
+          ['Giao tiếp', 'Đắt', 'Mắc', 'Mắc', null, 'Giá cả cao'],
+          ['Giao tiếp', 'Lười', 'Nhác', 'Làm biếng', null, 'Ngại làm việc, học tập'],
+          ['Giao tiếp', 'Vào', 'Vô', 'Vô', null, 'Di chuyển từ ngoài vào trong'],
+          ['Giao tiếp', 'Thế à', 'Rứa à', 'Vậy hả', 'Rứa hả', 'Câu cảm thán xác nhận thông tin'],
+          ['Giao tiếp', 'Không sao', 'Không răng', 'Không sao đâu', 'Hổng sao', 'Trấn an người khác'],
+          ['Giao tiếp', 'Cái gì', 'Cái chi', 'Cái gì', 'Cái giề', 'Từ để hỏi sự vật'],
+          ['Giao tiếp', 'Ở đâu', 'Ở mô', 'Ở đâu', null, 'Từ để hỏi địa điểm'],
+        ];
+
+        const insertSql = `
+          INSERT INTO tu_vung_vung_mien 
+          (danh_muc, tu_mien_bac, tu_mien_trung, tu_mien_nam, tu_dong_nghia_khac, ghi_chu_ngu_canh)
+          VALUES ?
+        `;
+        db.query(insertSql, [sampleData], (errInsert) => {
+          if (errInsert) {
+            console.warn('⚠️ Lỗi chèn dữ liệu mẫu tu_vung_vung_mien:', errInsert.message);
+          } else {
+            console.log('✅ Đã nạp thành công 33 cặp từ điển từ vựng 3 miền!');
+          }
+        });
+      }
+    });
+  });
+};
+
+// Gọi khởi tạo bảng
+initTuVungVungMien();
+
+// 1. API lấy danh sách từ vựng 3 miền (có tự động chọn theo vùng miền đang chọn)
+app.get('/api/tu-vung-vung-mien', (req, res) => {
+  const currentRegion = req.headers['x-region'] || req.query.region || req.region || 'nam';
+  const { danh_muc, q } = req.query;
+
+  let sql = 'SELECT * FROM tu_vung_vung_mien WHERE 1=1';
+  const params = [];
+
+  if (danh_muc) {
+    sql += ' AND danh_muc = ?';
+    params.push(danh_muc);
+  }
+
+  if (q) {
+    sql += ' AND (tu_mien_bac LIKE ? OR tu_mien_trung LIKE ? OR tu_mien_nam LIKE ?)';
+    const searchPattern = `%${q}%`;
+    params.push(searchPattern, searchPattern, searchPattern);
+  }
+
+  sql += ' ORDER BY danh_muc ASC, id ASC';
+
+  db.query(sql, params, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    // Format kết quả tự động gắn trường từ theo vùng miền và câu chú thích UX
+    const formatted = results.map((item) => {
+      let tu_hien_thi = item.tu_mien_nam;
+      let ghi_chu_so_sanh = '';
+
+      if (currentRegion === 'bac') {
+        tu_hien_thi = item.tu_mien_bac;
+        ghi_chu_so_sanh = `(Miền Trung: ${item.tu_mien_trung} — Miền Nam: ${item.tu_mien_nam})`;
+      } else if (currentRegion === 'trung') {
+        tu_hien_thi = item.tu_mien_trung;
+        ghi_chu_so_sanh = `(Miền Bắc: ${item.tu_mien_bac} — Miền Nam: ${item.tu_mien_nam})`;
+      } else {
+        tu_hien_thi = item.tu_mien_nam;
+        ghi_chu_so_sanh = `(Miền Bắc: ${item.tu_mien_bac} — Miền Trung: ${item.tu_mien_trung})`;
+      }
+
+      return {
+        ...item,
+        region_applied: currentRegion,
+        tu_hien_thi,
+        ghi_chu_so_sanh,
+      };
+    });
+
+    res.json(formatted);
+  });
+});
+
+// 2. API lấy toàn bộ từ điển 3 miền (để client cache offline)
+app.get('/api/tu-vung-vung-mien/all', (req, res) => {
+  const sql = 'SELECT * FROM tu_vung_vung_mien ORDER BY danh_muc ASC, id ASC';
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+// 3. API tự động chuyển đổi văn bản / câu / từ theo vùng miền
+app.post('/api/tu-vung-vung-mien/convert', (req, res) => {
+  const currentRegion = req.headers['x-region'] || req.body.region || req.region || 'nam';
+  const text = req.body.text || '';
+
+  if (!text) {
+    return res.status(400).json({ error: 'Vui lòng cung cấp văn bản cần chuyển đổi (field: text)' });
+  }
+
+  // Lấy toàn bộ từ điển để quét và chuyển đổi
+  db.query('SELECT * FROM tu_vung_vung_mien', (err, dictionary) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    let convertedText = text;
+    const replacements = [];
+
+    dictionary.forEach((item) => {
+      let targetWord = item.tu_mien_nam;
+      let note = '';
+
+      if (currentRegion === 'bac') {
+        targetWord = item.tu_mien_bac;
+        note = `(Miền Trung: ${item.tu_mien_trung} — Miền Nam: ${item.tu_mien_nam})`;
+      } else if (currentRegion === 'trung') {
+        targetWord = item.tu_mien_trung;
+        note = `(Miền Bắc: ${item.tu_mien_bac} — Miền Nam: ${item.tu_mien_nam})`;
+      } else {
+        targetWord = item.tu_mien_nam;
+        note = `(Miền Bắc: ${item.tu_mien_bac} — Miền Trung: ${item.tu_mien_trung})`;
+      }
+
+      const allVariants = [item.tu_mien_bac, item.tu_mien_trung, item.tu_mien_nam];
+      allVariants.forEach((variant) => {
+        if (variant && variant.toLowerCase() !== targetWord.toLowerCase()) {
+          const regex = new RegExp(`\\b${variant}\\b`, 'gi');
+          if (regex.test(convertedText)) {
+            convertedText = convertedText.replace(regex, targetWord);
+            replacements.push({
+              tu_goc: variant,
+              tu_chuyen_doi: targetWord,
+              vung_mien: currentRegion,
+              chu_thich_ux: `${targetWord} ${note}`,
+            });
+          }
+        }
+      });
+    });
+
+    res.json({
+      original_text: text,
+      converted_text: convertedText,
+      region: currentRegion,
+      replacements,
+    });
+  });
+});
+
+// 4. API lấy cấu hình giọng đọc TTS theo vùng miền
+app.get('/api/tu-vung-vung-mien/voice-config', (req, res) => {
+  const currentRegion = req.headers['x-region'] || req.query.region || req.region || 'nam';
+
+  const voiceMap = {
+    bac: {
+      region: 'bac',
+      region_name: 'Miền Bắc',
+      voice_code: 'banmai',
+      voice_name: 'Ban Mai (Nữ miền Bắc chuẩn)',
+      speed: 1.0,
+      description: 'Giọng đọc chuẩn Hà Nội thanh thoát, tự nhiên',
+    },
+    trung: {
+      region: 'trung',
+      region_name: 'Miền Trung',
+      voice_code: 'myan',
+      voice_name: 'Mỹ An (Nữ miền Trung)',
+      speed: 1.0,
+      description: 'Giọng đọc miền Trung (Huế - Đà Nẵng) truyền cảm, trầm ấm',
+    },
+    nam: {
+      region: 'nam',
+      region_name: 'Miền Nam',
+      voice_code: 'lannhi',
+      voice_name: 'Lan Nhi (Nữ miền Nam chuẩn)',
+      speed: 1.0,
+      description: 'Giọng đọc Sài Gòn ngọt ngào, gần gũi',
+    },
+  };
+
+  const config = voiceMap[currentRegion] || voiceMap.nam;
+  res.json(config);
 });
 
 // Khởi chạy server tại cổng 5000

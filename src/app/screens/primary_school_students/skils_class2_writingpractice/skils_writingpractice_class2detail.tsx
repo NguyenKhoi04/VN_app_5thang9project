@@ -1,20 +1,18 @@
+import { useEvent } from "expo";
 import { useLocalSearchParams } from "expo-router";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { useEvent } from "expo";
 import { useEffect, useState } from "react";
 import {
   Dimensions,
   ImageBackground,
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  View,
-  FlatList,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Footer from "../Footer";
+import Footer from "../../Footer";
 import Header, { ClassInfo } from "../Header";
 
 const { width } = Dimensions.get("window");
@@ -194,29 +192,29 @@ export default function WritingPracticeClass2Detail({ navigation, route }: any) 
         {/* ========== MENU PHỤ THEO MODE ========== */}
 
         {/* Mode 1 & 2: Menu ngang (gọn hơn) */}
-          {(mode === 1 || mode === 2) && (
-            <View style={styles.horizontalMenu}>
-              {getCurrentList().map((item) => (
-                <Pressable
-                  key={item}
+        {(mode === 1 || mode === 2) && (
+          <View style={styles.horizontalMenu}>
+            {getCurrentList().map((item) => (
+              <Pressable
+                key={item}
+                style={[
+                  styles.horizontalItem,
+                  currentLetter === item && styles.horizontalItemActive,
+                ]}
+                onPress={() => setCurrentLetter(item)}
+              >
+                <Text
                   style={[
-                    styles.horizontalItem,
-                    currentLetter === item && styles.horizontalItemActive,
+                    styles.horizontalText,
+                    currentLetter === item && styles.horizontalTextActive,
                   ]}
-                  onPress={() => setCurrentLetter(item)}
                 >
-                  <Text
-                    style={[
-                      styles.horizontalText,
-                      currentLetter === item && styles.horizontalTextActive,
-                    ]}
-                  >
-                    {LETTER_LABELS[item] || item}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          )}
+                  {LETTER_LABELS[item] || item}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
 
         {/* Mode 3: Menu ngang */}
         {mode === 3 && (

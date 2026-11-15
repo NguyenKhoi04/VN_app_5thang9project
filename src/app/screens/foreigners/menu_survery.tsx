@@ -48,7 +48,7 @@ const MenuSurvey = () => {
       initialRouteName="Language"
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: '#2563EB' },
+        contentStyle: { backgroundColor: '#F8FAFC' },
       }}
     >
       {/* Survey screens */}

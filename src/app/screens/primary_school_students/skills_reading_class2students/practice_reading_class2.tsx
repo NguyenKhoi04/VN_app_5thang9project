@@ -1,21 +1,21 @@
 // Danh mục đọc - Lớp 2
 
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
   Alert,
+  Dimensions,
+  Image,
+  ImageBackground,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Footer from '../../Footer';
 import Header, { ClassInfo } from '../Header';
-import Footer from '../Footer';
 
 const { width } = Dimensions.get('window');
 

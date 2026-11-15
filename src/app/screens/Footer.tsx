@@ -20,7 +20,7 @@ const Footer = () => {
         <Text style={styles.footerText}>Bài học</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.footerItem} onPress={() => {}}>
+      {/* <TouchableOpacity style={styles.footerItem} onPress={() => {}}>
         <Text style={styles.footerIcon}>🏆</Text>
         <Text style={styles.footerText}>Thành tích</Text>
       </TouchableOpacity>
@@ -28,6 +28,17 @@ const Footer = () => {
       <TouchableOpacity style={styles.footerItem} onPress={() => {}}>
         <Text style={styles.footerIcon}>👤</Text>
         <Text style={styles.footerText}>Cá nhân</Text>
+      </TouchableOpacity> */}
+
+      {/* Cài đặt */}
+      <TouchableOpacity
+        style={styles.footerItem}
+        onPress={() => {
+          navigation.navigate('Settings');
+        }}
+      >
+        <Text style={styles.footerIcon}>⚙️ </Text>
+        <Text style={styles.footerText}> Cài đặt </Text>
       </TouchableOpacity>
     </View>
   );

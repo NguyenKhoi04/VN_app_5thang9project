@@ -2,22 +2,21 @@
 import { createAudioPlayer } from "expo-audio";
 // import { useLocalSearchParams, useRouter } from "expo-router";
 
-import { useNavigation } from "@react-navigation/native";
-import { useLocalSearchParams} from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Dimensions,
   Image,
   ImageBackground,
   Pressable,
-  
+
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Footer from "../Footer";
+import Footer from "../../Footer";
 import Header, { ClassInfo } from "../Header";
 
 const { width } = Dimensions.get("window");

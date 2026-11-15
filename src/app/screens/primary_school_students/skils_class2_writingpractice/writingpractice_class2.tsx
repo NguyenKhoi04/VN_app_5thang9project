@@ -14,7 +14,7 @@ import {
   View,
 } from "react-native";
 
-import Footer from "../Footer";
+import Footer from "../../Footer";
 import Header, { ClassInfo } from "../Header";
 
 const { width } = Dimensions.get("window");
@@ -127,7 +127,7 @@ export default function PracticeReadingClass1Screen({ navigation, route }: any) 
                 resizeMode="cover"
               />
             </TouchableOpacity>
-            </View>
+          </View>
         </View>
       </ScrollView>
       <Footer />

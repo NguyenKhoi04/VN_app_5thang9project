@@ -10,6 +10,8 @@ import {
   Animated,
 } from 'react-native';
 
+import Footer from '../../Footer';
+
 interface SectionCardProps {
   number: string;
   title: string;
@@ -167,6 +169,8 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
 
         <View style={{ height: 30 }} />
       </ScrollView>
+
+      <Footer/>
     </SafeAreaView>
   );
 };

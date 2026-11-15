@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { API_ENDPOINTS } from '../../../src/config/api';
 
+import Footer from './Footer';
 const { width } = Dimensions.get('window');
 const API_roles_URL = API_ENDPOINTS.GET_ROLES;
 
@@ -95,6 +96,7 @@ const RoleSelectionScreen = ({ navigation, route }: any) => {
           )}
         </View>
       </View>
+      <Footer/>
     </SafeAreaView>
   );
 };

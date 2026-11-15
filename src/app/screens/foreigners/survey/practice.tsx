@@ -1,139 +1,239 @@
-// Bạn muốn luyện tập thường xuyên như thế nào
+// Mục tiêu luyện tập mỗi ngày cho người nước ngoài
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import SurveyLayout from './SurveyLayout';
 
-const practiceOptions = [
-  { id: '5min', text: '5 phút mỗi ngày', icon: '🤔' },
-  { id: '15min', text: '15 phút mỗi ngày', icon: '😃' },
-  { id: '30min', text: '30 phút mỗi ngày', icon: '😊' },
-  { id: '60min', text: '60 phút mỗi ngày', icon: '🤩' },
-  { id: 'other', text: 'Khác', icon: '🤔' },
+const PRACTICE_GOALS = [
+  {
+    id: '5min',
+    icon: '☕',
+    title: '5 phút mỗi ngày',
+    badge: 'Khởi động',
+    sub: 'Nhẹ nhàng, dễ duy trì thói quen hàng ngày (Casual & Easy)',
+  },
+  {
+    id: '15min',
+    icon: '⚡',
+    title: '15 phút mỗi ngày',
+    badge: 'Phổ biến nhất ⭐',
+    sub: 'Cân bằng hoàn hảo giữa thời gian và hiệu quả (Regular & Balanced)',
+  },
+  {
+    id: '30min',
+    icon: '🔥',
+    title: '30 phút mỗi ngày',
+    badge: 'Nghiêm túc',
+    sub: 'Tiến bộ vượt bậc, giao tiếp cơ bản sau 1 tháng (Serious & Fast)',
+  },
+  {
+    id: '60min',
+    icon: '🚀',
+    title: '60 phút mỗi ngày',
+    badge: 'Chuyên sâu',
+    sub: 'Chinh phục tiếng Việt trong thời gian ngắn nhất (Intensive & Pro)',
+  },
 ];
 
-const PracticeScreen = ({ navigation }: any) => {
-  const [selected, setSelected] = useState<string | null>(null);
+export default function PracticeScreen({ navigation }: any) {
+  const [selected, setSelected] = useState<string>('15min');
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.card}>
-        {/* Nút quay lại */}
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backIcon}>◀️</Text>
-        </TouchableOpacity>
+    <SurveyLayout
+      step={7}
+      totalSteps={7}
+      titleBadge="BƯỚC CUỐI CÙNG"
+      title="Mục tiêu luyện tập mỗi ngày?"
+      subtitle="Duy trì đều đặn mỗi ngày là chìa khóa vàng để thành thạo tiếng Việt."
+      onBack={() => navigation.goBack()}
+      continueText="🚀 Bắt đầu học ngay"
+      continueDisabled={!selected}
+      onContinue={() => navigation.navigate('HocTiengViet')}
+    >
+      <View style={styles.list}>
+        {PRACTICE_GOALS.map((goal) => {
+          const isSelected = selected === goal.id;
 
-        <Text style={styles.title}>Bạn muốn luyện tập thường xuyên như thế nào?</Text>
-        <Text style={styles.subtitle}>
-          Chúng tôi sẽ nhắc bạn theo lịch trình học phù hợp.
-        </Text>
+          return (
+            <TouchableOpacity
+              key={goal.id}
+              style={[
+                styles.card,
+                isSelected && styles.cardSelected,
+              ]}
+              onPress={() => setSelected(goal.id)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.iconBadge, isSelected && styles.iconBadgeSelected]}>
+                <Text style={styles.iconText}>{goal.icon}</Text>
+              </View>
 
-        {/* Danh sách lựa chọn */}
-        {practiceOptions.map((option) => (
-          <TouchableOpacity
-            key={option.id}
-            style={[
-              styles.option,
-              selected === option.id && styles.selectedOption,
-            ]}
-            onPress={() => setSelected(option.id)}
-          >
-            <View style={styles.left}>
-              <Text style={styles.icon}>{option.icon}</Text>
-              <Text style={styles.optionText}>{option.text}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+              <View style={styles.textContainer}>
+                <View style={styles.headerRow}>
+                  <Text style={[styles.titleText, isSelected && styles.titleTextSelected]}>
+                    {goal.title}
+                  </Text>
+                  {goal.badge && (
+                    <Text style={[styles.badge, isSelected && styles.badgeSelected]}>
+                      {goal.badge}
+                    </Text>
+                  )}
+                </View>
+                <Text style={styles.subText}>{goal.sub}</Text>
+              </View>
 
-        {/* Nút Hoàn thành */}
-        <TouchableOpacity
-          style={[styles.continueButton, !selected && styles.disabledButton]}
-          disabled={!selected}
-          onPress={() => navigation.navigate('HocTiengViet')}
-        >
-          <Text style={styles.continueText}>Hoàn thành</Text>
-        </TouchableOpacity>
+              <View
+                style={[
+                  styles.radioCircle,
+                  isSelected && styles.radioCircleSelected,
+                ]}
+              >
+                {isSelected && <Text style={styles.checkIcon}>✓</Text>}
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </View>
-    </SafeAreaView>
+
+      {/* Cam kết truyền động lực */}
+      <View style={styles.motivationCard}>
+        <Text style={styles.motivationEmoji}>💡</Text>
+        <View style={styles.motivationTextContainer}>
+          <Text style={styles.motivationTitle}>Bạn có thể đổi mục tiêu bất kỳ lúc nào</Text>
+          <Text style={styles.motivationSub}>
+            Ứng dụng sẽ gửi thông báo nhắc nhở nhẹ nhàng vào buổi tối để bạn không quên buổi học.
+          </Text>
+        </View>
+      </View>
+    </SurveyLayout>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#2563EB',
-    justifyContent: 'center',
-    padding: 20,
+  list: {
+    gap: 12,
   },
   card: {
-    backgroundColor: 'white',
-    borderRadius: 24,
-    padding: 24,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-  },
-  backIcon: {
-    fontSize: 28,
-    color: '#64748B',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: '700',
-    marginBottom: 8,
-    marginTop: 45,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 15,
-    color: '#64748B',
-    marginBottom: 24,
-    textAlign: 'center',
-  },
-  option: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 18,
-    backgroundColor: '#F8FAFC',
-    borderRadius: 16,
-    marginBottom: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
   },
-  selectedOption: {
+  cardSelected: {
     backgroundColor: '#EFF6FF',
     borderColor: '#2563EB',
-    borderWidth: 2,
+    elevation: 3,
+    shadowColor: '#2563EB',
+    shadowOpacity: 0.15,
   },
-  left: {
-    flexDirection: 'row',
+  iconBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#F8FAFC',
     alignItems: 'center',
-    flex: 1,
-  },
-  icon: {
-    fontSize: 24,
+    justifyContent: 'center',
     marginRight: 14,
   },
-  optionText: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#1E3A8A',
+  iconBadgeSelected: {
+    backgroundColor: '#DBEAFE',
+  },
+  iconText: {
+    fontSize: 26,
+  },
+  textContainer: {
     flex: 1,
   },
-  continueButton: {
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 3,
+  },
+  titleText: {
+    fontSize: 15.5,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  titleTextSelected: {
+    color: '#1D4ED8',
+  },
+  badge: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#64748B',
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    overflow: 'hidden',
+  },
+  badgeSelected: {
+    backgroundColor: '#DBEAFE',
+    color: '#1D4ED8',
+  },
+  subText: {
+    fontSize: 12.5,
+    color: '#64748B',
+    lineHeight: 18,
+  },
+  radioCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#CBD5E1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+  },
+  radioCircleSelected: {
     backgroundColor: '#2563EB',
-    paddingVertical: 18,
-    borderRadius: 16,
+    borderColor: '#2563EB',
+  },
+  checkIcon: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  motivationCard: {
     marginTop: 20,
+    backgroundColor: '#F0FDF4',
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+    borderRadius: 16,
+    padding: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  disabledButton: {
-    backgroundColor: '#94A3B8',
+  motivationEmoji: {
+    fontSize: 24,
+    marginRight: 12,
   },
-  continueText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
-    textAlign: 'center',
+  motivationTextContainer: {
+    flex: 1,
+  },
+  motivationTitle: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: '#166534',
+    marginBottom: 2,
+  },
+  motivationSub: {
+    fontSize: 12,
+    color: '#15803D',
+    lineHeight: 17,
   },
 });
-
-export default PracticeScreen;

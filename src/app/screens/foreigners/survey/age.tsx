@@ -1,92 +1,151 @@
-//Chọn độ tuổi
+// Chọn độ tuổi
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-const ageOptions = [
-  { emoji: '😊', label: '18-24' },
-  { emoji: '😎', label: '25-34' },
-  { emoji: '🕶️', label: '35-44' },
-  { emoji: '😊', label: '45-54' },
-  { emoji: '🙂', label: '55+' },
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import SurveyLayout from './SurveyLayout';
+
+const AGE_OPTIONS = [
+  { id: 'under18', emoji: '👶', label: 'Dưới 18 tuổi', sub: 'Học sinh / Thiếu niên (Under 18)' },
+  { id: '18_24', emoji: '🎒', label: '18 - 24 tuổi', sub: 'Sinh viên / Mới tốt nghiệp (18 - 24 years)' },
+  { id: '25_34', emoji: '💼', label: '25 - 34 tuổi', sub: 'Người đi làm / Người trẻ (25 - 34 years)' },
+  { id: '35_44', emoji: '👔', label: '35 - 44 tuổi', sub: 'Trung niên / Chuyên viên (35 - 44 years)' },
+  { id: '45_54', emoji: '☕', label: '45 - 54 tuổi', sub: 'Trưởng thành / Nhà quản lý (45 - 54 years)' },
+  { id: '55_plus', emoji: '🌸', label: '55+ tuổi', sub: 'Nghỉ hưu / Học giải trí (55+ years)' },
 ];
 
-const AgeScreen = ({ navigation }: any) => {
-  const [selected, setSelected] = useState<string | null>(null);
+export default function AgeScreen({ navigation }: any) {
+  const [selected, setSelected] = useState<string>('25_34');
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.card}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backIcon}>◀️</Text>
-        </TouchableOpacity>
+    <SurveyLayout
+      step={2}
+      totalSteps={7}
+      titleBadge="BƯỚC 2"
+      title="Bạn bao nhiêu tuổi?"
+      subtitle="Chúng mình sẽ gợi ý các chủ đề giao tiếp và từ vựng phù hợp nhất với nhóm tuổi của bạn."
+      onBack={() => navigation.goBack()}
+      continueText="Tiếp tục"
+      continueDisabled={!selected}
+      onContinue={() => navigation.navigate('LevelVn')}
+    >
+      <View style={styles.list}>
+        {AGE_OPTIONS.map((item) => {
+          const isSelected = selected === item.id;
 
-        <Text style={styles.title}>Bạn bao nhiêu tuổi?</Text>
+          return (
+            <TouchableOpacity
+              key={item.id}
+              style={[
+                styles.card,
+                isSelected && styles.cardSelected,
+              ]}
+              onPress={() => setSelected(item.id)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.emojiBadge, isSelected && styles.emojiBadgeSelected]}>
+                <Text style={styles.emojiText}>{item.emoji}</Text>
+              </View>
 
-        {ageOptions.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.option, selected === item.label && styles.selectedOption]}
-            onPress={() => setSelected(item.label)}
-          >
-            <Text style={styles.emoji}>{item.emoji}</Text>
-            <Text style={styles.optionText}>{item.label}</Text>
-          </TouchableOpacity>
-        ))}
+              <View style={styles.textContainer}>
+                <Text style={[styles.labelText, isSelected && styles.labelTextSelected]}>
+                  {item.label}
+                </Text>
+                <Text style={styles.subText}>{item.sub}</Text>
+              </View>
 
-        <TouchableOpacity 
-          style={[styles.continueButton, !selected && styles.disabledButton]}
-          disabled={!selected}
-          onPress={() => navigation.navigate('LevelVn')}
-        >
-          <Text style={styles.continueText}>Tiếp tục</Text>
-        </TouchableOpacity>
-        
-        {/* Nhấn skip bỏ qua */}
-<TouchableOpacity
-  style={styles.skipButton}
-  onPress={() => navigation.navigate('HocTiengViet')}
->
-  <Text style={styles.skipButtonText}>Skip (Bỏ qua)</Text>
-</TouchableOpacity>
+              <View
+                style={[
+                  styles.radioCircle,
+                  isSelected && styles.radioCircleSelected,
+                ]}
+              >
+                {isSelected && <Text style={styles.checkIcon}>✓</Text>}
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </View>
-    </SafeAreaView>
+    </SurveyLayout>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#2563EB', justifyContent: 'center', padding: 20 },
-  card: { backgroundColor: 'white', borderRadius: 24, padding: 24, elevation: 5 },
-  backButton: { position: 'absolute', top: 20, left: 20 },
-  backIcon: { fontSize: 28, color: '#64748B' },
-  title: { fontSize: 24, fontWeight: '700', textAlign: 'center', marginBottom: 30, marginTop: 20 },
-  option: {
+  list: {
+    gap: 12,
+  },
+  card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    padding: 18,
-    borderRadius: 16,
-    marginBottom: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 16,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: '#E2E8F0',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
   },
-  selectedOption: { borderColor: '#2563EB', backgroundColor: '#EFF6FF' },
-  emoji: { fontSize: 28, marginRight: 16 },
-  optionText: { fontSize: 18, fontWeight: '500' },
-  continueButton: {
+  cardSelected: {
+    backgroundColor: '#EFF6FF',
+    borderColor: '#2563EB',
+    elevation: 3,
+    shadowColor: '#2563EB',
+    shadowOpacity: 0.15,
+  },
+  emojiBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#F8FAFC',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  emojiBadgeSelected: {
+    backgroundColor: '#DBEAFE',
+  },
+  emojiText: {
+    fontSize: 26,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  labelText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1E293B',
+    marginBottom: 2,
+  },
+  labelTextSelected: {
+    color: '#1D4ED8',
+  },
+  subText: {
+    fontSize: 12.5,
+    color: '#64748B',
+  },
+  radioCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#CBD5E1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+  },
+  radioCircleSelected: {
     backgroundColor: '#2563EB',
-    paddingVertical: 18,
-    borderRadius: 16,
-    marginTop: 20,
+    borderColor: '#2563EB',
   },
-  disabledButton: { backgroundColor: '#94A3B8' },
-  continueText: { color: 'white', fontSize: 18, fontWeight: '600', textAlign: 'center' },
-  skipButton: { color: '#FF4040', fontSize: 15, fontWeight: '600', textAlign: 'center', marginTop: 10 },
-  skipButtonText: {
-  color: '#fff',          // hoặc màu bạn muốn
-  fontSize: 16,
-  fontWeight: '600',
-  textAlign: 'center',
-},
+  checkIcon: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '900',
+  },
 });
-
-export default AgeScreen;
