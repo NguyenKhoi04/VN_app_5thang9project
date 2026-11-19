@@ -167,6 +167,77 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
           <Text style={[styles.arrow, { color: '#D97706' }]}>›</Text>
         </TouchableOpacity>
 
+        {/* ============================================================ */}
+        {/* DANH SÁCH CHỦ ĐỀ TRONG CUỘC SỐNG • LIFE TOPICS (AI CAMERA) */}
+        {/* ============================================================ */}
+        <View style={styles.divider}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>CHỦ ĐỀ ĐỜI SỐNG • LIFE TOPICS</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <View style={styles.lifeTopicsSection}>
+          <View style={styles.lifeHeader}>
+            <View>
+              <Text style={styles.lifeMainTitle}>
+                Chủ Đề Trong Cuộc Sống 🌍
+              </Text>
+              <Text style={styles.lifeSubTitle}>
+                AI Object Recognition & Vietnamese Pronunciation
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('LifeTopics')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.lifeViewAll}>Xem tất cả ›</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* 2 Thẻ chủ đề: Trái cây & Động vật */}
+          <View style={styles.lifeCardsRow}>
+            {/* Thẻ 1: Trái cây */}
+            <TouchableOpacity
+              style={[styles.topicBox, { backgroundColor: '#FEF2F2', borderColor: '#FCA5A5' }]}
+              onPress={() => navigation.navigate('TopicDetail', { topicId: 'fruits' })}
+              activeOpacity={0.85}
+            >
+              <View style={styles.topicBoxTop}>
+                <Text style={styles.topicEmoji}>🍎</Text>
+                <View style={[styles.miniAiChip, { backgroundColor: '#EF4444' }]}>
+                  <Text style={styles.miniAiChipText}>AI CAM</Text>
+                </View>
+              </View>
+              <Text style={styles.topicNameVi}>Trái Cây</Text>
+              <Text style={styles.topicNameEn}>Fruits (5 items)</Text>
+              <Text style={styles.topicSample}>Táo, Chuối, Cam, Dưa hấu, Nho</Text>
+              <View style={[styles.topicBtn, { backgroundColor: '#EF4444' }]}>
+                <Text style={styles.topicBtnText}>Quét AI ➔</Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Thẻ 2: Động vật */}
+            <TouchableOpacity
+              style={[styles.topicBox, { backgroundColor: '#ECFDF5', borderColor: '#6EE7B7' }]}
+              onPress={() => navigation.navigate('TopicDetail', { topicId: 'animals' })}
+              activeOpacity={0.85}
+            >
+              <View style={styles.topicBoxTop}>
+                <Text style={styles.topicEmoji}>🐾</Text>
+                <View style={[styles.miniAiChip, { backgroundColor: '#10B981' }]}>
+                  <Text style={styles.miniAiChipText}>AI CAM</Text>
+                </View>
+              </View>
+              <Text style={styles.topicNameVi}>Động Vật</Text>
+              <Text style={styles.topicNameEn}>Animals (3 items)</Text>
+              <Text style={styles.topicSample}>Trâu, Sư tử, Mèo</Text>
+              <View style={[styles.topicBtn, { backgroundColor: '#10B981' }]}>
+                <Text style={styles.topicBtnText}>Quét AI ➔</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         <View style={{ height: 30 }} />
       </ScrollView>
 
@@ -275,6 +346,95 @@ const styles = StyleSheet.create({
   vocabDesc: { fontSize: 12, color: '#78350F', lineHeight: 18, marginBottom: 4 },
   vocabDescEn: { fontSize: 10, color: '#92400E' },
   searchHint: { fontSize: 11, color: '#B45309', fontStyle: 'italic' },
+  
+  /* Styles cho Life Topics */
+  lifeTopicsSection: {
+    marginTop: 6,
+    marginBottom: 10,
+  },
+  lifeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  lifeMainTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  lifeSubTitle: {
+    fontSize: 11,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  lifeViewAll: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#2563EB',
+  },
+  lifeCardsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  topicBox: {
+    flex: 1,
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1.5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  topicBoxTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  topicEmoji: {
+    fontSize: 26,
+  },
+  miniAiChip: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  miniAiChipText: {
+    color: '#FFFFFF',
+    fontSize: 9,
+    fontWeight: '800',
+  },
+  topicNameVi: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#1E293B',
+  },
+  topicNameEn: {
+    fontSize: 11,
+    color: '#64748B',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  topicSample: {
+    fontSize: 10.5,
+    color: '#475569',
+    lineHeight: 14,
+    marginBottom: 8,
+  },
+  topicBtn: {
+    paddingVertical: 6,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  topicBtnText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
+  },
 });
 
 export default HocTiengViet;

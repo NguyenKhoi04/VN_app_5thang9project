@@ -65,6 +65,10 @@ import WritingPracticeClass2Screen from "./screens/primary_school_students/skils
 // Lớp 3 Writing Practice
 import WritingPracticeClass3Screen from "./screens/primary_school_students/skils_class3_writingpractice/writingpractice_class3";
 
+// Chủ đề trong cuộc sống (AI Camera)
+import LifeTopicsScreen from "./screens/life_topics/LifeTopicsScreen";
+import TopicDetailScreen from "./screens/life_topics/TopicDetailScreen";
+
 // Lớp 1 spelling
 import SkillsSpellingClass1Students from "./screens/primary_school_students/skills_spelling_students/skills_spelling_class1_students";
 // Lớp 2 spelling
@@ -93,6 +97,8 @@ function App() {
           <Stack.Screen name="Settings" component={SettingsScreen} />
           <Stack.Screen name="MenuSurvey" component={MenuSurvey} />
           <Stack.Screen name="HomePrimary" component={HomePrimary} />
+          <Stack.Screen name="LifeTopics" component={LifeTopicsScreen} />
+          <Stack.Screen name="TopicDetail" component={TopicDetailScreen} />
 
           {/* Lớp 1 */}
           <Stack.Screen name="PracticeReadingClass1" component={PracticeReadingclass1} />

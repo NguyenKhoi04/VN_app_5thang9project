@@ -56,4 +56,7 @@ export const API_ENDPOINTS = {
   GET_PHAN_BAI_NN: `${BASE_URL}/api/phan-bai-nn`,
   GET_TU_VUNG: `${BASE_URL}/api/tu-vung`,
   GET_CAU_HOI_NN: `${BASE_URL}/api/cau-hoi-nn`,
+
+  // AI Camera nhận diện đồ vật (Roboflow & Backend AI)
+  AI_DETECT_OBJECT: `${BASE_URL}/api/ai/detect-object`,
 };

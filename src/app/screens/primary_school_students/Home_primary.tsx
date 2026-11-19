@@ -384,6 +384,83 @@ const HomePrimary = ({ navigation, route }: any) => {
             </Text>
           )}
         </View>
+
+        {/* ============================================================ */}
+        {/* BƯỚC 1: DANH SÁCH CHỦ ĐỀ TRONG CUỘC SỐNG (AI CAMERA NHẬN DIỆN) */}
+        {/* ============================================================ */}
+        <View style={styles.lifeTopicsSection}>
+          <View style={styles.lifeTopicsHeaderRow}>
+            <View>
+              <Text style={styles.lifeTopicsTitle}>
+                Danh sách chủ đề trong cuộc sống 🌍
+              </Text>
+              <Text style={styles.lifeTopicsSubtitle}>
+                Camera AI nhận diện đồ vật & phát âm tiếng Việt
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("LifeTopics")}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.seeAllText}>Xem tất cả ›</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* 2 Chủ đề chính: Trái cây & Động vật */}
+          <View style={styles.lifeTopicCardsGrid}>
+            {/* Chủ đề 1: Trái cây */}
+            <TouchableOpacity
+              style={[styles.lifeCard, styles.lifeCardFruit]}
+              onPress={() =>
+                navigation.navigate("TopicDetail", { topicId: "fruits" })
+              }
+              activeOpacity={0.85}
+            >
+              <View style={styles.lifeCardTop}>
+                <View style={[styles.lifeIconBox, { backgroundColor: "#FEE2E2" }]}>
+                  <Text style={styles.lifeIconEmoji}>🍎</Text>
+                </View>
+                <View style={[styles.aiChip, { backgroundColor: "#EF4444" }]}>
+                  <Text style={styles.aiChipText}>📷 AI CAM</Text>
+                </View>
+              </View>
+              <Text style={styles.lifeCardName}>Trái Cây</Text>
+              <Text style={styles.lifeCardEn}>Fruits • 5 loại</Text>
+              <Text style={styles.lifeCardDesc}>
+                Táo, Chuối, Cam, Dưa hấu, Nho
+              </Text>
+              <View style={[styles.lifeCardAction, { backgroundColor: "#EF4444" }]}>
+                <Text style={styles.lifeCardActionText}>Bắt đầu quét ➔</Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Chủ đề 2: Động vật */}
+            <TouchableOpacity
+              style={[styles.lifeCard, styles.lifeCardAnimal]}
+              onPress={() =>
+                navigation.navigate("TopicDetail", { topicId: "animals" })
+              }
+              activeOpacity={0.85}
+            >
+              <View style={styles.lifeCardTop}>
+                <View style={[styles.lifeIconBox, { backgroundColor: "#D1FAE5" }]}>
+                  <Text style={styles.lifeIconEmoji}>🐾</Text>
+                </View>
+                <View style={[styles.aiChip, { backgroundColor: "#10B981" }]}>
+                  <Text style={styles.aiChipText}>📷 AI CAM</Text>
+                </View>
+              </View>
+              <Text style={styles.lifeCardName}>Động Vật</Text>
+              <Text style={styles.lifeCardEn}>Animals • 3 loài</Text>
+              <Text style={styles.lifeCardDesc}>
+                Trâu, Sư tử, Mèo
+              </Text>
+              <View style={[styles.lifeCardAction, { backgroundColor: "#10B981" }]}>
+                <Text style={styles.lifeCardActionText}>Bắt đầu quét ➔</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
       </ScrollView>
 
       {/* Footer */}
@@ -521,6 +598,111 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#2B6CB0",
     marginTop: 2,
+  },
+
+  /* Styles cho Danh sách chủ đề trong cuộc sống */
+  lifeTopicsSection: {
+    marginTop: 24,
+    marginBottom: 16,
+  },
+  lifeTopicsHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 14,
+  },
+  lifeTopicsTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1E40AF",
+  },
+  lifeTopicsSubtitle: {
+    fontSize: 12.5,
+    color: "#64748B",
+    marginTop: 2,
+  },
+  seeAllText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#2563EB",
+  },
+  lifeTopicCardsGrid: {
+    flexDirection: "row",
+    gap: 14,
+  },
+  lifeCard: {
+    flex: 1,
+    borderRadius: 18,
+    padding: 14,
+    borderWidth: 1.5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  lifeCardFruit: {
+    backgroundColor: "#FEF2F2",
+    borderColor: "#FCA5A5",
+  },
+  lifeCardAnimal: {
+    backgroundColor: "#ECFDF5",
+    borderColor: "#6EE7B7",
+  },
+  lifeCardTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  lifeIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  lifeIconEmoji: {
+    fontSize: 24,
+  },
+  aiChip: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  aiChipText: {
+    color: "#FFFFFF",
+    fontSize: 9.5,
+    fontWeight: "800",
+  },
+  lifeCardName: {
+    fontSize: 17,
+    fontWeight: "800",
+    color: "#1E293B",
+  },
+  lifeCardEn: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#64748B",
+    marginTop: 1,
+  },
+  lifeCardDesc: {
+    fontSize: 11,
+    color: "#475569",
+    marginTop: 4,
+    lineHeight: 15,
+  },
+  lifeCardAction: {
+    marginTop: 10,
+    paddingVertical: 7,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  lifeCardActionText: {
+    color: "#FFFFFF",
+    fontSize: 11.5,
+    fontWeight: "700",
   },
 });
 
