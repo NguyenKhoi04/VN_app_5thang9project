@@ -1,22 +1,45 @@
 // Kỹ năng 2: Nghe và lập lại
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import BaseSkillContent, { ContentCard, PlayButton } from '../BaseSkillContent';
+import { API_ENDPOINTS } from '../../../../../config/api';
 
 interface Props { navigation: any; route: any; }
+
+const DEFAULT_PHRASES = [
+  { vn: 'Xin chào!', en: 'Hello!' },
+  { vn: 'Cảm ơn bạn.', en: 'Thank you.' },
+  { vn: 'Tạm biệt!', en: 'Goodbye!' },
+  { vn: 'Vâng, được.', en: 'Yes, okay.' },
+  { vn: 'Không, cảm ơn.', en: 'No, thank you.' },
+];
 
 const NgheLapLaiScreen: React.FC<Props> = ({ navigation, route }) => {
   const { lessonId = 1, themeColor = '#4F46E5' } = route?.params || {};
   const [currentIndex, setCurrentIndex] = useState(0);
   const [recorded, setRecorded] = useState(false);
+  const [phrases, setPhrases] = useState(DEFAULT_PHRASES);
 
-  const phrases = [
-    { vn: 'Xin chào!', en: 'Hello!' },
-    { vn: 'Cảm ơn bạn.', en: 'Thank you.' },
-    { vn: 'Tạm biệt!', en: 'Goodbye!' },
-    { vn: 'Vâng, được.', en: 'Yes, okay.' },
-    { vn: 'Không, cảm ơn.', en: 'No, thank you.' },
-  ];
+  useEffect(() => {
+    let isMounted = true;
+    fetch(`${API_ENDPOINTS.GET_BAI_TAP_KY_NANG}?so_bai=${lessonId}&ky_nang_id=1`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((item: any) => ({
+            vn: item.tu_tv,
+            en: item.goi_y || '',
+          }));
+          setPhrases(mapped);
+          setCurrentIndex(0);
+          setRecorded(false);
+        }
+      })
+      .catch((err) => {
+        console.log('Using default phrases fallback:', err.message);
+      });
+    return () => { isMounted = false; };
+  }, [lessonId]);
 
   const current = phrases[currentIndex];
 

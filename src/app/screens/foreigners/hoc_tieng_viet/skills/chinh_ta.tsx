@@ -1,9 +1,18 @@
 // Kỹ năng 6: Viết chính tả
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import BaseSkillContent, { ContentCard, PlayButton } from '../BaseSkillContent';
+import { API_ENDPOINTS } from '../../../../../config/api';
 
 interface Props { navigation: any; route: any; }
+
+const DEFAULT_WORDS = [
+  { word: 'xin chào', hint: 'Greeting • Lời chào', audio: '🎵' },
+  { word: 'cảm ơn', hint: 'Thank you • Cảm ơn', audio: '🎵' },
+  { word: 'tạm biệt', hint: 'Goodbye • Tạm biệt', audio: '🎵' },
+  { word: 'Việt Nam', hint: 'Country name • Tên quốc gia', audio: '🎵' },
+  { word: 'tiếng Việt', hint: 'Vietnamese language • Ngôn ngữ', audio: '🎵' },
+];
 
 const ChinhTaScreen: React.FC<Props> = ({ navigation, route }) => {
   const { lessonId = 1, themeColor = '#4F46E5' } = route?.params || {};
@@ -11,14 +20,30 @@ const ChinhTaScreen: React.FC<Props> = ({ navigation, route }) => {
   const [input, setInput] = useState('');
   const [checked, setChecked] = useState(false);
   const [score, setScore] = useState(0);
+  const [dictationWords, setDictationWords] = useState(DEFAULT_WORDS);
 
-  const dictationWords = [
-    { word: 'xin chào', hint: 'Greeting • Lời chào', audio: '🎵' },
-    { word: 'cảm ơn', hint: 'Thank you • Cảm ơn', audio: '🎵' },
-    { word: 'tạm biệt', hint: 'Goodbye • Tạm biệt', audio: '🎵' },
-    { word: 'Việt Nam', hint: 'Country name • Tên quốc gia', audio: '🎵' },
-    { word: 'tiếng Việt', hint: 'Vietnamese language • Ngôn ngữ', audio: '🎵' },
-  ];
+  useEffect(() => {
+    let isMounted = true;
+    fetch(`${API_ENDPOINTS.GET_BAI_TAP_KY_NANG}?so_bai=${lessonId}&ky_nang_id=4`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((item: any) => ({
+            word: item.tu_tv,
+            hint: item.goi_y || 'Luyện viết từ',
+            audio: '🎵',
+          }));
+          setDictationWords(mapped);
+          setCurrentIdx(0);
+          setInput('');
+          setChecked(false);
+        }
+      })
+      .catch((err) => {
+        console.log('Using default dictation words fallback:', err.message);
+      });
+    return () => { isMounted = false; };
+  }, [lessonId]);
 
   const current = dictationWords[currentIdx];
   const isCorrect = input.trim().toLowerCase() === current.word.toLowerCase();

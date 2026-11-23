@@ -1,5 +1,5 @@
 // Bảng từ vựng - 3 cột: Tiếng Việt | Từ loại | Tiếng Anh + Tìm kiếm
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   ScrollView,
   FlatList,
 } from 'react-native';
+import { API_ENDPOINTS } from '../../../../../config/api';
 
 interface VocabWord {
   vn: string;
@@ -101,8 +102,29 @@ const BangTuVung: React.FC<Props> = ({ navigation, route }) => {
   const { lessonId = 1, lessonTitle = '', lessonTitleEn = '' } = route?.params || {};
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<string | null>(null);
+  const [dbWords, setDbWords] = useState<VocabWord[] | null>(null);
 
-  const words = VOCAB_DATA[lessonId] || [];
+  useEffect(() => {
+    let isMounted = true;
+    fetch(`${API_ENDPOINTS.GET_TU_VUNG}?so_bai=${lessonId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          const mapped: VocabWord[] = data.map((item: any) => ({
+            vn: item.tu_tv || item.tu_tv_goc,
+            type: (item.loai_tu || 'N') as any,
+            en: item.nghia_en || '',
+          }));
+          setDbWords(mapped);
+        }
+      })
+      .catch((err) => {
+        console.log('Error fetching vocab from DB:', err.message);
+      });
+    return () => { isMounted = false; };
+  }, [lessonId]);
+
+  const words = dbWords || VOCAB_DATA[lessonId] || [];
 
   const filtered = useMemo(() => {
     return words.filter((w) => {

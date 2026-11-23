@@ -109,7 +109,12 @@ const SkillMenuScreen: React.FC<SkillMenuProps> = ({
             key={skill.id}
             skill={skill}
             themeColor={themeColor}
-            onPress={(screenName) => navigation.navigate(screenName, { lessonId: lessonNumber })}
+            onPress={(screenName) => navigation.navigate(screenName, { 
+              lessonId: lessonNumber, 
+              themeColor, 
+              lessonTitle, 
+              lessonSubtitle 
+            })}
           />
         ))}
 

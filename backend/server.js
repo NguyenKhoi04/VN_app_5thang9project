@@ -751,8 +751,47 @@ app.post('/api/tien-trinh-hs', (req, res) => {
 // ============================================================
 
 app.get('/api/bai-hoc-nn', (req, res) => {
-  const sql = 'SELECT * FROM bai_hoc_nn ORDER BY thu_tu ASC';
-  db.query(sql, (err, results) => {
+  const { loai_phan } = req.query;
+  let sql = 'SELECT * FROM bai_hoc_nn';
+  const params = [];
+  if (loai_phan) {
+    sql += ' WHERE loai_phan = ?';
+    params.push(loai_phan);
+  }
+  sql += ' ORDER BY thu_tu ASC';
+  db.query(sql, params, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+app.get('/api/bai-tap-ky-nang', (req, res) => {
+  const { bai_hoc_id, ky_nang_id, so_bai, loai_phan } = req.query;
+  let sql = `
+    SELECT bt.*, bh.so_bai, bh.loai_phan, bh.ma_bai 
+    FROM bai_tap_ky_nang bt
+    JOIN bai_hoc_nn bh ON bt.bai_hoc_id = bh.id
+    WHERE 1=1
+  `;
+  const params = [];
+  if (bai_hoc_id) {
+    sql += ' AND bt.bai_hoc_id = ?';
+    params.push(bai_hoc_id);
+  }
+  if (ky_nang_id) {
+    sql += ' AND bt.ky_nang_id = ?';
+    params.push(ky_nang_id);
+  }
+  if (so_bai) {
+    sql += ' AND bh.so_bai = ?';
+    params.push(so_bai);
+  }
+  if (loai_phan) {
+    sql += ' AND bh.loai_phan = ?';
+    params.push(loai_phan);
+  }
+  sql += ' ORDER BY bt.thu_tu ASC';
+  db.query(sql, params, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);
   });
@@ -774,16 +813,25 @@ app.get('/api/phan-bai-nn', (req, res) => {
 });
 
 app.get('/api/tu-vung', (req, res) => {
-  const { bai_hoc_id } = req.query;
+  const { bai_hoc_id, so_bai } = req.query;
   const currentRegion = req.headers['x-region'] || req.query.region || req.region || 'nam';
 
-  let sql = 'SELECT * FROM tu_vung';
+  let sql = `
+    SELECT tv.*, bh.so_bai, bh.ma_bai 
+    FROM tu_vung tv
+    JOIN bai_hoc_nn bh ON tv.bai_hoc_id = bh.id
+    WHERE 1=1
+  `;
   const params = [];
   if (bai_hoc_id) {
-    sql += ' WHERE bai_hoc_id = ?';
+    sql += ' AND tv.bai_hoc_id = ?';
     params.push(bai_hoc_id);
   }
-  sql += ' ORDER BY thu_tu ASC';
+  if (so_bai) {
+    sql += ' AND bh.so_bai = ?';
+    params.push(so_bai);
+  }
+  sql += ' ORDER BY tv.thu_tu ASC';
 
   db.query(sql, params, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });

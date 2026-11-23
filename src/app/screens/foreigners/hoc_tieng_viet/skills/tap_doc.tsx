@@ -1,16 +1,43 @@
 // Kỹ năng 3: Tập đọc (3.1 Đọc các chữ, 3.2 Tập đối thoại)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import BaseSkillContent, { ContentCard, PlayButton } from '../BaseSkillContent';
+import { API_ENDPOINTS } from '../../../../../config/api';
 
 interface Props { navigation: any; route: any; }
+
+const DEFAULT_WORDS = ['xin', 'chào', 'cảm', 'ơn', 'tạm', 'biệt', 'vâng', 'không'];
 
 const TapDocScreen: React.FC<Props> = ({ navigation, route }) => {
   const { lessonId = 1, themeColor = '#4F46E5' } = route?.params || {};
   const [activeTab, setActiveTab] = useState('3.1');
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
+  const [words, setWords] = useState<string[]>(DEFAULT_WORDS);
 
-  const words = ['xin', 'chào', 'cảm', 'ơn', 'tạm', 'biệt', 'vâng', 'không'];
+  useEffect(() => {
+    let isMounted = true;
+    fetch(`${API_ENDPOINTS.GET_BAI_TAP_KY_NANG}?so_bai=${lessonId}&ky_nang_id=3`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          const list: string[] = [];
+          data.forEach((item: any) => {
+            if (item.tu_tv) {
+              const parts = item.tu_tv.split(/[\s,]+/);
+              parts.forEach((p: string) => {
+                const clean = p.trim();
+                if (clean && !list.includes(clean)) list.push(clean);
+              });
+            }
+          });
+          if (list.length > 0) setWords(list);
+        }
+      })
+      .catch((err) => {
+        console.log('Using default reading words fallback:', err.message);
+      });
+    return () => { isMounted = false; };
+  }, [lessonId]);
   const dialogue = [
     { speaker: 'A', vn: 'Xin chào! Anh tên gì?', en: 'Hello! What is your name?', side: 'left' },
     { speaker: 'B', vn: 'Xin chào! Tôi tên là Nam.', en: 'Hello! My name is Nam.', side: 'right' },

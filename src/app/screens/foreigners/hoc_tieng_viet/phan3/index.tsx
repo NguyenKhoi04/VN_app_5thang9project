@@ -1,6 +1,6 @@
 // Phần 3: Bài học theo chủ đề - Duolingo Roadmap đặc biệt
 // Hiển thị tên chủ đề to (font 20) + tiếng Anh (font 13)
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,22 +11,23 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
+import { API_ENDPOINTS } from '../../../../../config/api';
 
 const { width } = Dimensions.get('window');
 const THEME = '#059669';
 
-const lessons = [
+const DEFAULT_LESSONS = [
   {
     id: 1,
-    titleVN: 'XIN LỖI, ANH TÊN GÌ?',
-    titleEN: 'Excuse me, What is your name?',
+    titleVN: 'CHỦ ĐỀ 1: XIN LỖI, ANH TÊN GÌ?',
+    titleEN: 'Excuse me, what is your name?',
     emoji: '👋',
     status: 'current' as const,
     screenName: 'Phan3Bai1',
   },
   {
     id: 2,
-    titleVN: 'CÔ LÀ NGƯỜI NƯỚC NÀO?',
+    titleVN: 'CHỦ ĐỀ 2: CÔ LÀ NGƯỜI NƯỚC NÀO?',
     titleEN: 'Where are you from?',
     emoji: '🌍',
     status: 'current' as const,
@@ -34,7 +35,7 @@ const lessons = [
   },
   {
     id: 3,
-    titleVN: 'DẠO NÀY BẠN LÀM GÌ?',
+    titleVN: 'CHỦ ĐỀ 3: DẠO NÀY BẠN LÀM GÌ?',
     titleEN: 'What are you doing these days?',
     emoji: '💼',
     status: 'current' as const,
@@ -42,7 +43,7 @@ const lessons = [
   },
   {
     id: 4,
-    titleVN: 'BÂY GIỜ CÔ SỐNG Ở ĐÂU?',
+    titleVN: 'CHỦ ĐỀ 4: BÂY GIỜ CÔ SỐNG Ở ĐÂU?',
     titleEN: 'Where do you live now?',
     emoji: '🏠',
     status: 'current' as const,
@@ -50,7 +51,7 @@ const lessons = [
   },
   {
     id: 5,
-    titleVN: 'BÀI TẬP TỔNG HỢP PHẦN 3',
+    titleVN: 'CHỦ ĐỀ 5: BÀI TẬP TỔNG HỢP CHỦ ĐỀ 1 ĐẾN CHỦ ĐỀ 4',
     titleEN: 'Comprehensive Practice Part 3',
     emoji: '🎯',
     status: 'current' as const,
@@ -85,7 +86,33 @@ const PulseRing: React.FC = () => {
 interface Props { navigation: any; }
 
 const Phan3Roadmap: React.FC<Props> = ({ navigation }) => {
-  const reversed = [...lessons].reverse();
+  const [lessonList, setLessonList] = useState(DEFAULT_LESSONS);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch(`${API_ENDPOINTS.GET_BAI_HOC_NN}?loai_phan=chu_de`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          const emojis = ['👋', '🌍', '💼', '🏠', '🎯'];
+          const mapped = data.map((item: any, idx: number) => ({
+            id: item.so_bai || (idx + 1),
+            titleVN: item.ten_bai_vn,
+            titleEN: item.ten_bai_en,
+            emoji: emojis[idx % emojis.length],
+            status: 'current' as const,
+            screenName: `Phan3Bai${item.so_bai || (idx + 1)}`,
+          }));
+          setLessonList(mapped);
+        }
+      })
+      .catch((err) => {
+        console.log('Using default Phan 3 lessons fallback:', err.message);
+      });
+    return () => { isMounted = false; };
+  }, []);
+
+  const reversed = [...lessonList].reverse();
 
   return (
     <SafeAreaView style={styles.container}>

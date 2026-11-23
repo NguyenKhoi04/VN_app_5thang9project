@@ -51,11 +51,12 @@ export const API_ENDPOINTS = {
   GET_TIEN_TRINH_HS: `${BASE_URL}/api/tien-trinh-hs`,
   SAVE_TIEN_TRINH_HS: `${BASE_URL}/api/tien-trinh-hs`,
 
-  // Người nước ngoài (bai_hoc_nn, phan_bai_nn, tu_vung, cau_hoi_nn)
+  // Người nước ngoài (bai_hoc_nn, phan_bai_nn, tu_vung, cau_hoi_nn, bai_tap_ky_nang)
   GET_BAI_HOC_NN: `${BASE_URL}/api/bai-hoc-nn`,
   GET_PHAN_BAI_NN: `${BASE_URL}/api/phan-bai-nn`,
   GET_TU_VUNG: `${BASE_URL}/api/tu-vung`,
   GET_CAU_HOI_NN: `${BASE_URL}/api/cau-hoi-nn`,
+  GET_BAI_TAP_KY_NANG: `${BASE_URL}/api/bai-tap-ky-nang`,
 
   // AI Camera nhận diện đồ vật (Roboflow & Backend AI)
   AI_DETECT_OBJECT: `${BASE_URL}/api/ai/detect-object`,
