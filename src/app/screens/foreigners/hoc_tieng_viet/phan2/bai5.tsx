@@ -1,163 +1,328 @@
 // Phần 2 - Bài 5: Bài tập tổng hợp (Comprehensive Practice)
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, SafeAreaView,
-  ScrollView, TextInput, Animated, Alert, Modal, PanResponder,
-  Dimensions,
+  ScrollView, TextInput, Alert, ActivityIndicator,
 } from 'react-native';
+// @ts-ignore
+import { API_ENDPOINTS } from '../../../../../config/api';
 
-const { width } = Dimensions.get('window');
 const THEME = '#0891B2';
-
-// ─────────────────────────────────────────────────────────────
-// TYPES
-// ─────────────────────────────────────────────────────────────
 type SectionKey = 'tracNghiem' | 'dienTu' | 'nguPhap' | 'hoiThoai' | 'nghe';
-
 interface Props { navigation: any; }
 
 // ─────────────────────────────────────────────────────────────
-// DATA - Phần 2: Âm vị / Phát âm
+// TYPES - CẤU TRÚC DỮ LIỆU ĐƯỢC LOAD ĐỘNG TỪ BẢNG CAU_HOI_NN (BAI_HOC_ID = 14)
 // ─────────────────────────────────────────────────────────────
+interface TracNghiemItem {
+  id: number;
+  cat?: string;
+  q: string;
+  opts: string[];
+  ans: string;
+}
 
-// 1. TRẮC NGHIỆM (10 câu: từ vựng, ngữ pháp, phát âm)
-const tracNghiemData = [
-  { id: 1, cat: '📚 Từ vựng', q: 'Từ nào có nghĩa là "airport"?', opts: ['A. bệnh viện', 'B. sân bay', 'C. trường học', 'D. nhà hàng', 'E. khách sạn'], ans: 'B' },
-  { id: 2, cat: '📖 Ngữ pháp', q: '"Anh ___ mua vé máy bay chưa?" – Chọn từ đúng:', opts: ['A. đã', 'B. sẽ', 'C. đang', 'D. vừa', 'E. mới'], ans: 'A' },
-  { id: 3, cat: '🔊 Phát âm', q: 'Từ "máy bay" có thanh điệu:', opts: ['A. ngang – huyền', 'B. sắc – nặng', 'C. sắc – ngang', 'D. hỏi – ngã', 'E. nặng – sắc'], ans: 'C' },
-  { id: 4, cat: '📚 Từ vựng', q: '"Vé" trong "vé máy bay" nghĩa là gì?', opts: ['A. ticket', 'B. seat', 'C. gate', 'D. passport', 'E. luggage'], ans: 'A' },
-  { id: 5, cat: '📖 Ngữ pháp', q: 'Câu nào đúng?', opts: ['A. Tôi muốn mua một vé.', 'B. Tôi một muốn mua vé.', 'C. Muốn tôi mua một vé.', 'D. Vé một tôi muốn mua.', 'E. Mua vé tôi muốn.'], ans: 'A' },
-  { id: 6, cat: '🔊 Phát âm', q: 'Từ "hải quan" phát âm đúng là:', opts: ['A. h-ai quyền hài quờ- u-a -quan', 'B. h-ai hỏi hải quờ -u -a -quan ', 'C. h-ai sắc hái hờ -u -a -quan', 'D. h-ai nặng hại hờ -u -a -quan', 'E. hải bản'], ans: 'B' },
-  { id: 7, cat: '📚 Từ vựng', q: '"Khởi hành" nghĩa là gì?', opts: ['A. arrive', 'B. depart', 'C. transit', 'D. board', 'E. land'], ans: 'B' },
-  { id: 8, cat: '📖 Ngữ pháp', q: '"Chuyến bay ___ mấy giờ?" – Chọn đúng:', opts: ['A. lúc', 'B. vào', 'C. ở', 'D. từ', 'E. đến'], ans: 'B' },
-  { id: 9, cat: '🔊 Phát âm', q: 'Thanh điệu của "huyền" là:', opts: ['A. dấu  ´ ', 'B. dấu `', 'C. dấu ~', 'D. dấu ?', 'E. .'], ans: 'B' },
-  { id: 10, cat: '📚 Từ vựng', q: '"Hành lý" nghĩa tiếng Anh là:', opts: ['A. boarding pass', 'B. check-in', 'C. luggage', 'D. customs', 'E. terminal'], ans: 'C' },
-];
+interface DienTuDang1Item {
+  id: number;
+  cat?: string;
+  sentence: string;
+  wordBank: string[];
+  ans: string;
+}
 
-// 2. ĐIỀN TỪ (3 dạng, mỗi dạng ~3-4 câu = tổng 10)
-// Dạng 1: Kéo thả từ có sẵn
-const dienTuDang1Data = [
-  { id: 1, sentence: '___ tôi muốn mua một vé khứ hồi.', blank: 0, wordBank: ['Xin lỗi,', 'Cảm ơn,', 'Chào,', 'Hẹn gặp,'], ans: 'Xin lỗi,' },
-  { id: 2, sentence: 'Chuyến bay ___ lúc 8 giờ sáng.', blank: 1, wordBank: ['khởi hành', 'đáp xuống', 'bay lên', 'chờ đợi'], ans: 'khởi hành' },
-  { id: 3, sentence: 'Tôi cần ___ hành lý trước khi lên máy bay.', blank: 1, wordBank: ['ký gửi', 'mang về', 'bỏ lại', 'mở ra'], ans: 'ký gửi' },
-  { id: 4, sentence: 'Cổng ___ là cổng của chuyến bay này.', blank: 1, wordBank: ['cửa số 5', 'số 5', 'cửa 15', 'số cửa 20'], ans: 'số 5' },
-];
+interface DienTuDang2Item {
+  id: number;
+  cat?: string;
+  emoji: string;
+  hint: string;
+  ans: string;
+}
 
-// Dạng 2: Gõ từ (có gợi ý hình ảnh emoji)
-const dienTuDang2Data = [
-  { id: 1, emoji: '✈️', hint: 'Phương tiện bay', ans: 'máy bay' },
-  { id: 2, emoji: '🎫', hint: 'Giấy tờ để lên tàu / xe / máy bay', ans: 'vé' },
-  { id: 3, emoji: '🧳', hint: 'Đồ dùng mang theo khi đi du lịch', ans: 'hành lý' },
-  { id: 4, emoji: '🛂', hint: 'Nơi kiểm tra hộ chiếu', ans: 'hải quan' },
-];
+interface DienTuDang3Item {
+  id: number;
+  cat?: string;
+  emoji: string;
+  shuffled: string[];
+  ans: string;
+}
 
-// Dạng 3: Sắp xếp chữ cái thành từ
-const dienTuDang3Data = [
-  { id: 1, emoji: '🏨', shuffled: ['H', 'Á', 'C', 'H', ' ', 'S', 'Ạ', 'N'], ans: 'KHÁCH SẠN' },
-  { id: 2, emoji: '🚀', shuffled: ['H', 'Ở', 'I', ' ', 'H', 'À', 'N', 'H'], ans: 'KHỞI HÀNH' },
-  { id: 3, emoji: '🏛️', shuffled: ['H', 'H', 'T', 'C', 'Ủ', 'Ụ'], ans: 'THỦ TỤC' },
-];
+interface NguPhapDang1Item {
+  id: number;
+  cat?: string;
+  sentence: string;
+  wordBank: string[];
+  ans: string;
+}
 
-// 3. NGỮ PHÁP (4 dạng)
-// Dạng 1: Kéo thả điền vào câu
-const nguPhapDang1Data = [
-  { id: 1, sentence: 'Tôi ___ đặt vé máy bay rồi.', wordBank: ['đã', 'sẽ', 'đang', 'chưa'], ans: 'đã' },
-  { id: 2, sentence: 'Chuyến bay ___ vì thời tiết xấu.', wordBank: ['bị hoãn', 'bị hủy', 'sẽ đi', 'đã hạ cánh'], ans: 'bị hoãn' },
-  { id: 3, sentence: 'Anh ấy ___ đi Đà Nẵng rồi phải không?', wordBank: ['đã', 'sẽ', 'đang', 'sắp'], ans: 'đã' },
-];
+interface NguPhapDang2Item {
+  id: number;
+  cat?: string;
+  original: string;
+  rewrite: string;
+  ans: string;
+}
 
-// Dạng 2: Viết lại câu
-const nguPhapDang2Data = [
-  { id: 1, original: 'Tôi muốn mua vé. Vé đó đi Hà Nội.', rewrite: 'Tôi muốn mua ___ đi Hà Nội.', ans: 'vé' },
-  { id: 2, original: 'Cô ấy đặt phòng khách sạn. Phòng đó ở gần sân bay.', rewrite: 'Cô ấy đặt ___ ở gần sân bay.', ans: 'phòng khách sạn' },
-  { id: 3, original: 'Chúng tôi sẽ khởi hành. Chúng tôi khởi hành lúc 6 giờ.', rewrite: 'Chúng tôi sẽ khởi hành ___ 6 giờ.', ans: 'lúc' },
-  { id: 4, original: 'Anh cần trình hộ chiếu. Hộ chiếu ở hải quan.', rewrite: 'Anh cần trình hộ chiếu ___ hải quan.', ans: 'ở' },
-];
+interface NguPhapDang3Item {
+  id: number;
+  cat?: string;
+  words: string[];
+  ans: string;
+}
 
-// Dạng 3: Sắp xếp câu
-const nguPhapDang3Data = [
-  { id: 1, words: ['bay', 'Tôi', 'vé', 'muốn', 'mua', 'máy'], ans: 'Tôi muốn mua vé máy bay' },
-  { id: 2, words: ['hành', 'khởi', 'chuyến', 'lúc', 'bay', '8 giờ'], ans: 'Chuyến bay khởi hành lúc 8 giờ' },
-  { id: 3, words: ['sân bay', 'đến', 'phải', 'sớm', 'Bạn', 'ở'], ans: 'Bạn phải đến sân bay sớm' },
-];
+interface NguPhapDang4Item {
+  id: number;
+  cat?: string;
+  emoji: string;
+  words: string[];
+  ans: string;
+}
 
-// Dạng 4: Hình ảnh + Sắp xếp câu kéo thả
-const nguPhapDang4Data = [
-  { id: 1, emoji: '🎫', words: ['một', 'Tôi', 'cần', 'vé', 'khứ hồi'], ans: 'Tôi cần một vé khứ hồi' },
-  { id: 2, emoji: '🧳', words: ['ký gửi', 'hành lý', 'Tôi', 'muốn'], ans: 'Tôi muốn ký gửi hành lý' },
-  { id: 3, emoji: '🛂', words: ['hải quan', 'thủ tục', 'ở', 'xong', 'Tôi'], ans: 'Tôi xong thủ tục ở hải quan' },
-];
+interface HoiThoaiDang1Item {
+  id: number;
+  cat?: string;
+  q: string;
+  opts: string[];
+  ans: string;
+}
 
-// 4. HỘI THOẠI (3 dạng)
-const hoiThoaiDang1Data = [
-  { id: 1, q: 'Nhân viên: "Anh muốn mua vé loại nào?" – Khách đáp:', opts: ['A. Vé một chiều đi Hà Nội.', 'B. Tôi không biết.', 'C. Sân bay đâu?', 'D. Cảm ơn nhiều.', 'E. Gặp lại sau.'], ans: 'A' },
-  { id: 2, q: 'Nhân viên: "Hành lý của anh nặng bao nhiêu?" – Khách đáp:', opts: ['A. 20 kg.', 'B. Tôi đi Hà Nội.', 'C. Vé khứ hồi.', 'D. Lúc 8 giờ.', 'E. Cổng số 5.'], ans: 'A' },
-  { id: 3, q: 'Nhân viên: "Chuyến bay của anh khởi hành lúc mấy giờ?" – Khách đáp:', opts: ['A. 9 giờ 30 sáng.', 'B. Vé một chiều.', 'C. Tôi cần hành lý.', 'D. Cổng số 10.', 'E. Hải quan đâu?'], ans: 'A' },
-  { id: 4, q: '"Anh có thể cho tôi xem hộ chiếu không?" Ai nói câu này?', opts: ['A. Nhân viên hải quan', 'B. Phi công', 'C. Hành khách', 'D. Nhân viên khách sạn', 'E. Tài xế taxi'], ans: 'A' },
-];
+interface HoiThoaiDang2Item {
+  id: number;
+  cat?: string;
+  title: string;
+  lines: { key: string; text: string }[];
+  ans: string[];
+}
 
-// Dạng 2: Sắp xếp hội thoại kéo thả
-const hoiThoaiDang2Data = [
-  {
-    id: 1,
-    title: 'Mua vé máy bay',
-    lines: [
-      { key: 'A', text: 'Nhân viên: Anh muốn mua vé đi đâu ạ?' },
-      { key: 'D', text: 'Khách: Tôi muốn mua vé đi Hà Nội.' },
-      { key: 'C', text: 'Nhân viên: Anh muốn vé một chiều hay khứ hồi?' },
-      { key: 'B', text: 'Khách: Vé khứ hồi, ngày mai khởi hành.' },
-    ],
-    ans: ['A', 'D', 'C', 'B'],
-  },
-  {
-    id: 2,
-    title: 'Check-in sân bay',
-    lines: [
-      { key: 'D', text: 'NV: Xin cho xem vé và hộ chiếu ạ.' },
-      { key: 'A', text: 'Khách: Vâng, đây ạ.' },
-      { key: 'B', text: 'NV: Hành lý của anh nặng 18 kg, không cần phụ phí.' },
-      { key: 'C', text: 'Khách: Cảm ơn chị.' },
-    ],
-    ans: ['D', 'A', 'B', 'C'],
-  },
-];
+interface HoiThoaiDang3Item {
+  id: number;
+  cat?: string;
+  dialogue: string;
+  blank: string;
+  wordBank: string[];
+}
 
-// Dạng 3: Điền từ vào hội thoại
-const hoiThoaiDang3Data = [
-  { id: 1, dialogue: 'NV: Chuyến bay của anh ___lúc 10 giờ. Khách: Cảm ơn.', blank: 'khởi hành', wordBank: ['khởi hành', 'hạ cánh', 'cất cánh', 'đến nơi'] },
-  { id: 2, dialogue: 'Khách: Cổng ___ là cổng của tôi? NV: Cổng B3 ạ.', blank: 'nào', wordBank: ['nào', 'đó', 'này', 'kia'] },
-  { id: 3, dialogue: 'NV: Anh có hành lý ___ gửi không? Khách: Có, 20kg.', blank: 'ký', wordBank: ['ký', 'cầm', 'mang', 'xách'] },
-];
+interface NgheDang1Item {
+  id: number;
+  cat?: string;
+  audio: string;
+  opts: string[];
+  ans: string;
+}
 
-// 5. NGHE & ĐIỀN TỪ (3 dạng, mỗi dạng dùng audio emoji giả lập)
-const ngheDang1Data = [
-  { id: 1, audio: '🔊 "Xin lỗi, vé đi Hà Nội bao nhiêu tiền?"', opts: ['A. Hỏi giá vé', 'B. Hỏi giờ bay', 'C. Đặt phòng', 'D. Hỏi hành lý', 'E. Hỏi cổng bay'], ans: 'A' },
-  { id: 2, audio: '🔊 "Chuyến bay khởi hành lúc 7 giờ sáng."', opts: ['A. 6 giờ', 'B. 7 giờ', 'C. 8 giờ', 'D. 9 giờ', 'E. 10 giờ'], ans: 'B' },
-  { id: 3, audio: '🔊 "Hành lý của anh nặng 22 kg, phải trả phụ phí."', opts: ['A. 18 kg', 'B. 20 kg', 'C. 22 kg', 'D. 24 kg', 'E. 25 kg'], ans: 'C' },
-  { id: 4, audio: '🔊 "Cổng số 12 là cổng của chuyến bay đi TP.HCM."', opts: ['A. Cổng 10', 'B. Cổng 11', 'C. Cổng 12', 'D. Cổng 13', 'E. Cổng 15'], ans: 'C' },
-];
+interface NgheDang2Item {
+  id: number;
+  cat?: string;
+  audio: string;
+  ans: string;
+}
 
-const ngheDang2Data = [
-  { id: 1, audio: '🔊 "Tôi muốn mua vé ___ Đà Nẵng."', ans: 'đi' },
-  { id: 2, audio: '🔊 "Chuyến bay ___ lúc 6 giờ tối."', ans: 'khởi hành' },
-  { id: 3, audio: '🔊 "Làm ơn cho tôi xem ___ của anh."', ans: 'hộ chiếu' },
-];
+interface NgheDang3Item {
+  id: number;
+  cat?: string;
+  audio: string;
+  emojis: string[];
+  ans: string;
+}
 
-const ngheDang3Data = [
-  { id: 1, audio: '🔊 "Đây là cổng lên máy bay."', emojis: ['🚪✈️', '🛂', '🏨', '🚕', '🍜'], ans: '🚪✈️' },
-  { id: 2, audio: '🔊 "Tôi cần ký gửi hành lý."', emojis: ['🧳📦', '🎫', '🛂', '🍱', '💳'], ans: '🧳📦' },
-  { id: 3, audio: '🔊 "Xin trình hộ chiếu."', emojis: ['📘', '🎫', '🧳', '✈️', '🏨'], ans: '📘' },
-];
+// ─────────────────────────────────────────────────────────────
+// PARSER CAU_HOI_NN TỪ MYSQL CHO BÀI 5 PHẦN 2 (BAI_HOC_ID = 14)
+// ─────────────────────────────────────────────────────────────
+const parseCauHoiNN = (rows: any[]) => {
+  const byDang: Record<string, any[]> = {};
+  rows.forEach((r) => {
+    byDang[r.dang_bai] = byDang[r.dang_bai] || [];
+    byDang[r.dang_bai].push(r);
+  });
+
+  // 1. Trắc nghiệm (10 câu)
+  const tracNghiem: TracNghiemItem[] = (byDang.trac_nghiem || []).map((q, idx) => {
+    const optsObj = typeof q.du_lieu_phuong_an === 'string' ? JSON.parse(q.du_lieu_phuong_an) : q.du_lieu_phuong_an;
+    return {
+      id: idx + 1,
+      cat: q.phan_loai_phu || 'Trắc nghiệm',
+      q: q.de_bai,
+      opts: Object.entries(optsObj || {}).map(([k, v]) => `${k}. ${v}`),
+      ans: q.dap_an_chuan,
+    };
+  });
+
+  // 2. Điền từ (11 câu: 4 dạng 1 + 4 dạng 2 + 3 dạng 3)
+  const dienTuRows = byDang.dien_tu || [];
+  const dienTuDang1: DienTuDang1Item[] = dienTuRows
+    .filter((q) => q.phan_loai_phu === 'Kéo thả từ')
+    .map((q, idx) => {
+      const p = typeof q.du_lieu_phuong_an === 'string' ? JSON.parse(q.du_lieu_phuong_an) : q.du_lieu_phuong_an;
+      return {
+        id: idx + 1,
+        cat: q.phan_loai_phu || 'Kéo thả từ',
+        sentence: q.de_bai,
+        wordBank: (p && p.bank) || [],
+        ans: q.dap_an_chuan,
+      };
+    });
+
+  const defaultDienTu2Emojis = ['✈️', '🎫', '🧳', '🛂'];
+  const dienTuDang2: DienTuDang2Item[] = dienTuRows
+    .filter((q) => q.phan_loai_phu === 'Xem hình điền từ')
+    .map((q, idx) => {
+      return {
+        id: idx + 1,
+        cat: q.phan_loai_phu || 'Xem hình điền từ',
+        emoji: q.hinh_anh || defaultDienTu2Emojis[idx] || '📝',
+        hint: q.chu_thich || q.de_bai,
+        ans: q.dap_an_chuan,
+      };
+    });
+
+  const defaultDienTu3Emojis = ['🏨', '🚀', '🏛️'];
+  const dienTuDang3: DienTuDang3Item[] = dienTuRows
+    .filter((q) => q.phan_loai_phu === 'Sắp xếp chữ cái')
+    .map((q, idx) => {
+      const p = typeof q.du_lieu_phuong_an === 'string' ? JSON.parse(q.du_lieu_phuong_an) : q.du_lieu_phuong_an;
+      const rawLetters: string[] = ((p && p.letters) || []).filter((l: string) => l && l.trim().length > 0);
+      return {
+        id: idx + 1,
+        cat: q.phan_loai_phu || 'Sắp xếp chữ cái',
+        emoji: q.hinh_anh || defaultDienTu3Emojis[idx] || '🔤',
+        shuffled: rawLetters.map((l: string) => l.toUpperCase()),
+        ans: (q.dap_an_chuan || '').toUpperCase(),
+      };
+    });
+
+  // 3. Ngữ pháp (13 câu: 3 dạng 1 + 4 dạng 2 + 3 dạng 3 + 3 dạng 4)
+  const nguPhapRows = byDang.ngu_phap || [];
+  const nguPhapDang1: NguPhapDang1Item[] = nguPhapRows.slice(0, 3).map((q, idx) => {
+    const p = typeof q.du_lieu_phuong_an === 'string' ? JSON.parse(q.du_lieu_phuong_an) : q.du_lieu_phuong_an;
+    return {
+      id: idx + 1,
+      cat: q.phan_loai_phu || 'Điền từ ngữ pháp',
+      sentence: q.de_bai,
+      wordBank: (p && p.bank) || [],
+      ans: q.dap_an_chuan,
+    };
+  });
+
+  const nguPhapDang2: NguPhapDang2Item[] = nguPhapRows.slice(3, 7).map((q, idx) => {
+    return {
+      id: idx + 1,
+      cat: q.phan_loai_phu || 'Viết lại câu',
+      original: q.de_bai,
+      rewrite: q.chu_thich || q.de_bai,
+      ans: q.dap_an_chuan,
+    };
+  });
+
+  const nguPhapDang3: NguPhapDang3Item[] = nguPhapRows.slice(7, 10).map((q, idx) => {
+    const p = typeof q.du_lieu_phuong_an === 'string' ? JSON.parse(q.du_lieu_phuong_an) : q.du_lieu_phuong_an;
+    return {
+      id: idx + 1,
+      cat: q.phan_loai_phu || 'Sắp xếp câu',
+      words: (p && p.words) || [],
+      ans: q.dap_an_chuan,
+    };
+  });
+
+  const defaultNguPhap4Emojis = ['🎫', '🧳', '🛂'];
+  const nguPhapDang4: NguPhapDang4Item[] = nguPhapRows.slice(10, 13).map((q, idx) => {
+    const p = typeof q.du_lieu_phuong_an === 'string' ? JSON.parse(q.du_lieu_phuong_an) : q.du_lieu_phuong_an;
+    return {
+      id: idx + 1,
+      cat: q.phan_loai_phu || 'Nhìn hình xếp câu',
+      emoji: q.hinh_anh || defaultNguPhap4Emojis[idx] || '🖼️',
+      words: (p && p.words) || [],
+      ans: q.dap_an_chuan,
+    };
+  });
+
+  // 4. Hội thoại (9 câu: 4 dạng 1 + 2 dạng 2 + 3 dạng 3)
+  const hoiThoaiRows = byDang.hoi_thoai || [];
+  const hoiThoaiDang1: HoiThoaiDang1Item[] = hoiThoaiRows.slice(0, 4).map((q, idx) => {
+    const p = typeof q.du_lieu_phuong_an === 'string' ? JSON.parse(q.du_lieu_phuong_an) : q.du_lieu_phuong_an;
+    return {
+      id: idx + 1,
+      cat: q.phan_loai_phu || 'Trắc nghiệm hội thoại',
+      q: q.de_bai,
+      opts: ((p && p.options) || []).map((o: any) => `${o.key}. ${o.text}`),
+      ans: q.dap_an_chuan,
+    };
+  });
+
+  const hoiThoaiDang2: HoiThoaiDang2Item[] = hoiThoaiRows.slice(4, 6).map((q, idx) => {
+    const p = typeof q.du_lieu_phuong_an === 'string' ? JSON.parse(q.du_lieu_phuong_an) : q.du_lieu_phuong_an;
+    return {
+      id: idx + 1,
+      cat: q.phan_loai_phu || `Hội thoại ${idx + 1}`,
+      title: (p && p.title) || q.phan_loai_phu || `Hội thoại ${idx + 1}`,
+      lines: (p && p.lines) || [],
+      ans: (q.dap_an_chuan || '').split(','),
+    };
+  });
+
+  const hoiThoaiDang3: HoiThoaiDang3Item[] = hoiThoaiRows.slice(6, 9).map((q, idx) => {
+    const p = typeof q.du_lieu_phuong_an === 'string' ? JSON.parse(q.du_lieu_phuong_an) : q.du_lieu_phuong_an;
+    return {
+      id: idx + 1,
+      cat: q.phan_loai_phu || 'Điền từ hội thoại',
+      dialogue: (p && p.dialogue) || q.chu_thich || q.de_bai,
+      blank: (p && p.blank) || q.dap_an_chuan,
+      wordBank: (p && p.bank) || [],
+    };
+  });
+
+  // 5. Nghe & Điền từ (10 câu: 4 dạng 1 + 3 dạng 2 + 3 dạng 3)
+  const ngheRows = byDang.nghe_dien_tu || [];
+  const ngheDang1: NgheDang1Item[] = ngheRows.slice(0, 4).map((q, idx) => {
+    const p = typeof q.du_lieu_phuong_an === 'string' ? JSON.parse(q.du_lieu_phuong_an) : q.du_lieu_phuong_an;
+    return {
+      id: idx + 1,
+      cat: q.phan_loai_phu || 'Nghe trắc nghiệm',
+      audio: `🔊 "${q.de_bai}"`,
+      opts: ((p && p.options) || []).map((o: any) => `${o.key}. ${o.text}`),
+      ans: q.dap_an_chuan,
+    };
+  });
+
+  const ngheDang2: NgheDang2Item[] = ngheRows.slice(4, 7).map((q, idx) => {
+    return {
+      id: idx + 1,
+      cat: q.phan_loai_phu || 'Nghe điền từ',
+      audio: `🔊 "${q.de_bai}"`,
+      ans: q.dap_an_chuan,
+    };
+  });
+
+  const ngheDang3: NgheDang3Item[] = ngheRows.slice(7, 10).map((q, idx) => {
+    const p = typeof q.du_lieu_phuong_an === 'string' ? JSON.parse(q.du_lieu_phuong_an) : q.du_lieu_phuong_an;
+    return {
+      id: idx + 1,
+      cat: q.phan_loai_phu || 'Nghe chọn hình',
+      audio: `🔊 "${q.de_bai}"`,
+      emojis: (p && p.emojis) || [],
+      ans: q.dap_an_chuan,
+    };
+  });
+
+  return {
+    tracNghiem,
+    dienTuDang1,
+    dienTuDang2,
+    dienTuDang3,
+    nguPhapDang1,
+    nguPhapDang2,
+    nguPhapDang3,
+    nguPhapDang4,
+    hoiThoaiDang1,
+    hoiThoaiDang2,
+    hoiThoaiDang3,
+    ngheDang1,
+    ngheDang2,
+    ngheDang3,
+  };
+};
 
 // ─────────────────────────────────────────────────────────────
 // SMALL REUSABLE COMPONENTS
 // ─────────────────────────────────────────────────────────────
-
-const SectionTab: React.FC<{ label: string; active: boolean; onPress: () => void; color: string }> = ({ label, active, onPress, color }) => (
-  <TouchableOpacity onPress={onPress} style={[styles.tab, active && { backgroundColor: color, borderColor: color }]}>
-    <Text style={[styles.tabText, active && { color: 'white' }]}>{label}</Text>
-  </TouchableOpacity>
-);
 
 const ResultBanner: React.FC<{ correct: boolean; onRetry: () => void }> = ({ correct, onRetry }) => (
   <View style={[styles.banner, { backgroundColor: correct ? '#D1FAE5' : '#FEE2E2' }]}>
@@ -175,7 +340,8 @@ const ResultBanner: React.FC<{ correct: boolean; onRetry: () => void }> = ({ cor
 // ─────────────────────────────────────────────────────────────
 // SECTION 1: TRẮC NGHIỆM
 // ─────────────────────────────────────────────────────────────
-const TracNghiemSection: React.FC = () => {
+const TracNghiemSection: React.FC<{ data?: TracNghiemItem[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
@@ -186,21 +352,25 @@ const TracNghiemSection: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    const allAnswered = tracNghiemData.every(q => answers[q.id]);
+    const allAnswered = currentData.every(q => answers[q.id]);
     if (!allAnswered) { Alert.alert('Chưa xong!', 'Hãy chọn đáp án cho tất cả câu hỏi.'); return; }
     setSubmitted(true);
-    const allCorrect = tracNghiemData.every(q => answers[q.id] === q.ans);
+    const allCorrect = currentData.every(q => answers[q.id] === q.ans);
     setShowResult(true);
     if (!allCorrect) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
-  const allCorrect = submitted && tracNghiemData.every(q => answers[q.id] === q.ans);
+  const allCorrect = submitted && currentData.every(q => answers[q.id] === q.ans);
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
-      {tracNghiemData.map(q => (
+      {currentData.map(q => (
         <View key={q.id} style={styles.questionCard}>
-          <Text style={styles.catBadge}>{q.cat}</Text>
+          {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
           <Text style={styles.questionText}>Câu {q.id}: {q.q}</Text>
           {q.opts.map(opt => {
             const letter = opt[0];
@@ -237,8 +407,9 @@ const TracNghiemSection: React.FC = () => {
 // ─────────────────────────────────────────────────────────────
 // SECTION 2: ĐIỀN TỪ
 // ─────────────────────────────────────────────────────────────
-// Dạng 1: Kéo thả từ có sẵn (click to assign)
-const DienTuDang1: React.FC = () => {
+// Dạng 1: Kéo thả từ có sẵn
+const DienTuDang1: React.FC<{ data?: DienTuDang1Item[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
@@ -249,26 +420,31 @@ const DienTuDang1: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    const allDone = dienTuDang1Data.every(q => answers[q.id]);
+    const allDone = currentData.every(q => answers[q.id]);
     if (!allDone) { Alert.alert('Chưa xong!', 'Hãy chọn đáp án cho tất cả câu.'); return; }
     setSubmitted(true);
-    const allCorrect = dienTuDang1Data.every(q => answers[q.id] === q.ans);
+    const allCorrect = currentData.every(q => answers[q.id] === q.ans);
     setShowResult(true);
     if (!allCorrect) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
-  const allCorrect = submitted && dienTuDang1Data.every(q => answers[q.id] === q.ans);
+  const allCorrect = submitted && currentData.every(q => answers[q.id] === q.ans);
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 1: Chọn từ điền vào chỗ trống</Text>
-      {dienTuDang1Data.map(q => {
+      {currentData.map(q => {
         const parts = q.sentence.split('___');
         const filled = answers[q.id] || '     ';
         const isCorrect = submitted && answers[q.id] === q.ans;
         const isWrong = submitted && answers[q.id] && answers[q.id] !== q.ans;
         return (
           <View key={q.id} style={styles.questionCard}>
+            {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
             <Text style={styles.questionText}>Câu {q.id}:</Text>
             <View style={styles.sentenceRow}>
               <Text style={styles.sentText}>{parts[0]}</Text>
@@ -298,30 +474,36 @@ const DienTuDang1: React.FC = () => {
 };
 
 // Dạng 2: Gõ từ theo hình ảnh
-const DienTuDang2: React.FC = () => {
+const DienTuDang2: React.FC<{ data?: DienTuDang2Item[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
   const handleSubmit = () => {
-    const allDone = dienTuDang2Data.every(q => answers[q.id]?.trim());
+    const allDone = currentData.every(q => answers[q.id]?.trim());
     if (!allDone) { Alert.alert('Chưa xong!', 'Hãy điền tất cả từ.'); return; }
     setSubmitted(true);
-    const allCorrect = dienTuDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
+    const allCorrect = currentData.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
     setShowResult(true);
     if (!allCorrect) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
-  const allCorrect = submitted && dienTuDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
+  const allCorrect = submitted && currentData.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 2: Nhìn hình - Gõ từ</Text>
-      {dienTuDang2Data.map(q => {
+      {currentData.map(q => {
         const correct = submitted && answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase();
         const wrong = submitted && !correct;
         return (
           <View key={q.id} style={styles.questionCard}>
+            {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
             <Text style={styles.bigEmoji}>{q.emoji}</Text>
             <Text style={styles.hintText}>{q.hint}</Text>
             <TextInput
@@ -346,71 +528,90 @@ const DienTuDang2: React.FC = () => {
 };
 
 // Dạng 3: Sắp xếp chữ cái thành từ
-const DienTuDang3: React.FC = () => {
-  const [arranged, setArranged] = useState<Record<number, string[]>>(
-    Object.fromEntries(dienTuDang3Data.map(q => [q.id, [...q.shuffled].sort(() => Math.random() - 0.5)]))
+const DienTuDang3: React.FC<{ data?: DienTuDang3Item[] }> = ({ data = [] }) => {
+  const currentData = (data && data.length > 0) ? data : [];
+  const [arranged, setArranged] = useState<Record<number, string[]>>(() =>
+    Object.fromEntries(currentData.map(q => [q.id, [...(q.shuffled || [])].sort(() => Math.random() - 0.5)]))
+  );
+  const [answers, setAnswers] = useState<Record<number, string[]>>(() =>
+    Object.fromEntries(currentData.map(q => [q.id, []]))
   );
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
-  const [answers, setAnswers] = useState<Record<number, string[]>>(
-    Object.fromEntries(dienTuDang3Data.map(q => [q.id, []]))
-  );
+
+  useEffect(() => {
+    if (currentData.length > 0) {
+      setArranged(Object.fromEntries(currentData.map(q => [q.id, [...(q.shuffled || [])].sort(() => Math.random() - 0.5)])));
+      setAnswers(Object.fromEntries(currentData.map(q => [q.id, []])));
+      setSubmitted(false);
+      setShowResult(false);
+    }
+  }, [data]);
 
   const moveLetter = (qid: number, letter: string, from: 'bank' | 'answer') => {
     if (submitted) return;
+    const item = currentData.find(q => q.id === qid);
+    const defaultShuffled = item ? [...(item.shuffled || [])] : [];
+    const curArr = arranged[qid] !== undefined ? arranged[qid] : defaultShuffled;
+    const curAns = answers[qid] || [];
+
     if (from === 'bank') {
-      setArranged(prev => {
-        const idx = prev[qid].indexOf(letter);
-        if (idx === -1) return prev;
-        const next = [...prev[qid]];
-        next.splice(idx, 1);
-        return { ...prev, [qid]: next };
-      });
-      setAnswers(prev => ({ ...prev, [qid]: [...prev[qid], letter] }));
+      const idx = curArr.indexOf(letter);
+      if (idx === -1) return;
+      const nextArr = [...curArr];
+      nextArr.splice(idx, 1);
+      setArranged(prev => ({ ...prev, [qid]: nextArr }));
+      setAnswers(prev => ({ ...prev, [qid]: [...curAns, letter] }));
     } else {
-      setAnswers(prev => {
-        const idx = prev[qid].indexOf(letter);
-        if (idx === -1) return prev;
-        const next = [...prev[qid]];
-        next.splice(idx, 1);
-        return { ...prev, [qid]: next };
-      });
-      setArranged(prev => ({ ...prev, [qid]: [...prev[qid], letter] }));
+      const idx = curAns.indexOf(letter);
+      if (idx === -1) return;
+      const nextAns = [...curAns];
+      nextAns.splice(idx, 1);
+      setAnswers(prev => ({ ...prev, [qid]: nextAns }));
+      setArranged(prev => ({ ...prev, [qid]: [...curArr, letter] }));
     }
   };
 
   const handleSubmit = () => {
-    const allDone = dienTuDang3Data.every(q => answers[q.id].length > 0);
+    const allDone = currentData.every(q => (answers[q.id] || []).length > 0);
     if (!allDone) { Alert.alert('Chưa xong!', 'Hãy sắp xếp tất cả từ.'); return; }
     setSubmitted(true);
-    const allCorrect = dienTuDang3Data.every(q => answers[q.id].join('') === q.ans.replace(/ /g, ''));
+    const allCorrect = currentData.every(q => (answers[q.id] || []).join('') === q.ans.replace(/ /g, ''));
     setShowResult(true);
     if (!allCorrect) {
       setTimeout(() => {
         setSubmitted(false); setShowResult(false);
-        setArranged(Object.fromEntries(dienTuDang3Data.map(q => [q.id, [...q.shuffled].sort(() => Math.random() - 0.5)])));
-        setAnswers(Object.fromEntries(dienTuDang3Data.map(q => [q.id, []])));
+        setArranged(Object.fromEntries(currentData.map(q => [q.id, [...(q.shuffled || [])].sort(() => Math.random() - 0.5)])));
+        setAnswers(Object.fromEntries(currentData.map(q => [q.id, []])));
       }, 120000);
     }
   };
 
-  const allCorrect = submitted && dienTuDang3Data.every(q => answers[q.id].join('') === q.ans.replace(/ /g, ''));
+  const allCorrect = submitted && currentData.every(q => (answers[q.id] || []).join('') === q.ans.replace(/ /g, ''));
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 3: Sắp xếp chữ cái thành từ</Text>
-      {dienTuDang3Data.map(q => {
-        const correct = submitted && answers[q.id].join('') === q.ans.replace(/ /g, '');
+      {currentData.map(q => {
+        const userWord = (answers[q.id] || []).join('');
+        const correct = submitted && userWord === q.ans.replace(/ /g, '');
         const wrong = submitted && !correct;
+        const ansLetters = answers[q.id] || [];
+        const bankLetters = arranged[q.id] !== undefined ? arranged[q.id] : (q.shuffled || []);
         return (
           <View key={q.id} style={styles.questionCard}>
+            {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
             <Text style={styles.bigEmoji}>{q.emoji}</Text>
             <Text style={styles.questionText}>Câu {q.id}: Sắp xếp thành từ đúng</Text>
             {/* Answer area */}
             <View style={[styles.letterRow, correct && { backgroundColor: '#D1FAE5' }, wrong && { backgroundColor: '#FEE2E2' }]}>
-              {answers[q.id].length === 0
+              {ansLetters.length === 0
                 ? <Text style={styles.placeholder}>Nhấn chữ cái bên dưới để xếp...</Text>
-                : answers[q.id].map((l, i) => (
+                : ansLetters.map((l, i) => (
                   <TouchableOpacity key={`a${i}`} onPress={() => moveLetter(q.id, l, 'answer')} style={[styles.letterChip, { backgroundColor: correct ? '#059669' : wrong ? '#DC2626' : THEME }]}>
                     <Text style={styles.letterChipText}>{l}</Text>
                   </TouchableOpacity>
@@ -418,7 +619,7 @@ const DienTuDang3: React.FC = () => {
             </View>
             {/* Letter bank */}
             <View style={styles.letterRow}>
-              {arranged[q.id].map((l, i) => (
+              {bankLetters.map((l, i) => (
                 <TouchableOpacity key={`b${i}`} onPress={() => moveLetter(q.id, l, 'bank')} style={[styles.letterChip, { backgroundColor: '#94A3B8' }]}>
                   <Text style={styles.letterChipText}>{l}</Text>
                 </TouchableOpacity>
@@ -430,8 +631,8 @@ const DienTuDang3: React.FC = () => {
       })}
       {showResult && <ResultBanner correct={allCorrect} onRetry={() => {
         setSubmitted(false); setShowResult(false);
-        setArranged(Object.fromEntries(dienTuDang3Data.map(q => [q.id, [...q.shuffled].sort(() => Math.random() - 0.5)])));
-        setAnswers(Object.fromEntries(dienTuDang3Data.map(q => [q.id, []])));
+        setArranged(Object.fromEntries(currentData.map(q => [q.id, [...(q.shuffled || [])].sort(() => Math.random() - 0.5)])));
+        setAnswers(Object.fromEntries(currentData.map(q => [q.id, []])));
       }} />}
       {!showResult && (
         <TouchableOpacity style={[styles.submitBtn, { backgroundColor: THEME }]} onPress={handleSubmit}>
@@ -445,28 +646,34 @@ const DienTuDang3: React.FC = () => {
 // ─────────────────────────────────────────────────────────────
 // SECTION 3: NGỮ PHÁP
 // ─────────────────────────────────────────────────────────────
-const NguPhapDang1: React.FC = () => {
+const NguPhapDang1: React.FC<{ data?: NguPhapDang1Item[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
   const handleSubmit = () => {
-    if (!nguPhapDang1Data.every(q => answers[q.id])) { Alert.alert('Chưa xong!', 'Chọn tất cả đáp án.'); return; }
+    if (!currentData.every(q => answers[q.id])) { Alert.alert('Chưa xong!', 'Chọn tất cả đáp án.'); return; }
     setSubmitted(true);
-    const ok = nguPhapDang1Data.every(q => answers[q.id] === q.ans);
+    const ok = currentData.every(q => answers[q.id] === q.ans);
     setShowResult(true);
     if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
-  const allCorrect = submitted && nguPhapDang1Data.every(q => answers[q.id] === q.ans);
+  const allCorrect = submitted && currentData.every(q => answers[q.id] === q.ans);
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 1: Chọn từ điền vào câu</Text>
-      {nguPhapDang1Data.map(q => {
+      {currentData.map(q => {
         const parts = q.sentence.split('___');
         return (
           <View key={q.id} style={styles.questionCard}>
+            {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
             <View style={styles.sentenceRow}>
               <Text style={styles.sentText}>{parts[0]}</Text>
               <View style={[styles.blankBox,
@@ -496,30 +703,36 @@ const NguPhapDang1: React.FC = () => {
   );
 };
 
-const NguPhapDang2: React.FC = () => {
+const NguPhapDang2: React.FC<{ data?: NguPhapDang2Item[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
   const handleSubmit = () => {
-    if (!nguPhapDang2Data.every(q => answers[q.id]?.trim())) { Alert.alert('Chưa xong!', 'Điền tất cả câu.'); return; }
+    if (!currentData.every(q => answers[q.id]?.trim())) { Alert.alert('Chưa xong!', 'Điền tất cả câu.'); return; }
     setSubmitted(true);
-    const ok = nguPhapDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
+    const ok = currentData.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
     setShowResult(true);
     if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
-  const allCorrect = submitted && nguPhapDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
+  const allCorrect = submitted && currentData.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 2: Viết lại câu</Text>
-      {nguPhapDang2Data.map(q => {
+      {currentData.map(q => {
         const correct = submitted && answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase();
         const wrong = submitted && !correct;
         const parts = q.rewrite.split('___');
         return (
           <View key={q.id} style={styles.questionCard}>
+            {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
             <Text style={styles.originalSent}>Gốc: {q.original}</Text>
             <View style={styles.sentenceRow}>
               <Text style={styles.sentText}>{parts[0]}</Text>
@@ -545,17 +758,26 @@ const NguPhapDang2: React.FC = () => {
   );
 };
 
-const NguPhapDang3: React.FC = () => {
-  const [arrangements, setArrangements] = useState<Record<number, { bank: string[], answer: string[] }>>(
-    Object.fromEntries(nguPhapDang3Data.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }]))
-  );
+const NguPhapDang3: React.FC<{ data?: NguPhapDang3Item[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
+  const [arrangements, setArrangements] = useState<Record<number, { bank: string[], answer: string[] }>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
+
+  useEffect(() => {
+    if (currentData.length > 0) {
+      setArrangements(
+        Object.fromEntries(currentData.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }]))
+      );
+      setSubmitted(false);
+      setShowResult(false);
+    }
+  }, [data]);
 
   const moveWord = (qid: number, word: string, from: 'bank' | 'answer') => {
     if (submitted) return;
     setArrangements(prev => {
-      const cur = prev[qid];
+      const cur = prev[qid] || { bank: [], answer: [] };
       if (from === 'bank') {
         const idx = cur.bank.indexOf(word);
         if (idx === -1) return prev;
@@ -571,38 +793,44 @@ const NguPhapDang3: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    if (!nguPhapDang3Data.every(q => arrangements[q.id].answer.length > 0)) { Alert.alert('Chưa xong!', 'Sắp xếp tất cả câu.'); return; }
+    if (!currentData.every(q => (arrangements[q.id]?.answer || []).length > 0)) { Alert.alert('Chưa xong!', 'Sắp xếp tất cả câu.'); return; }
     setSubmitted(true);
-    const ok = nguPhapDang3Data.every(q => arrangements[q.id].answer.join(' ') === q.ans);
+    const ok = currentData.every(q => (arrangements[q.id]?.answer || []).join(' ') === q.ans);
     setShowResult(true);
     if (!ok) setTimeout(() => {
       setSubmitted(false); setShowResult(false);
-      setArrangements(Object.fromEntries(nguPhapDang3Data.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }])));
+      setArrangements(Object.fromEntries(currentData.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }])));
     }, 120000);
   };
 
-  const allCorrect = submitted && nguPhapDang3Data.every(q => arrangements[q.id].answer.join(' ') === q.ans);
+  const allCorrect = submitted && currentData.every(q => (arrangements[q.id]?.answer || []).join(' ') === q.ans);
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 3: Sắp xếp từ thành câu</Text>
-      {nguPhapDang3Data.map(q => {
-        const correct = submitted && arrangements[q.id].answer.join(' ') === q.ans;
+      {currentData.map(q => {
+        const cur = arrangements[q.id] || { bank: [], answer: [] };
+        const correct = submitted && cur.answer.join(' ') === q.ans;
         const wrong = submitted && !correct;
         return (
           <View key={q.id} style={styles.questionCard}>
+            {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
             <Text style={styles.questionText}>Câu {q.id}: Sắp xếp thành câu đúng</Text>
             <View style={[styles.wordRow, correct && { backgroundColor: '#D1FAE5' }, wrong && { backgroundColor: '#FEE2E2' }]}>
-              {arrangements[q.id].answer.length === 0
+              {cur.answer.length === 0
                 ? <Text style={styles.placeholder}>Nhấn từ bên dưới để xếp câu...</Text>
-                : arrangements[q.id].answer.map((w, i) => (
+                : cur.answer.map((w, i) => (
                   <TouchableOpacity key={`a${i}`} onPress={() => moveWord(q.id, w, 'answer')} style={[styles.wordChip, { backgroundColor: correct ? '#059669' : wrong ? '#DC2626' : THEME }]}>
                     <Text style={[styles.wordChipText, { color: 'white' }]}>{w}</Text>
                   </TouchableOpacity>
                 ))}
             </View>
             <View style={styles.wordRow}>
-              {arrangements[q.id].bank.map((w, i) => (
+              {cur.bank.map((w, i) => (
                 <TouchableOpacity key={`b${i}`} onPress={() => moveWord(q.id, w, 'bank')} style={[styles.wordChip, { backgroundColor: '#94A3B8' }]}>
                   <Text style={[styles.wordChipText, { color: 'white' }]}>{w}</Text>
                 </TouchableOpacity>
@@ -614,7 +842,7 @@ const NguPhapDang3: React.FC = () => {
       })}
       {showResult && <ResultBanner correct={allCorrect} onRetry={() => {
         setSubmitted(false); setShowResult(false);
-        setArrangements(Object.fromEntries(nguPhapDang3Data.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }])));
+        setArrangements(Object.fromEntries(currentData.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }])));
       }} />}
       {!showResult && (
         <TouchableOpacity style={[styles.submitBtn, { backgroundColor: THEME }]} onPress={handleSubmit}>
@@ -625,17 +853,26 @@ const NguPhapDang3: React.FC = () => {
   );
 };
 
-const NguPhapDang4: React.FC = () => {
-  const [arrangements, setArrangements] = useState<Record<number, { bank: string[], answer: string[] }>>(
-    Object.fromEntries(nguPhapDang4Data.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }]))
-  );
+const NguPhapDang4: React.FC<{ data?: NguPhapDang4Item[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
+  const [arrangements, setArrangements] = useState<Record<number, { bank: string[], answer: string[] }>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
+
+  useEffect(() => {
+    if (currentData.length > 0) {
+      setArrangements(
+        Object.fromEntries(currentData.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }]))
+      );
+      setSubmitted(false);
+      setShowResult(false);
+    }
+  }, [data]);
 
   const moveWord = (qid: number, word: string, from: 'bank' | 'answer') => {
     if (submitted) return;
     setArrangements(prev => {
-      const cur = prev[qid];
+      const cur = prev[qid] || { bank: [], answer: [] };
       if (from === 'bank') {
         const idx = cur.bank.indexOf(word);
         if (idx === -1) return prev;
@@ -651,38 +888,44 @@ const NguPhapDang4: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    if (!nguPhapDang4Data.every(q => arrangements[q.id].answer.length > 0)) { Alert.alert('Chưa xong!', 'Sắp xếp tất cả câu.'); return; }
+    if (!currentData.every(q => (arrangements[q.id]?.answer || []).length > 0)) { Alert.alert('Chưa xong!', 'Sắp xếp tất cả câu.'); return; }
     setSubmitted(true);
-    const ok = nguPhapDang4Data.every(q => arrangements[q.id].answer.join(' ') === q.ans);
+    const ok = currentData.every(q => (arrangements[q.id]?.answer || []).join(' ') === q.ans);
     setShowResult(true);
     if (!ok) setTimeout(() => {
       setSubmitted(false); setShowResult(false);
-      setArrangements(Object.fromEntries(nguPhapDang4Data.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }])));
+      setArrangements(Object.fromEntries(currentData.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }])));
     }, 120000);
   };
 
-  const allCorrect = submitted && nguPhapDang4Data.every(q => arrangements[q.id].answer.join(' ') === q.ans);
+  const allCorrect = submitted && currentData.every(q => (arrangements[q.id]?.answer || []).join(' ') === q.ans);
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 4: Nhìn hình – Sắp xếp câu</Text>
-      {nguPhapDang4Data.map(q => {
-        const correct = submitted && arrangements[q.id].answer.join(' ') === q.ans;
+      {currentData.map(q => {
+        const cur = arrangements[q.id] || { bank: [], answer: [] };
+        const correct = submitted && cur.answer.join(' ') === q.ans;
         const wrong = submitted && !correct;
         return (
           <View key={q.id} style={styles.questionCard}>
+            {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
             <Text style={styles.bigEmoji}>{q.emoji}</Text>
             <View style={[styles.wordRow, correct && { backgroundColor: '#D1FAE5' }, wrong && { backgroundColor: '#FEE2E2' }]}>
-              {arrangements[q.id].answer.length === 0
+              {cur.answer.length === 0
                 ? <Text style={styles.placeholder}>Nhấn từ bên dưới...</Text>
-                : arrangements[q.id].answer.map((w, i) => (
+                : cur.answer.map((w, i) => (
                   <TouchableOpacity key={`a${i}`} onPress={() => moveWord(q.id, w, 'answer')} style={[styles.wordChip, { backgroundColor: correct ? '#059669' : wrong ? '#DC2626' : THEME }]}>
                     <Text style={[styles.wordChipText, { color: 'white' }]}>{w}</Text>
                   </TouchableOpacity>
                 ))}
             </View>
             <View style={styles.wordRow}>
-              {arrangements[q.id].bank.map((w, i) => (
+              {cur.bank.map((w, i) => (
                 <TouchableOpacity key={`b${i}`} onPress={() => moveWord(q.id, w, 'bank')} style={[styles.wordChip, { backgroundColor: '#94A3B8' }]}>
                   <Text style={[styles.wordChipText, { color: 'white' }]}>{w}</Text>
                 </TouchableOpacity>
@@ -694,7 +937,7 @@ const NguPhapDang4: React.FC = () => {
       })}
       {showResult && <ResultBanner correct={allCorrect} onRetry={() => {
         setSubmitted(false); setShowResult(false);
-        setArrangements(Object.fromEntries(nguPhapDang4Data.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }])));
+        setArrangements(Object.fromEntries(currentData.map(q => [q.id, { bank: [...q.words].sort(() => Math.random() - 0.5), answer: [] }])));
       }} />}
       {!showResult && (
         <TouchableOpacity style={[styles.submitBtn, { backgroundColor: THEME }]} onPress={handleSubmit}>
@@ -708,26 +951,32 @@ const NguPhapDang4: React.FC = () => {
 // ─────────────────────────────────────────────────────────────
 // SECTION 4: HỘI THOẠI
 // ─────────────────────────────────────────────────────────────
-const HoiThoaiDang1: React.FC = () => {
+const HoiThoaiDang1: React.FC<{ data?: HoiThoaiDang1Item[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
   const handleSubmit = () => {
-    if (!hoiThoaiDang1Data.every(q => answers[q.id])) { Alert.alert('Chưa xong!'); return; }
+    if (!currentData.every(q => answers[q.id])) { Alert.alert('Chưa xong!'); return; }
     setSubmitted(true);
-    const ok = hoiThoaiDang1Data.every(q => answers[q.id] === q.ans);
+    const ok = currentData.every(q => answers[q.id] === q.ans);
     setShowResult(true);
     if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
-  const allCorrect = submitted && hoiThoaiDang1Data.every(q => answers[q.id] === q.ans);
+  const allCorrect = submitted && currentData.every(q => answers[q.id] === q.ans);
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 1: Hội thoại trắc nghiệm</Text>
-      {hoiThoaiDang1Data.map(q => (
+      {currentData.map(q => (
         <View key={q.id} style={styles.questionCard}>
+          {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
           <Text style={styles.questionText}>💬 {q.q}</Text>
           {q.opts.map(opt => {
             const letter = opt[0];
@@ -753,17 +1002,26 @@ const HoiThoaiDang1: React.FC = () => {
   );
 };
 
-const HoiThoaiDang2: React.FC = () => {
-  const [orders, setOrders] = useState<Record<number, string[]>>(
-    Object.fromEntries(hoiThoaiDang2Data.map(d => [d.id, [...d.lines.map(l => l.key)].sort(() => Math.random() - 0.5)]))
-  );
+const HoiThoaiDang2: React.FC<{ data?: HoiThoaiDang2Item[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
+  const [orders, setOrders] = useState<Record<number, string[]>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
+
+  useEffect(() => {
+    if (currentData.length > 0) {
+      setOrders(
+        Object.fromEntries(currentData.map(d => [d.id, [...d.lines.map(l => l.key)].sort(() => Math.random() - 0.5)]))
+      );
+      setSubmitted(false);
+      setShowResult(false);
+    }
+  }, [data]);
 
   const moveUp = (did: number, idx: number) => {
     if (submitted || idx === 0) return;
     setOrders(prev => {
-      const arr = [...prev[did]];
+      const arr = [...(prev[did] || [])];
       [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
       return { ...prev, [did]: arr };
     });
@@ -772,7 +1030,7 @@ const HoiThoaiDang2: React.FC = () => {
   const moveDown = (did: number, idx: number) => {
     if (submitted) return;
     setOrders(prev => {
-      const arr = [...prev[did]];
+      const arr = [...(prev[did] || [])];
       if (idx >= arr.length - 1) return prev;
       [arr[idx + 1], arr[idx]] = [arr[idx], arr[idx + 1]];
       return { ...prev, [did]: arr };
@@ -781,27 +1039,34 @@ const HoiThoaiDang2: React.FC = () => {
 
   const handleSubmit = () => {
     setSubmitted(true);
-    const ok = hoiThoaiDang2Data.every(d => orders[d.id].join('') === d.ans.join(''));
+    const ok = currentData.every(d => (orders[d.id] || []).join('') === d.ans.join(''));
     setShowResult(true);
     if (!ok) setTimeout(() => {
       setSubmitted(false); setShowResult(false);
-      setOrders(Object.fromEntries(hoiThoaiDang2Data.map(d => [d.id, [...d.lines.map(l => l.key)].sort(() => Math.random() - 0.5)])));
+      setOrders(Object.fromEntries(currentData.map(d => [d.id, [...d.lines.map(l => l.key)].sort(() => Math.random() - 0.5)])));
     }, 120000);
   };
 
-  const allCorrect = submitted && hoiThoaiDang2Data.every(d => orders[d.id].join('') === d.ans.join(''));
+  const allCorrect = submitted && currentData.every(d => (orders[d.id] || []).join('') === d.ans.join(''));
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 2: Sắp xếp hội thoại (↑↓ để xếp)</Text>
-      {hoiThoaiDang2Data.map(d => {
-        const correct = submitted && orders[d.id].join('') === d.ans.join('');
+      {currentData.map(d => {
+        const curOrder = orders[d.id] || [];
+        const correct = submitted && curOrder.join('') === d.ans.join('');
         const wrong = submitted && !correct;
         return (
           <View key={d.id} style={styles.questionCard}>
+            {d.cat ? <Text style={styles.catBadge}>🏷️ {d.cat}</Text> : null}
             <Text style={styles.questionText}>🗣️ {d.title}</Text>
-            {orders[d.id].map((key, idx) => {
-              const line = d.lines.find(l => l.key === key)!;
+            {curOrder.map((key, idx) => {
+              const line = d.lines.find(l => l.key === key);
+              if (!line) return null;
               return (
                 <View key={key} style={[styles.dialogueLine, correct && { backgroundColor: '#D1FAE5' }, wrong && { backgroundColor: '#FEE2E2' }]}>
                   <View style={styles.arrowBtns}>
@@ -818,7 +1083,7 @@ const HoiThoaiDang2: React.FC = () => {
       })}
       {showResult && <ResultBanner correct={allCorrect} onRetry={() => {
         setSubmitted(false); setShowResult(false);
-        setOrders(Object.fromEntries(hoiThoaiDang2Data.map(d => [d.id, [...d.lines.map(l => l.key)].sort(() => Math.random() - 0.5)])));
+        setOrders(Object.fromEntries(currentData.map(d => [d.id, [...d.lines.map(l => l.key)].sort(() => Math.random() - 0.5)])));
       }} />}
       {!showResult && (
         <TouchableOpacity style={[styles.submitBtn, { backgroundColor: THEME }]} onPress={handleSubmit}>
@@ -829,30 +1094,36 @@ const HoiThoaiDang2: React.FC = () => {
   );
 };
 
-const HoiThoaiDang3: React.FC = () => {
+const HoiThoaiDang3: React.FC<{ data?: HoiThoaiDang3Item[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
   const handleSubmit = () => {
-    if (!hoiThoaiDang3Data.every(q => answers[q.id])) { Alert.alert('Chưa xong!'); return; }
+    if (!currentData.every(q => answers[q.id])) { Alert.alert('Chưa xong!'); return; }
     setSubmitted(true);
-    const ok = hoiThoaiDang3Data.every(q => answers[q.id] === q.blank);
+    const ok = currentData.every(q => answers[q.id] === q.blank);
     setShowResult(true);
     if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
-  const allCorrect = submitted && hoiThoaiDang3Data.every(q => answers[q.id] === q.blank);
+  const allCorrect = submitted && currentData.every(q => answers[q.id] === q.blank);
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 3: Điền từ vào hội thoại</Text>
-      {hoiThoaiDang3Data.map(q => {
-        const parts = q.dialogue.split(q.blank);
+      {currentData.map(q => {
+        const parts = q.dialogue.includes('___') ? q.dialogue.split('___') : q.dialogue.split(q.blank);
         const correct = submitted && answers[q.id] === q.blank;
         const wrong = submitted && answers[q.id] !== q.blank;
         return (
           <View key={q.id} style={styles.questionCard}>
+            {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
             <Text style={styles.questionText}>💬 {parts[0]}</Text>
             <View style={styles.wordBankRow}>
               {q.wordBank.map(w => (
@@ -861,7 +1132,7 @@ const HoiThoaiDang3: React.FC = () => {
                 </TouchableOpacity>
               ))}
             </View>
-            <Text style={styles.sentText}>→ {parts[1]}</Text>
+            <Text style={styles.sentText}>→ {parts[1] || ''}</Text>
             {wrong && <Text style={styles.correctHint}>✓ Đáp án: {q.blank}</Text>}
           </View>
         );
@@ -879,26 +1150,32 @@ const HoiThoaiDang3: React.FC = () => {
 // ─────────────────────────────────────────────────────────────
 // SECTION 5: NGHE & ĐIỀN TỪ
 // ─────────────────────────────────────────────────────────────
-const NgheDang1: React.FC = () => {
+const NgheDang1: React.FC<{ data?: NgheDang1Item[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
   const handleSubmit = () => {
-    if (!ngheDang1Data.every(q => answers[q.id])) { Alert.alert('Chưa xong!'); return; }
+    if (!currentData.every(q => answers[q.id])) { Alert.alert('Chưa xong!'); return; }
     setSubmitted(true);
-    const ok = ngheDang1Data.every(q => answers[q.id] === q.ans);
+    const ok = currentData.every(q => answers[q.id] === q.ans);
     setShowResult(true);
     if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
-  const allCorrect = submitted && ngheDang1Data.every(q => answers[q.id] === q.ans);
+  const allCorrect = submitted && currentData.every(q => answers[q.id] === q.ans);
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 1: Nghe – Trắc nghiệm</Text>
-      {ngheDang1Data.map(q => (
+      {currentData.map(q => (
         <View key={q.id} style={styles.questionCard}>
+          {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
           <View style={styles.audioPill}><Text style={styles.audioText}>{q.audio}</Text></View>
           {q.opts.map(opt => {
             const letter = opt[0];
@@ -924,30 +1201,36 @@ const NgheDang1: React.FC = () => {
   );
 };
 
-const NgheDang2: React.FC = () => {
+const NgheDang2: React.FC<{ data?: NgheDang2Item[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
   const handleSubmit = () => {
-    if (!ngheDang2Data.every(q => answers[q.id]?.trim())) { Alert.alert('Chưa xong!'); return; }
+    if (!currentData.every(q => answers[q.id]?.trim())) { Alert.alert('Chưa xong!'); return; }
     setSubmitted(true);
-    const ok = ngheDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
+    const ok = currentData.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
     setShowResult(true);
     if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
-  const allCorrect = submitted && ngheDang2Data.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
+  const allCorrect = submitted && currentData.every(q => answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase());
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 2: Nghe – Tự điền từ</Text>
-      {ngheDang2Data.map(q => {
+      {currentData.map(q => {
         const correct = submitted && answers[q.id]?.trim().toLowerCase() === q.ans.toLowerCase();
         const wrong = submitted && !correct;
         const parts = q.audio.split('___');
         return (
           <View key={q.id} style={styles.questionCard}>
+            {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
             <View style={styles.audioPill}><Text style={styles.audioText}>{parts[0]}</Text>
               <TextInput
                 style={[styles.inlineInput, correct && { borderColor: '#059669', color: '#059669' }, wrong && { borderColor: '#DC2626', color: '#DC2626' }]}
@@ -956,7 +1239,7 @@ const NgheDang2: React.FC = () => {
                 editable={!submitted}
                 placeholder="..."
               />
-              <Text style={styles.audioText}>{parts[1]}</Text>
+              <Text style={styles.audioText}>{parts[1] || ''}</Text>
             </View>
             {wrong && <Text style={styles.correctHint}>✓ Đáp án: {q.ans}</Text>}
           </View>
@@ -972,26 +1255,32 @@ const NgheDang2: React.FC = () => {
   );
 };
 
-const NgheDang3: React.FC = () => {
+const NgheDang3: React.FC<{ data?: NgheDang3Item[] }> = ({ data }) => {
+  const currentData = (data && data.length > 0) ? data : [];
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
   const handleSubmit = () => {
-    if (!ngheDang3Data.every(q => answers[q.id])) { Alert.alert('Chưa xong!'); return; }
+    if (!currentData.every(q => answers[q.id])) { Alert.alert('Chưa xong!'); return; }
     setSubmitted(true);
-    const ok = ngheDang3Data.every(q => answers[q.id] === q.ans);
+    const ok = currentData.every(q => answers[q.id] === q.ans);
     setShowResult(true);
     if (!ok) setTimeout(() => { setSubmitted(false); setShowResult(false); setAnswers({}); }, 120000);
   };
 
-  const allCorrect = submitted && ngheDang3Data.every(q => answers[q.id] === q.ans);
+  const allCorrect = submitted && currentData.every(q => answers[q.id] === q.ans);
+
+  if (currentData.length === 0) {
+    return <Text style={{ textAlign: 'center', marginVertical: 20, color: '#64748B' }}>Đang tải bài tập...</Text>;
+  }
 
   return (
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 3: Nghe – Chọn hình ảnh</Text>
-      {ngheDang3Data.map(q => (
+      {currentData.map(q => (
         <View key={q.id} style={styles.questionCard}>
+          {q.cat ? <Text style={styles.catBadge}>🏷️ {q.cat}</Text> : null}
           <View style={styles.audioPill}><Text style={styles.audioText}>{q.audio}</Text></View>
           <View style={styles.emojiGrid}>
             {q.emojis.map(em => {
@@ -1036,9 +1325,41 @@ const Phan2Bai5: React.FC<Props> = ({ navigation }) => {
   const [hoiThoaiTab, setHoiThoaiTab] = useState(1);
   const [ngheTab, setNgheTab] = useState(1);
 
+  const [dbData, setDbData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${API_ENDPOINTS.GET_CAU_HOI_NN}?bai_hoc_id=14`);
+        const json = await res.json();
+        const rows = Array.isArray(json) ? json : (json?.data || []);
+        if (rows && rows.length > 0) {
+          const parsed = parseCauHoiNN(rows);
+          setDbData(parsed);
+        }
+      } catch (e) {
+        console.log('Error loading cau_hoi_nn for bai 5 phan 2:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   const renderContent = () => {
+    if (loading) {
+      return (
+        <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 40 }}>
+          <ActivityIndicator size="large" color={THEME} />
+          <Text style={{ marginTop: 12, color: '#64748B', fontSize: 14 }}>Đang tải ngân hàng câu hỏi...</Text>
+        </View>
+      );
+    }
+
     switch (activeSection) {
-      case 'tracNghiem': return <TracNghiemSection />;
+      case 'tracNghiem': return <TracNghiemSection data={dbData?.tracNghiem} />;
       case 'dienTu':
         return (
           <View>
@@ -1049,9 +1370,9 @@ const Phan2Bai5: React.FC<Props> = ({ navigation }) => {
                 </TouchableOpacity>
               ))}
             </View>
-            {dienTuTab === 1 && <DienTuDang1 />}
-            {dienTuTab === 2 && <DienTuDang2 />}
-            {dienTuTab === 3 && <DienTuDang3 />}
+            {dienTuTab === 1 && <DienTuDang1 data={dbData?.dienTuDang1} />}
+            {dienTuTab === 2 && <DienTuDang2 data={dbData?.dienTuDang2} />}
+            {dienTuTab === 3 && <DienTuDang3 data={dbData?.dienTuDang3} />}
           </View>
         );
       case 'nguPhap':
@@ -1064,10 +1385,10 @@ const Phan2Bai5: React.FC<Props> = ({ navigation }) => {
                 </TouchableOpacity>
               ))}
             </View>
-            {nguPhapTab === 1 && <NguPhapDang1 />}
-            {nguPhapTab === 2 && <NguPhapDang2 />}
-            {nguPhapTab === 3 && <NguPhapDang3 />}
-            {nguPhapTab === 4 && <NguPhapDang4 />}
+            {nguPhapTab === 1 && <NguPhapDang1 data={dbData?.nguPhapDang1} />}
+            {nguPhapTab === 2 && <NguPhapDang2 data={dbData?.nguPhapDang2} />}
+            {nguPhapTab === 3 && <NguPhapDang3 data={dbData?.nguPhapDang3} />}
+            {nguPhapTab === 4 && <NguPhapDang4 data={dbData?.nguPhapDang4} />}
           </View>
         );
       case 'hoiThoai':
@@ -1080,9 +1401,9 @@ const Phan2Bai5: React.FC<Props> = ({ navigation }) => {
                 </TouchableOpacity>
               ))}
             </View>
-            {hoiThoaiTab === 1 && <HoiThoaiDang1 />}
-            {hoiThoaiTab === 2 && <HoiThoaiDang2 />}
-            {hoiThoaiTab === 3 && <HoiThoaiDang3 />}
+            {hoiThoaiTab === 1 && <HoiThoaiDang1 data={dbData?.hoiThoaiDang1} />}
+            {hoiThoaiTab === 2 && <HoiThoaiDang2 data={dbData?.hoiThoaiDang2} />}
+            {hoiThoaiTab === 3 && <HoiThoaiDang3 data={dbData?.hoiThoaiDang3} />}
           </View>
         );
       case 'nghe':
@@ -1095,9 +1416,9 @@ const Phan2Bai5: React.FC<Props> = ({ navigation }) => {
                 </TouchableOpacity>
               ))}
             </View>
-            {ngheTab === 1 && <NgheDang1 />}
-            {ngheTab === 2 && <NgheDang2 />}
-            {ngheTab === 3 && <NgheDang3 />}
+            {ngheTab === 1 && <NgheDang1 data={dbData?.ngheDang1} />}
+            {ngheTab === 2 && <NgheDang2 data={dbData?.ngheDang2} />}
+            {ngheTab === 3 && <NgheDang3 data={dbData?.ngheDang3} />}
           </View>
         );
       default: return null;
