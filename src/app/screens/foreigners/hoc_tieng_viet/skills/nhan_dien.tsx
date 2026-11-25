@@ -1,32 +1,109 @@
 // Kỹ năng 5: Nhận diện và thay thế
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import BaseSkillContent, { ContentCard } from '../BaseSkillContent';
+import { API_ENDPOINTS } from '../../../../../config/api';
 
 interface Props { navigation: any; route: any; }
 
-const NhanDienScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { lessonId = 1, themeColor = '#4F46E5' } = route?.params || {};
-  const [selectedSub, setSelectedSub] = useState<number | null>(null);
-  const [filled, setFilled] = useState<string[]>(Array(3).fill(''));
-  const [showAnswer, setShowAnswer] = useState(false);
+const DEFAULT_TEMPLATE = {
+  base: 'Tôi tên là ___.',
+  baseEn: 'My name is ___.',
+  substitutions: [
+    { vn: 'Nam', en: '(male name)' },
+    { vn: 'Lan', en: '(female name)' },
+    { vn: 'Peter', en: '(foreign name)' },
+    { vn: 'An', en: '(neutral name)' },
+  ],
+};
 
-  const template = {
-    base: 'Tôi tên là ___.',
-    baseEn: 'My name is ___.',
-    substitutions: [
-      { vn: 'Nam', en: '(male name)' },
-      { vn: 'Lan', en: '(female name)' },
-      { vn: 'Peter', en: '(foreign name)' },
-      { vn: 'An', en: '(neutral name)' },
+const DEFAULT_RECOGNITION = [
+  {
+    sentence: 'Anh ấy là giáo viên người Pháp.',
+    en: 'He is a French teacher.',
+    parts: [
+      { text: 'Anh ấy', role: 'Chủ ngữ', roleEn: 'Subject', color: '#4F46E5' },
+      { text: 'là', role: 'Vị ngữ', roleEn: 'Verb', color: '#059669' },
+      { text: 'giáo viên người Pháp', role: 'Tân ngữ', roleEn: 'Predicate', color: '#D97706' },
     ],
-  };
+  },
+];
 
-  const blanks = [
-    { sentence: 'Anh là người ___?', sentenceEn: 'Are you ___?', answer: 'Việt Nam', answerEn: 'Vietnamese' },
-    { sentence: 'Tôi học ___ năm.', sentenceEn: 'I have studied for ___ year(s).', answer: 'một', answerEn: 'one' },
-    { sentence: 'Nhà tôi ở ___.', sentenceEn: 'My home is in ___.', answer: 'Hà Nội', answerEn: 'Hanoi' },
-  ];
+const DEFAULT_BLANKS = [
+  { sentence: 'Anh là người ___?', sentenceEn: 'Are you ___?', answer: 'Việt Nam', answerEn: 'Vietnamese' },
+  { sentence: 'Tôi học ___ năm.', sentenceEn: 'I have studied for ___ year(s).', answer: 'một', answerEn: 'one' },
+  { sentence: 'Nhà tôi ở ___.', sentenceEn: 'My home is in ___.', answer: 'Hà Nội', answerEn: 'Hanoi' },
+];
+
+const NhanDienScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { lessonId = 1, baiHocId, themeColor = '#4F46E5' } = route?.params || {};
+  const currentBaiHocId = baiHocId || lessonId;
+  const [selectedSub, setSelectedSub] = useState<number | null>(null);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [template, setTemplate] = useState(DEFAULT_TEMPLATE);
+  const [recognitionList, setRecognitionList] = useState(DEFAULT_RECOGNITION);
+  const [blanks, setBlanks] = useState(DEFAULT_BLANKS);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch(API_ENDPOINTS.GET_NN_BAI_HOC_CHI_TIET_KY_NANG(currentBaiHocId, 5))
+      .then((res) => res.json())
+      .then((res) => {
+        if (!isMounted) return;
+        if (res?.success && Array.isArray(res?.data) && res.data.length > 0) {
+          const row = res.data[0];
+
+          // 1. Mẫu câu thay thế
+          if (row.noi_dung_chinh && typeof row.noi_dung_chinh === 'object') {
+            const subs = Array.isArray(row.noi_dung_chinh.tu_thay_the)
+              ? row.noi_dung_chinh.tu_thay_the.map((s: any) => ({
+                  vn: s.tu || s.vn || '',
+                  en: s.mo_ta_en || s.en || '',
+                }))
+              : DEFAULT_TEMPLATE.substitutions;
+            setTemplate({
+              base: row.noi_dung_chinh.mau_cau_vn || 'Tôi tên là ___.',
+              baseEn: row.noi_dung_chinh.mau_cau_en || 'My name is ___.',
+              substitutions: subs,
+            });
+            setSelectedSub(null);
+          }
+
+          // 2. Nhận diện cấu trúc
+          if (row.noi_dung_phu && typeof row.noi_dung_phu === 'object') {
+            const colors = ['#4F46E5', '#059669', '#D97706', '#DC2626'];
+            const p = row.noi_dung_phu;
+            if (p.cau_vn && Array.isArray(p.thanh_phan)) {
+              setRecognitionList([{
+                sentence: p.cau_vn,
+                en: p.cau_en || '',
+                parts: p.thanh_phan.map((item: any, idx: number) => ({
+                  text: item.tu || '',
+                  role: item.nhom_vn || '',
+                  roleEn: item.nhom_en || '',
+                  color: colors[idx % colors.length],
+                })),
+              }]);
+            }
+          }
+
+          // 3. Điền vào chỗ trống
+          if (row.bai_kiem_tra && Array.isArray(row.bai_kiem_tra.danh_sach)) {
+            setBlanks(row.bai_kiem_tra.danh_sach.map((b: any) => ({
+              sentence: b.cau_vn || '',
+              sentenceEn: b.cau_en || '',
+              answer: b.dap_an || '',
+              answerEn: b.dap_an_en || '',
+            })));
+            setShowAnswer(false);
+          }
+        }
+      })
+      .catch((err) => {
+        console.log('Using default substitution fallback:', err.message);
+      });
+    return () => { isMounted = false; };
+  }, [currentBaiHocId]);
 
   return (
     <BaseSkillContent
@@ -64,10 +141,10 @@ const NhanDienScreen: React.FC<Props> = ({ navigation, route }) => {
         {selectedSub !== null && (
           <View style={[styles.resultBox, { borderColor: themeColor, backgroundColor: themeColor + '10' }]}>
             <Text style={[styles.resultText, { color: themeColor }]}>
-              → Tôi tên là {template.substitutions[selectedSub].vn}.
+              → {template.base.replace('___', template.substitutions[selectedSub].vn)}
             </Text>
             <Text style={styles.resultEn}>
-              → My name is {template.substitutions[selectedSub].vn}.
+              → {template.baseEn.replace('___', template.substitutions[selectedSub].vn)}
             </Text>
           </View>
         )}
@@ -75,17 +152,7 @@ const NhanDienScreen: React.FC<Props> = ({ navigation, route }) => {
 
       {/* Pattern recognition */}
       <ContentCard title="🔍 Nhận diện cấu trúc • Pattern Recognition">
-        {[
-          {
-            sentence: 'Anh ấy là giáo viên người Pháp.',
-            en: 'He is a French teacher.',
-            parts: [
-              { text: 'Anh ấy', role: 'Chủ ngữ', roleEn: 'Subject', color: '#4F46E5' },
-              { text: 'là', role: 'Vị ngữ', roleEn: 'Verb', color: '#059669' },
-              { text: 'giáo viên người Pháp', role: 'Tân ngữ', roleEn: 'Predicate', color: '#D97706' },
-            ],
-          },
-        ].map((item, idx) => (
+        {recognitionList.map((item, idx) => (
           <View key={idx} style={styles.recognitionCard}>
             <Text style={styles.recSentence}>{item.sentence}</Text>
             <Text style={styles.recEn}>{item.en}</Text>

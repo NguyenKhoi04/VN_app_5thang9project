@@ -15,31 +15,45 @@ const DEFAULT_PHRASES = [
 ];
 
 const NgheLapLaiScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { lessonId = 1, themeColor = '#4F46E5' } = route?.params || {};
+  const { lessonId = 1, baiHocId, themeColor = '#4F46E5' } = route?.params || {};
+  const currentBaiHocId = baiHocId || lessonId;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [recorded, setRecorded] = useState(false);
   const [phrases, setPhrases] = useState(DEFAULT_PHRASES);
 
   useEffect(() => {
     let isMounted = true;
-    fetch(`${API_ENDPOINTS.GET_BAI_TAP_KY_NANG}?so_bai=${lessonId}&ky_nang_id=1`)
+    fetch(API_ENDPOINTS.GET_NN_BAI_HOC_CHI_TIET_KY_NANG(currentBaiHocId, 2))
       .then((res) => res.json())
-      .then((data) => {
-        if (isMounted && Array.isArray(data) && data.length > 0) {
-          const mapped = data.map((item: any) => ({
-            vn: item.tu_tv,
-            en: item.goi_y || '',
-          }));
-          setPhrases(mapped);
-          setCurrentIndex(0);
-          setRecorded(false);
+      .then((res) => {
+        if (!isMounted) return;
+        if (res?.success && Array.isArray(res?.data) && res.data.length > 0) {
+          const row = res.data[0];
+          let list: { vn: string; en: string }[] = [];
+          if (Array.isArray(row?.noi_dung_chinh) && row.noi_dung_chinh.length > 0) {
+            list = row.noi_dung_chinh.map((item: any) => ({
+              vn: item.cau_vn || item.vn || '',
+              en: item.cau_en || item.en || '',
+            })).filter((x: any) => x.vn);
+          }
+          if (list.length === 0 && Array.isArray(res?.bai_tap_bo_tro) && res.bai_tap_bo_tro.length > 0) {
+            list = res.bai_tap_bo_tro.map((item: any) => ({
+              vn: item.tu_tv || '',
+              en: item.goi_y || '',
+            })).filter((x: any) => x.vn);
+          }
+          if (list.length > 0) {
+            setPhrases(list);
+            setCurrentIndex(0);
+            setRecorded(false);
+          }
         }
       })
       .catch((err) => {
         console.log('Using default phrases fallback:', err.message);
       });
     return () => { isMounted = false; };
-  }, [lessonId]);
+  }, [currentBaiHocId]);
 
   const current = phrases[currentIndex];
 

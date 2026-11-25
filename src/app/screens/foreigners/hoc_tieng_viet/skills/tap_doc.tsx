@@ -7,44 +7,69 @@ import { API_ENDPOINTS } from '../../../../../config/api';
 interface Props { navigation: any; route: any; }
 
 const DEFAULT_WORDS = ['xin', 'chào', 'cảm', 'ơn', 'tạm', 'biệt', 'vâng', 'không'];
+const DEFAULT_SAMPLE_SENTENCES = [
+  { vn: 'Bảng chữ cái tiếng Việt có 29 chữ cái.', en: 'The Vietnamese alphabet has 29 letters.' },
+  { vn: 'Tiếng Việt là tiếng đơn âm.', en: 'Vietnamese is a monosyllabic language.' },
+];
+const DEFAULT_DIALOGUE = [
+  { speaker: 'A', vn: 'Xin chào! Anh tên gì?', en: 'Hello! What is your name?', side: 'left' },
+  { speaker: 'B', vn: 'Xin chào! Tôi tên là Nam.', en: 'Hello! My name is Nam.', side: 'right' },
+  { speaker: 'A', vn: 'Anh là người nước nào?', en: 'What nationality are you?', side: 'left' },
+  { speaker: 'B', vn: 'Tôi là người Việt Nam. Còn bạn?', en: "I'm Vietnamese. And you?", side: 'right' },
+  { speaker: 'A', vn: 'Tôi là người Anh.', en: "I'm British.", side: 'left' },
+];
 
 const TapDocScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { lessonId = 1, themeColor = '#4F46E5' } = route?.params || {};
-  const [activeTab, setActiveTab] = useState('3.1');
+  const { lessonId = 1, baiHocId, targetSubTab, initialTab, themeColor = '#4F46E5' } = route?.params || {};
+  const currentBaiHocId = baiHocId || lessonId;
+  const [activeTab, setActiveTab] = useState(targetSubTab || initialTab || '3.1');
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const [words, setWords] = useState<string[]>(DEFAULT_WORDS);
+  const [sampleSentences, setSampleSentences] = useState(DEFAULT_SAMPLE_SENTENCES);
+  const [dialogue, setDialogue] = useState(DEFAULT_DIALOGUE);
 
   useEffect(() => {
     let isMounted = true;
-    fetch(`${API_ENDPOINTS.GET_BAI_TAP_KY_NANG}?so_bai=${lessonId}&ky_nang_id=3`)
+    fetch(API_ENDPOINTS.GET_NN_BAI_HOC_CHI_TIET_KY_NANG(currentBaiHocId, 3))
       .then((res) => res.json())
-      .then((data) => {
-        if (isMounted && Array.isArray(data) && data.length > 0) {
-          const list: string[] = [];
-          data.forEach((item: any) => {
-            if (item.tu_tv) {
-              const parts = item.tu_tv.split(/[\s,]+/);
-              parts.forEach((p: string) => {
-                const clean = p.trim();
-                if (clean && !list.includes(clean)) list.push(clean);
-              });
-            }
-          });
-          if (list.length > 0) setWords(list);
+      .then((res) => {
+        if (!isMounted) return;
+        if (res?.success && Array.isArray(res?.data)) {
+          // Tab 3.1
+          const row31 = res.data.find((r: any) => r.ky_hieu === '3.1' || r.id === 10);
+          if (row31?.noi_dung_chinh && Array.isArray(row31.noi_dung_chinh.tu)) {
+            setWords(row31.noi_dung_chinh.tu);
+          }
+          if (row31?.noi_dung_phu && Array.isArray(row31.noi_dung_phu.cau)) {
+            setSampleSentences(row31.noi_dung_phu.cau);
+          }
+
+          // Tab 3.2
+          const row32 = res.data.find((r: any) => r.ky_hieu === '3.2' || r.id === 11);
+          if (Array.isArray(row32?.noi_dung_chinh) && row32.noi_dung_chinh.length > 0) {
+            const mapped = row32.noi_dung_chinh.map((item: any) => ({
+              speaker: item.vai || item.speaker || 'A',
+              vn: item.vn || item.cau_vn || '',
+              en: item.en || item.cau_en || '',
+              side: (item.vai === 'B' || item.side === 'right') ? 'right' : 'left',
+            }));
+            setDialogue(mapped);
+          } else if (Array.isArray(res?.bai_tap_bo_tro) && res.bai_tap_bo_tro.length > 0) {
+            const mapped = res.bai_tap_bo_tro.map((item: any, idx: number) => ({
+              speaker: idx % 2 === 0 ? 'A' : 'B',
+              vn: item.tu_tv,
+              en: item.goi_y || '',
+              side: idx % 2 === 0 ? 'left' : 'right',
+            }));
+            setDialogue(mapped);
+          }
         }
       })
       .catch((err) => {
         console.log('Using default reading words fallback:', err.message);
       });
     return () => { isMounted = false; };
-  }, [lessonId]);
-  const dialogue = [
-    { speaker: 'A', vn: 'Xin chào! Anh tên gì?', en: 'Hello! What is your name?', side: 'left' },
-    { speaker: 'B', vn: 'Xin chào! Tôi tên là Nam.', en: 'Hello! My name is Nam.', side: 'right' },
-    { speaker: 'A', vn: 'Anh là người nước nào?', en: 'What nationality are you?', side: 'left' },
-    { speaker: 'B', vn: 'Tôi là người Việt Nam. Còn bạn?', en: "I'm Vietnamese. And you?", side: 'right' },
-    { speaker: 'A', vn: 'Tôi là người Anh.', en: "I'm British.", side: 'left' },
-  ];
+  }, [currentBaiHocId]);
 
   return (
     <BaseSkillContent
@@ -104,10 +129,7 @@ const TapDocScreen: React.FC<Props> = ({ navigation, route }) => {
           </ContentCard>
 
           <ContentCard title="📋 Câu đọc mẫu • Sample Reading Sentences">
-            {[
-              { vn: 'Bảng chữ cái tiếng Việt có 29 chữ cái.', en: 'The Vietnamese alphabet has 29 letters.' },
-              { vn: 'Tiếng Việt là tiếng đơn âm.', en: 'Vietnamese is a monosyllabic language.' },
-            ].map((item, i) => (
+            {sampleSentences.map((item, i) => (
               <View key={i} style={styles.sentenceRow}>
                 <Text style={styles.sentenceVn}>{item.vn}</Text>
                 <Text style={styles.sentenceEn}>{item.en}</Text>

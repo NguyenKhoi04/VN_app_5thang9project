@@ -17,6 +17,12 @@ const skills: SkillItem[] = [
 ];
 interface Props { navigation: any; }
 const Phan2Bai3: React.FC<Props> = ({ navigation }) => (
-  <SkillMenuScreen navigation={navigation} lessonTitle="Âm đệm và âm chính" lessonSubtitle="Medial and Main Vowels" lessonNumber={3} themeColor={THEME} skills={skills} onBack={() => navigation.goBack()} />
+  <SkillMenuScreen 
+    navigation={navigation} 
+    lessonId={12}
+    lessonNumber={3} 
+    themeColor={THEME} 
+    onBack={() => navigation.goBack()} 
+  />
 );
 export default Phan2Bai3;

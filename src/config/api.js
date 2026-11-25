@@ -58,6 +58,11 @@ export const API_ENDPOINTS = {
   GET_CAU_HOI_NN: `${BASE_URL}/api/cau-hoi-nn`,
   GET_BAI_TAP_KY_NANG: `${BASE_URL}/api/bai-tap-ky-nang`,
 
+  // Kỹ năng người nước ngoài (ky_nang_nn, baihoc_phatam_phan2, baihoc_chude_phan3)
+  GET_NN_KY_NANG: `${BASE_URL}/api/nn/ky-nang`,
+  GET_NN_BAI_HOC_KY_NANG: (baiHocId) => `${BASE_URL}/api/nn/bai-hoc/${baiHocId}/ky-nang`,
+  GET_NN_BAI_HOC_CHI_TIET_KY_NANG: (baiHocId, kyNangId) => `${BASE_URL}/api/nn/bai-hoc/${baiHocId}/ky-nang/${kyNangId}`,
+
   // AI Camera nhận diện đồ vật (Roboflow & Backend AI)
   AI_DETECT_OBJECT: `${BASE_URL}/api/ai/detect-object`,
 };

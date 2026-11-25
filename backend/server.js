@@ -1563,6 +1563,9 @@ app.post('/api/ai/detect-object', async (req, res) => {
   });
 });
 
+const kyNangNNRoutes = require('./kyNangNN');
+app.use('/api/nn', kyNangNNRoutes);
+
 // Khởi chạy server tại cổng 5000
 const PORT = 5000;
 app.listen(PORT, '0.0.0.0', () => {

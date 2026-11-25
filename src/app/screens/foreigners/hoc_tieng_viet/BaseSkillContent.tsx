@@ -78,10 +78,15 @@ export const ItemRow: React.FC<{ vn: string; en: string; color: string }> = ({ v
   </View>
 );
 
-export const PlayButton: React.FC<{ label: string; color: string }> = ({ label, color }) => (
-  <TouchableOpacity style={[cardStyles.playBtn, { borderColor: color }]} activeOpacity={0.8}>
+export const PlayButton: React.FC<{ label: string; color: string; style?: any }> = ({ label, color, style }) => (
+  <TouchableOpacity
+    style={[cardStyles.playBtn, { borderColor: color, backgroundColor: color + '12' }, style]}
+    activeOpacity={0.8}
+  >
     <Text style={[cardStyles.playIcon, { color }]}>▶</Text>
-    <Text style={[cardStyles.playText, { color }]}>{label}</Text>
+    <Text style={[cardStyles.playText, { color }]} numberOfLines={2}>
+      {label}
+    </Text>
   </TouchableOpacity>
 );
 
@@ -128,6 +133,7 @@ const cardStyles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.07,
     shadowRadius: 6,
+    overflow: 'hidden',
   },
   cardTitle: {
     fontSize: 14,
@@ -155,16 +161,18 @@ const cardStyles = StyleSheet.create({
   playBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingVertical: 9,
+    paddingHorizontal: 14,
     marginTop: 8,
     gap: 8,
+    maxWidth: '100%',
     alignSelf: 'flex-start',
+    overflow: 'hidden',
   },
-  playIcon: { fontSize: 16 },
-  playText: { fontSize: 14, fontWeight: '600' },
+  playIcon: { fontSize: 14 },
+  playText: { fontSize: 13, fontWeight: '700', flexShrink: 1 },
 });
 
 export default BaseSkillContent;

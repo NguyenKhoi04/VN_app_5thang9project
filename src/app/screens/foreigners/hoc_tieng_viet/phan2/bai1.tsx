@@ -1,4 +1,4 @@
-// Phần 2 - Bài 1: Âm đầu
+// Phần 2 - Bài 1: GẶP NHAU Ở SÂN BAY
 import React from 'react';
 import SkillMenuScreen, { SkillItem } from '../SkillMenuScreen';
 
@@ -26,11 +26,12 @@ const skills: SkillItem[] = [
 ];
 interface Props { navigation: any; }
 const Phan2Bai1: React.FC<Props> = ({ navigation }) => (
-  <SkillMenuScreen navigation={navigation} 
-  lessonTitle="Âm đầu" 
-  lessonSubtitle="Initial Consonants" 
-  lessonNumber={1} 
-  themeColor={THEME} 
-  skills={skills} onBack={() => navigation.goBack()} />
+  <SkillMenuScreen 
+    navigation={navigation} 
+    lessonId={10}
+    lessonNumber={1} 
+    themeColor={THEME} 
+    onBack={() => navigation.goBack()} 
+  />
 );
 export default Phan2Bai1;

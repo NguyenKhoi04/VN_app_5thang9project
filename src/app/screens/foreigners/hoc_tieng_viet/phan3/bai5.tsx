@@ -485,58 +485,79 @@ const DienTuDang2: React.FC<{ data?: DienTuDang2Item[] }> = ({ data = [] }) => {
   );
 };
 
+interface LetterToken {
+  uid: string;
+  char: string;
+}
+
+const buildLetterTokens = (list: DienTuDang3Item[]) => {
+  const map: Record<number, LetterToken[]> = {};
+  list.forEach(q => {
+    const tokens: LetterToken[] = q.shuffled.map((c, i) => ({ uid: `${q.id}_${i}_${c}`, char: c }));
+    map[q.id] = [...tokens].sort(() => Math.random() - 0.5);
+  });
+  return map;
+};
+
 const DienTuDang3: React.FC<{ data?: DienTuDang3Item[] }> = ({ data = [] }) => {
   const list = data;
-  const [arranged, setArranged] = useState<Record<number, string[]>>(
-    Object.fromEntries(list.map(q => [q.id, [...q.shuffled].sort(() => Math.random() - 0.5)]))
-  );
-  const [answers, setAnswers] = useState<Record<number, string[]>>(
+  const [arranged, setArranged] = useState<Record<number, LetterToken[]>>(() => buildLetterTokens(list));
+  const [answers, setAnswers] = useState<Record<number, LetterToken[]>>(() =>
     Object.fromEntries(list.map(q => [q.id, []]))
   );
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
   useEffect(() => {
-    setArranged(Object.fromEntries(list.map(q => [q.id, [...q.shuffled].sort(() => Math.random() - 0.5)])));
+    setArranged(buildLetterTokens(list));
     setAnswers(Object.fromEntries(list.map(q => [q.id, []])));
     setSubmitted(false);
     setShowResult(false);
   }, [data]);
 
-  const moveLetter = (qid: number, letter: string, from: 'bank' | 'answer') => {
+  const moveLetter = (qid: number, token: LetterToken, from: 'bank' | 'answer') => {
     if (submitted) return;
     if (from === 'bank') {
-      setArranged(prev => {
-        const cur = prev[qid] || [];
-        const idx = cur.indexOf(letter); if (idx === -1) return prev;
-        const n = [...cur]; n.splice(idx, 1);
-        return { ...prev, [qid]: n };
-      });
-      setAnswers(prev => ({ ...prev, [qid]: [...(prev[qid] || []), letter] }));
+      setArranged(prev => ({
+        ...prev,
+        [qid]: (prev[qid] || []).filter(t => t.uid !== token.uid),
+      }));
+      setAnswers(prev => ({
+        ...prev,
+        [qid]: [...(prev[qid] || []), token],
+      }));
     } else {
-      setAnswers(prev => {
-        const cur = prev[qid] || [];
-        const idx = cur.indexOf(letter); if (idx === -1) return prev;
-        const n = [...cur]; n.splice(idx, 1);
-        return { ...prev, [qid]: n };
-      });
-      setArranged(prev => ({ ...prev, [qid]: [...(prev[qid] || []), letter] }));
+      setAnswers(prev => ({
+        ...prev,
+        [qid]: (prev[qid] || []).filter(t => t.uid !== token.uid),
+      }));
+      setArranged(prev => ({
+        ...prev,
+        [qid]: [...(prev[qid] || []), token],
+      }));
     }
+  };
+
+  const checkSingle = (q: DienTuDang3Item) => {
+    const userStr = (answers[q.id] || []).map(t => t.char).join('').replace(/ /g, '').toUpperCase();
+    const targetStr = (q.ans || '').replace(/ /g, '').toUpperCase();
+    return userStr === targetStr;
   };
 
   const handleSubmit = () => {
     if (!list.every(q => (answers[q.id] || []).length > 0)) { Alert.alert('Chưa xong!'); return; }
     setSubmitted(true);
-    const ok = list.every(q => (answers[q.id] || []).join('') === q.ans.replace(/ /g, ''));
+    const ok = list.every(checkSingle);
     setShowResult(true);
     if (!ok) setTimeout(() => {
-      setSubmitted(false); setShowResult(false);
-      setArranged(Object.fromEntries(list.map(q => [q.id, [...q.shuffled].sort(() => Math.random() - 0.5)])));
+      setSubmitted(false);
+      setShowResult(false);
+      setArranged(buildLetterTokens(list));
       setAnswers(Object.fromEntries(list.map(q => [q.id, []])));
     }, 120000);
   };
 
-  const allCorrect = submitted && list.every(q => (answers[q.id] || []).join('') === q.ans.replace(/ /g, ''));
+  const allCorrect = submitted && list.every(checkSingle);
 
   if (list.length === 0) {
     return (
@@ -550,8 +571,7 @@ const DienTuDang3: React.FC<{ data?: DienTuDang3Item[] }> = ({ data = [] }) => {
     <View>
       <Text style={styles.sectionSubTitle}>📌 Dạng 3: Sắp xếp chữ cái thành từ</Text>
       {list.map(q => {
-        const userAns = (answers[q.id] || []).join('');
-        const correct = submitted && userAns === q.ans.replace(/ /g, '');
+        const correct = submitted && checkSingle(q);
         const wrong = submitted && !correct;
         const curBank = arranged[q.id] || [];
         const curAnswers = answers[q.id] || [];
@@ -561,17 +581,25 @@ const DienTuDang3: React.FC<{ data?: DienTuDang3Item[] }> = ({ data = [] }) => {
             <Text style={styles.bigEmoji}>{q.emoji}</Text>
             <View style={[styles.letterRow, correct && { backgroundColor: '#D1FAE5' }, wrong && { backgroundColor: '#FEE2E2' }]}>
               {curAnswers.length === 0
-                ? <Text style={styles.placeholder}>Nhấn chữ cái để xếp...</Text>
-                : curAnswers.map((l, i) => (
-                  <TouchableOpacity key={`a${i}`} onPress={() => moveLetter(q.id, l, 'answer')} style={[styles.letterChip, { backgroundColor: correct ? '#059669' : wrong ? '#DC2626' : THEME }]}>
-                    <Text style={styles.letterChipText}>{l}</Text>
+                ? <Text style={styles.placeholder}>Nhấn chữ cái bên dưới để xếp từ...</Text>
+                : curAnswers.map((tok) => (
+                  <TouchableOpacity
+                    key={tok.uid}
+                    onPress={() => moveLetter(q.id, tok, 'answer')}
+                    style={[styles.letterChip, { backgroundColor: correct ? '#059669' : wrong ? '#DC2626' : THEME }]}
+                  >
+                    <Text style={styles.letterChipText}>{tok.char === ' ' ? '␣' : tok.char}</Text>
                   </TouchableOpacity>
                 ))}
             </View>
             <View style={styles.letterRow}>
-              {curBank.map((l, i) => (
-                <TouchableOpacity key={`b${i}`} onPress={() => moveLetter(q.id, l, 'bank')} style={[styles.letterChip, { backgroundColor: '#94A3B8' }]}>
-                  <Text style={styles.letterChipText}>{l}</Text>
+              {curBank.map((tok) => (
+                <TouchableOpacity
+                  key={tok.uid}
+                  onPress={() => moveLetter(q.id, tok, 'bank')}
+                  style={[styles.letterChip, { backgroundColor: '#64748B' }]}
+                >
+                  <Text style={styles.letterChipText}>{tok.char === ' ' ? '␣' : tok.char}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -581,7 +609,7 @@ const DienTuDang3: React.FC<{ data?: DienTuDang3Item[] }> = ({ data = [] }) => {
       })}
       {showResult && <ResultBanner correct={allCorrect} onRetry={() => {
         setSubmitted(false); setShowResult(false);
-        setArranged(Object.fromEntries(list.map(q => [q.id, [...q.shuffled].sort(() => Math.random() - 0.5)])));
+        setArranged(buildLetterTokens(list));
         setAnswers(Object.fromEntries(list.map(q => [q.id, []])));
       }} />}
       {!showResult && (

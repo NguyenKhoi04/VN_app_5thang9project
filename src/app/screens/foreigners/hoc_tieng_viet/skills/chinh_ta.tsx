@@ -14,36 +14,66 @@ const DEFAULT_WORDS = [
   { word: 'tiếng Việt', hint: 'Vietnamese language • Ngôn ngữ', audio: '🎵' },
 ];
 
+const DEFAULT_TIPS = [
+  { vn: 'Tiếng Việt có dấu thanh và dấu phụ', en: 'Vietnamese has tone marks and diacritics' },
+  { vn: 'Ví dụ: a → ă → â (3 âm khác nhau)', en: 'Example: a → ă → â (3 different sounds)' },
+  { vn: 'Viết hoa chữ cái đầu câu và tên riêng', en: 'Capitalize first letter of sentence and proper nouns' },
+];
+
 const ChinhTaScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { lessonId = 1, themeColor = '#4F46E5' } = route?.params || {};
+  const { lessonId = 1, baiHocId, themeColor = '#4F46E5' } = route?.params || {};
+  const currentBaiHocId = baiHocId || lessonId;
   const [currentIdx, setCurrentIdx] = useState(0);
   const [input, setInput] = useState('');
   const [checked, setChecked] = useState(false);
   const [score, setScore] = useState(0);
   const [dictationWords, setDictationWords] = useState(DEFAULT_WORDS);
+  const [tips, setTips] = useState(DEFAULT_TIPS);
 
   useEffect(() => {
     let isMounted = true;
-    fetch(`${API_ENDPOINTS.GET_BAI_TAP_KY_NANG}?so_bai=${lessonId}&ky_nang_id=4`)
+    fetch(API_ENDPOINTS.GET_NN_BAI_HOC_CHI_TIET_KY_NANG(currentBaiHocId, 6))
       .then((res) => res.json())
-      .then((data) => {
-        if (isMounted && Array.isArray(data) && data.length > 0) {
-          const mapped = data.map((item: any) => ({
-            word: item.tu_tv,
-            hint: item.goi_y || 'Luyện viết từ',
-            audio: '🎵',
-          }));
-          setDictationWords(mapped);
-          setCurrentIdx(0);
-          setInput('');
-          setChecked(false);
+      .then((res) => {
+        if (!isMounted) return;
+        if (res?.success && Array.isArray(res?.data) && res.data.length > 0) {
+          const row = res.data[0];
+          let wordsList: { word: string; hint: string; audio: string }[] = [];
+          if (Array.isArray(row.noi_dung_chinh) && row.noi_dung_chinh.length > 0) {
+            wordsList = row.noi_dung_chinh.map((item: any) => ({
+              word: item.tu_vn || item.word || '',
+              hint: item.goi_y_en || item.hint || 'Luyện viết từ',
+              audio: '🎵',
+            })).filter((x: any) => x.word);
+          }
+          if (wordsList.length === 0 && Array.isArray(res?.bai_tap_bo_tro) && res.bai_tap_bo_tro.length > 0) {
+            wordsList = res.bai_tap_bo_tro.map((item: any) => ({
+              word: item.tu_tv || '',
+              hint: item.goi_y || 'Luyện viết từ',
+              audio: '🎵',
+            })).filter((x: any) => x.word);
+          }
+          if (wordsList.length > 0) {
+            setDictationWords(wordsList);
+            setCurrentIdx(0);
+            setInput('');
+            setChecked(false);
+            setScore(0);
+          }
+
+          if (row.noi_dung_phu && Array.isArray(row.noi_dung_phu.danh_sach) && row.noi_dung_phu.danh_sach.length > 0) {
+            setTips(row.noi_dung_phu.danh_sach.map((t: any) => ({
+              vn: t.vn || '',
+              en: t.en || '',
+            })));
+          }
         }
       })
       .catch((err) => {
         console.log('Using default dictation words fallback:', err.message);
       });
     return () => { isMounted = false; };
-  }, [lessonId]);
+  }, [currentBaiHocId]);
 
   const current = dictationWords[currentIdx];
   const isCorrect = input.trim().toLowerCase() === current.word.toLowerCase();
@@ -153,14 +183,12 @@ const ChinhTaScreen: React.FC<Props> = ({ navigation, route }) => {
 
       {/* Writing tips */}
       <ContentCard title="✏️ Mẹo viết chính tả • Dictation Tips">
-        <Text style={styles.tip}>
-          • Tiếng Việt có dấu thanh và dấu phụ{'\n'}
-          <Text style={styles.tipEn}>  Vietnamese has tone marks and diacritics{'\n'}</Text>
-          • Ví dụ: a → ă → â (3 âm khác nhau){'\n'}
-          <Text style={styles.tipEn}>  Example: a → ă → â (3 different sounds){'\n'}</Text>
-          • Viết hoa chữ cái đầu câu và tên riêng{'\n'}
-          <Text style={styles.tipEn}>  Capitalize first letter of sentence and proper nouns</Text>
-        </Text>
+        {tips.map((t, idx) => (
+          <View key={idx} style={{ marginBottom: 8 }}>
+            <Text style={styles.tip}>• {t.vn}</Text>
+            <Text style={styles.tipEn}>  {t.en}</Text>
+          </View>
+        ))}
       </ContentCard>
     </BaseSkillContent>
   );
