@@ -11,6 +11,7 @@ import {
   FlatList,
 } from 'react-native';
 import { API_ENDPOINTS } from '../../../../../config/api';
+import { useAutoTranslate } from '../../../locales/useAutoTranslate';
 
 interface VocabWord {
   vn: string;
@@ -100,6 +101,7 @@ interface Props { navigation: any; route: any; }
 
 const BangTuVung: React.FC<Props> = ({ navigation, route }) => {
   const { lessonId = 1, lessonTitle = '', lessonTitleEn = '' } = route?.params || {};
+  const tr = useAutoTranslate();
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<string | null>(null);
   const [dbWords, setDbWords] = useState<VocabWord[] | null>(null);
@@ -147,7 +149,7 @@ const BangTuVung: React.FC<Props> = ({ navigation, route }) => {
         <View style={styles.headerCenter}>
           <Text style={styles.headerBai}>Bài {lessonId} • Lesson {lessonId}</Text>
           <Text style={styles.headerTitle} numberOfLines={2}>{lessonTitle}</Text>
-          <Text style={styles.headerSub}>{lessonTitleEn}</Text>
+          <Text style={styles.headerSub}>{tr(lessonTitleEn)}</Text>
         </View>
         <View style={{ width: 40 }} />
       </View>
@@ -219,7 +221,7 @@ const BangTuVung: React.FC<Props> = ({ navigation, route }) => {
           <View style={styles.emptyBox}>
             <Text style={styles.emptyEmoji}>🔍</Text>
             <Text style={styles.emptyText}>Không tìm thấy từ nào</Text>
-            <Text style={styles.emptyTextEn}>No words found</Text>
+            <Text style={styles.emptyTextEn}>{tr('No words found')}</Text>
           </View>
         }
         contentContainerStyle={{ paddingBottom: 30 }}

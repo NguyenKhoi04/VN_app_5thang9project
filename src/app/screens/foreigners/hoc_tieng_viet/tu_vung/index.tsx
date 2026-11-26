@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
+import { useAutoTranslate } from '../../../locales/useAutoTranslate';
 
 const LESSONS = [
   { id: 1, titleVN: 'Xin lỗi, anh tên gì?', titleEN: 'Excuse me, What is your name?', emoji: '👋', count: 12 },
@@ -18,7 +19,9 @@ const LESSONS = [
 
 interface Props { navigation: any; }
 
-const TuVungIndex: React.FC<Props> = ({ navigation }) => (
+const TuVungIndex: React.FC<Props> = ({ navigation }) => {
+  const tr = useAutoTranslate();
+  return (
   <SafeAreaView style={styles.container}>
     <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
@@ -27,7 +30,7 @@ const TuVungIndex: React.FC<Props> = ({ navigation }) => (
       <View style={styles.headerCenter}>
         <Text style={styles.headerEmoji}>📖</Text>
         <Text style={styles.headerTitle}>BẢNG TỪ VỰNG</Text>
-        <Text style={styles.headerSub}>Vocabulary Table</Text>
+        <Text style={styles.headerSub}>{tr('Vocabulary Table')}</Text>
       </View>
       <View style={{ width: 40 }} />
     </View>
@@ -42,7 +45,7 @@ const TuVungIndex: React.FC<Props> = ({ navigation }) => (
         <TouchableOpacity
           key={lesson.id}
           style={styles.card}
-          onPress={() => navigation.navigate('BangTuVung', { lessonId: lesson.id, lessonTitle: lesson.titleVN, lessonTitleEn: lesson.titleEN })}
+          onPress={() => navigation.navigate('BangTuVung', { lessonId: lesson.id, lessonTitle: lesson.titleVN, lessonTitleEn: tr(lesson.titleEN) })}
           activeOpacity={0.85}
         >
           <View style={styles.cardLeft}>
@@ -51,7 +54,7 @@ const TuVungIndex: React.FC<Props> = ({ navigation }) => (
           </View>
           <View style={styles.cardRight}>
             <Text style={styles.cardTitle}>{lesson.titleVN}</Text>
-            <Text style={styles.cardSub}>{lesson.titleEN}</Text>
+            <Text style={styles.cardSub}>{tr(lesson.titleEN)}</Text>
             <View style={styles.countBadge}>
               <Text style={styles.countText}>📚 {lesson.count} từ vựng • words</Text>
             </View>
@@ -80,7 +83,8 @@ const TuVungIndex: React.FC<Props> = ({ navigation }) => (
       <View style={{ height: 30 }} />
     </ScrollView>
   </SafeAreaView>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFBEB' },

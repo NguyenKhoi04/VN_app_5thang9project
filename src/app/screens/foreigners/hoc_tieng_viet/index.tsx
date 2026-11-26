@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import Footer from '../../Footer';
+import { useAutoTranslate } from '../../locales/useAutoTranslate';
 
 interface SectionCardProps {
   number: string;
@@ -31,6 +32,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
   bgColor,
   onPress,
 }) => {
+  const tr = useAutoTranslate();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
@@ -54,7 +56,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
         </View>
         <View style={styles.cardRight}>
           <Text style={styles.cardTitle}>{title}</Text>
-          <Text style={styles.cardSubtitle}>{subtitle}</Text>
+          <Text style={styles.cardSubtitle}>{tr(subtitle)}</Text>
           <View style={[styles.badge, { backgroundColor: color }]}>
             <Text style={styles.badgeText}>4 bài học • 6 kỹ năng</Text>
           </View>
@@ -70,6 +72,7 @@ interface Props {
 }
 
 const HocTiengViet: React.FC<Props> = ({ navigation }) => {
+  const tr = useAutoTranslate();
   const sections = [
     {
       number: 'PHẦN 1',
@@ -110,7 +113,7 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
         <View style={styles.headerCenter}>
           <Text style={styles.headerFlag}>🇻🇳</Text>
           <Text style={styles.headerTitle}>Tiếng Việt</Text>
-          <Text style={styles.headerSub}>Vietnamese Language Course</Text>
+          <Text style={styles.headerSub}>{tr('Vietnamese Language Course')}</Text>
         </View>
         <View style={{ width: 40 }} />
       </View>
@@ -119,10 +122,10 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
         {/* Banner */}
         <View style={styles.banner}>
           <Text style={styles.bannerTitle}>Chương trình học</Text>
-          <Text style={styles.bannerSub}>Learning Program</Text>
+          <Text style={styles.bannerSub}>{tr('Learning Program')}</Text>
           <Text style={styles.bannerDesc}>
             Chọn phần học phù hợp với bạn{'\n'}
-            <Text style={styles.bannerDescEn}>Choose the section that suits you</Text>
+            <Text style={styles.bannerDescEn}>{tr('Choose the section that suits you')}</Text>
           </Text>
         </View>
 
@@ -157,10 +160,10 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
           </View>
           <View style={styles.vocabRight}>
             <Text style={styles.vocabTitle}>BẢNG TỪ VỰNG</Text>
-            <Text style={styles.vocabSub}>Vocabulary Table</Text>
+            <Text style={styles.vocabSub}>{tr('Vocabulary Table')}</Text>
             <Text style={styles.vocabDesc}>
               Tiếng Việt | Từ loại | Tiếng Anh{'\n'}
-              <Text style={styles.vocabDescEn}>Vietnamese | Word Type | English</Text>
+              <Text style={styles.vocabDescEn}>{tr('Vietnamese | Word Type | English')}</Text>
             </Text>
             <Text style={styles.searchHint}>🔍 Tìm kiếm từ • Search words</Text>
           </View>

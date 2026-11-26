@@ -12,6 +12,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { API_ENDPOINTS } from '../../../../../config/api';
+import { useAutoTranslate } from '../../../locales/useAutoTranslate';
 
 const { width } = Dimensions.get('window');
 const THEME = '#059669';
@@ -86,6 +87,7 @@ const PulseRing: React.FC = () => {
 interface Props { navigation: any; }
 
 const Phan3Roadmap: React.FC<Props> = ({ navigation }) => {
+  const tr = useAutoTranslate();
   const [lessonList, setLessonList] = useState(DEFAULT_LESSONS);
 
   useEffect(() => {
@@ -122,7 +124,7 @@ const Phan3Roadmap: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>PHẦN 3: Bài học theo chủ đề</Text>
-          <Text style={styles.headerSub}>Thematic Lessons</Text>
+          <Text style={styles.headerSub}>{tr('Thematic Lessons')}</Text>
         </View>
         <View style={{ width: 40 }} />
       </View>
@@ -132,7 +134,7 @@ const Phan3Roadmap: React.FC<Props> = ({ navigation }) => {
         <View style={styles.trophyRow}>
           <Text style={styles.trophy}>🏆</Text>
           <Text style={[styles.trophyText, { color: THEME }]}>Hoàn thành tất cả chủ đề</Text>
-          <Text style={styles.trophyTextEn}>Complete all topics</Text>
+          <Text style={styles.trophyTextEn}>{tr('Complete all topics')}</Text>
         </View>
 
         {reversed.map((lesson, idx) => {
@@ -193,7 +195,7 @@ const Phan3Roadmap: React.FC<Props> = ({ navigation }) => {
                   {/* Title VN - font 20 */}
                   <Text style={styles.topicTitleVN}>{lesson.titleVN}</Text>
                   {/* Title EN - font 13 */}
-                  <Text style={styles.topicTitleEN}>{lesson.titleEN}</Text>
+                  <Text style={styles.topicTitleEN}>{tr(lesson.titleEN)}</Text>
                   {!isLocked && (
                     <Text style={[styles.startHint, { color: THEME }]}>Bắt đầu › Start</Text>
                   )}

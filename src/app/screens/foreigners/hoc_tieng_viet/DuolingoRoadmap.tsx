@@ -11,6 +11,7 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
+import { useAutoTranslate } from '../../locales/useAutoTranslate';
 
 const { width } = Dimensions.get('window');
 
@@ -64,6 +65,7 @@ const DuolingoRoadmap: React.FC<RoadmapProps> = ({
   lessons,
   onBack,
 }) => {
+  const tr = useAutoTranslate();
   const reversed = [...lessons].reverse();
 
   return (
@@ -75,7 +77,7 @@ const DuolingoRoadmap: React.FC<RoadmapProps> = ({
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{sectionTitle}</Text>
-          <Text style={styles.headerSub}>{sectionSubtitle}</Text>
+          <Text style={styles.headerSub}>{tr(sectionSubtitle)}</Text>
         </View>
         <View style={{ width: 40 }} />
       </View>
@@ -162,7 +164,7 @@ const DuolingoRoadmap: React.FC<RoadmapProps> = ({
                   <Text style={[styles.cardTitle, { color: isLocked ? '#94A3B8' : '#1E293B' }]}>
                     {lesson.title}
                   </Text>
-                  <Text style={styles.cardSubtitle}>{lesson.subtitle}</Text>
+                  <Text style={styles.cardSubtitle}>{tr(lesson.subtitle)}</Text>
                   {!isLocked && (
                     <View style={styles.cardFooter}>
                       <Text style={[styles.cardAction, { color: sectionColor }]}>

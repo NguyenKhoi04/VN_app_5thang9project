@@ -14,6 +14,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// Tự động dịch các cột *_en theo header 'x-lang' cho nhóm API người nước ngoài
+const { localizeResponse, translateRoute } = require('./translator');
+app.post('/api/translate', translateRoute);
+['/api/bai-hoc-nn', '/api/phan-bai-nn', '/api/tu-vung', '/api/cau-hoi-nn', '/api/bai-tap-ky-nang', '/api/nn'].forEach((p) =>
+  app.use(p, localizeResponse),
+);
+
 // 1. Cấu hình thông tin kết nối MySQL
 const db = mysql.createPool({
   host: 'localhost',

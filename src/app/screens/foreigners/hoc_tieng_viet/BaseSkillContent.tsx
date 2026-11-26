@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
+import { useAutoTranslate } from '../../locales/useAutoTranslate';
 
 interface BaseSkillProps {
   navigation: any;
@@ -28,6 +29,7 @@ const BaseSkillContent: React.FC<BaseSkillProps> = ({
   themeColor,
   children,
 }) => {
+  const tr = useAutoTranslate();
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -41,7 +43,7 @@ const BaseSkillContent: React.FC<BaseSkillProps> = ({
             <Text style={styles.emoji}>{emoji}</Text>
             <Text style={styles.headerTitle}>{skillTitle}</Text>
           </View>
-          <Text style={styles.headerSub}>{skillSubtitle}</Text>
+          <Text style={styles.headerSub}>{tr(skillSubtitle)}</Text>
         </View>
         <View style={{ width: 40 }} />
       </View>
