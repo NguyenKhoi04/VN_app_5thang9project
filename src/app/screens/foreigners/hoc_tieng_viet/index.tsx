@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import Footer from '../../Footer';
+import { useLocalization } from '../../locales/useLocalization';
 
 interface SectionCardProps {
   number: string;
@@ -70,11 +71,13 @@ interface Props {
 }
 
 const HocTiengViet: React.FC<Props> = ({ navigation }) => {
+  const { labels, t } = useLocalization();
+
   const sections = [
     {
       number: 'PHẦN 1',
       title: 'Ngữ âm và chữ viết',
-      subtitle: 'Phonetics and Writing\n(Writing system)',
+      subtitle: `${labels.phoneticsWriting}\n${labels.phoneticsWritingSub}`,
       emoji: '✍️',
       color: '#4F46E5',
       bgColor: '#EEF2FF',
@@ -83,7 +86,7 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
     {
       number: 'PHẦN 2',
       title: 'Luyện Phát âm',
-      subtitle: 'Pronunciation Drills\n(Sounds & Tones)',
+      subtitle: `${labels.pronunciationDrills}\n${labels.pronunciationDrillsSub}`,
       emoji: '🎙️',
       color: '#0891B2',
       bgColor: '#ECFEFF',
@@ -92,7 +95,7 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
     {
       number: 'PHẦN 3',
       title: 'Bài học theo chủ đề',
-      subtitle: 'Thematic Lessons\n(Topic-based)',
+      subtitle: `${labels.thematicLessons}\n${labels.thematicLessonsSub}`,
       emoji: '📚',
       color: '#059669',
       bgColor: '#ECFDF5',
@@ -110,7 +113,7 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
         <View style={styles.headerCenter}>
           <Text style={styles.headerFlag}>🇻🇳</Text>
           <Text style={styles.headerTitle}>Tiếng Việt</Text>
-          <Text style={styles.headerSub}>Vietnamese Language Course</Text>
+          <Text style={styles.headerSub}>{labels.vietnameseCourse}</Text>
         </View>
         <View style={{ width: 40 }} />
       </View>
@@ -119,10 +122,10 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
         {/* Banner */}
         <View style={styles.banner}>
           <Text style={styles.bannerTitle}>Chương trình học</Text>
-          <Text style={styles.bannerSub}>Learning Program</Text>
+          <Text style={styles.bannerSub}>{labels.learningProgram}</Text>
           <Text style={styles.bannerDesc}>
             Chọn phần học phù hợp với bạn{'\n'}
-            <Text style={styles.bannerDescEn}>Choose the section that suits you</Text>
+            <Text style={styles.bannerDescEn}>{labels.chooseSection}</Text>
           </Text>
         </View>
 
@@ -143,7 +146,7 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
         {/* Vocabulary Special Section */}
         <View style={styles.divider}>
           <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>PHẦN ĐẶC BIỆT • SPECIAL SECTION</Text>
+          <Text style={styles.dividerText}>PHẦN ĐẶC BIỆT • {labels.specialSection}</Text>
           <View style={styles.dividerLine} />
         </View>
 
@@ -157,12 +160,12 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
           </View>
           <View style={styles.vocabRight}>
             <Text style={styles.vocabTitle}>BẢNG TỪ VỰNG</Text>
-            <Text style={styles.vocabSub}>Vocabulary Table</Text>
+            <Text style={styles.vocabSub}>{labels.vocabTable}</Text>
             <Text style={styles.vocabDesc}>
               Tiếng Việt | Từ loại | Tiếng Anh{'\n'}
-              <Text style={styles.vocabDescEn}>Vietnamese | Word Type | English</Text>
+              <Text style={styles.vocabDescEn}>{t('Vietnamese | Word Type | English')}</Text>
             </Text>
-            <Text style={styles.searchHint}>🔍 Tìm kiếm từ • Search words</Text>
+            <Text style={styles.searchHint}>🔍 Tìm kiếm từ • {t('Search words')}</Text>
           </View>
           <Text style={[styles.arrow, { color: '#D97706' }]}>›</Text>
         </TouchableOpacity>
@@ -172,7 +175,7 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
         {/* ============================================================ */}
         <View style={styles.divider}>
           <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>CHỦ ĐỀ ĐỜI SỐNG • LIFE TOPICS</Text>
+          <Text style={styles.dividerText}>CHỦ ĐỀ ĐỜI SỐNG • {labels.lifeTopics}</Text>
           <View style={styles.dividerLine} />
         </View>
 
@@ -183,7 +186,7 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
                 Chủ Đề Trong Cuộc Sống 🌍
               </Text>
               <Text style={styles.lifeSubTitle}>
-                AI Object Recognition & Vietnamese Pronunciation
+                {labels.aiObjectRecognition}
               </Text>
             </View>
             <TouchableOpacity
@@ -209,7 +212,7 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
                 </View>
               </View>
               <Text style={styles.topicNameVi}>Trái Cây</Text>
-              <Text style={styles.topicNameEn}>Fruits (5 items)</Text>
+              <Text style={styles.topicNameEn}>{labels.fruits} ({labels.items(5)})</Text>
               <Text style={styles.topicSample}>Táo, Chuối, Cam, Dưa hấu, Nho</Text>
               <View style={[styles.topicBtn, { backgroundColor: '#EF4444' }]}>
                 <Text style={styles.topicBtnText}>Quét AI ➔</Text>
@@ -229,7 +232,7 @@ const HocTiengViet: React.FC<Props> = ({ navigation }) => {
                 </View>
               </View>
               <Text style={styles.topicNameVi}>Động Vật</Text>
-              <Text style={styles.topicNameEn}>Animals (3 items)</Text>
+              <Text style={styles.topicNameEn}>{labels.animals} ({labels.items(3)})</Text>
               <Text style={styles.topicSample}>Trâu, Sư tử, Mèo</Text>
               <View style={[styles.topicBtn, { backgroundColor: '#10B981' }]}>
                 <Text style={styles.topicBtnText}>Quét AI ➔</Text>

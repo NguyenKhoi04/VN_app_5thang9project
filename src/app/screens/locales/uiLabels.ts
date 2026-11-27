@@ -1,0 +1,598 @@
+// Labels UI đa ngôn ngữ cho toàn bộ màn hình foreigners
+// Dòng tiếng Việt luôn cố định, dòng "en" (phụ) chuyển theo lang
+import type { LangCode } from './courseStatic';
+
+export interface UILabels {
+  // Header chính
+  vietnameseCourse: string;         // "Vietnamese Language Course"
+  learningProgram: string;          // "Learning Program"
+  coreCurriculum: string;           // "Core Curriculum"
+  chooseSection: string;            // "Choose the section that suits you"
+
+  // Sections
+  phoneticsWriting: string;         // "Phonetics and Writing"
+  phoneticsWritingSub: string;      // "(Writing system)"
+  pronunciationDrills: string;      // "Pronunciation Drills"
+  pronunciationDrillsSub: string;   // "(Sounds & Tones)"
+  thematicLessons: string;          // "Thematic Lessons"
+  thematicLessonsSub: string;       // "(Topic-based)"
+
+  // Stats / badges
+  lessonsSkills: (l: number, s: number) => string;
+  part: (n: number) => string;      // "PART 1"
+
+  // Divider / special
+  specialSection: string;           // "SPECIAL SECTION"
+  vocabBank: string;                // "VOCABULARY BANK"
+  vocabTable: string;               // "Vocabulary Table"
+
+  // Roadmap
+  goal: string;                     // "Goal"
+  completeAllLessons: string;       // "Complete all lessons"
+  completeAllTopics: string;        // "Complete all topics"
+  startFromHere: string;            // "Start from here!"
+  currentlyLearning: string;        // "Currently learning"
+  completed: string;                // "Completed"
+  startLesson: string;              // "Start"
+  lesson: string;                   // "Lesson"
+
+  // Skill menu
+  selectSkill: string;              // "Select a skill"
+  pronunciation: string;            // "Pronunciation"
+  listenRepeat: string;             // "Listen and Repeat"
+  readingPractice: string;          // "Reading Practice"
+  grammar: string;                  // "Grammar"
+  recognitionSubstitution: string;  // "Recognition and Substitution"
+  dictationWriting: string;         // "Dictation Writing"
+  doneComplete: string;             // "Done"
+  skill: string;                    // "Skill"
+
+  // Sub-skills
+  pronPractice: string;             // "Pronunciation Practice"
+  soundCombinations: string;        // "Sound Combinations"
+  tones: string;                    // "Tones"
+  readCharacters: string;           // "Read Characters"
+  dialoguePractice: string;         // "Dialogue Practice"
+
+  // Vocab
+  selectLessonVocab: string;        // "Select a lesson to view vocabulary"
+  searchWords: string;              // "Search words..."
+  wordTypeLegend: string;           // "Word Type Legend"
+  noun: string;
+  verb: string;
+  adjective: string;
+  adverb: string;
+  all: string;                      // "All"
+  words: string;                    // "words"
+  noWordsFound: string;             // "No words found"
+
+  // Life topics
+  lifeTopics: string;               // "LIFE TOPICS"
+  aiObjectRecognition: string;      // "AI Object Recognition & Vietnamese Pronunciation"
+  viewAll: string;                  // "View all"
+  fruits: string;                   // "Fruits"
+  animals: string;                  // "Animals"
+  scanAI: string;                   // "Scan AI"
+  items: (n: number) => string;     // "5 items"
+
+  // General
+  note: string;
+  noteRedText: string;              // "Any words highlighted in red cannot be pronounced."
+  learnAlphabet: string;            // "Learn the alphabet & pronunciation"
+  vietnameseAlphabet: string;       // "The Vietnamese Alphabet"
+  clickToHear: string;              // "Click on a letter to hear the sound"
+}
+
+const en: UILabels = {
+  vietnameseCourse: 'Vietnamese Language Course',
+  learningProgram: 'Learning Program',
+  coreCurriculum: 'Core Curriculum',
+  chooseSection: 'Choose the section that suits you',
+  phoneticsWriting: 'Phonetics and Writing',
+  phoneticsWritingSub: '(Writing system)',
+  pronunciationDrills: 'Pronunciation Drills',
+  pronunciationDrillsSub: '(Sounds & Tones)',
+  thematicLessons: 'Thematic Lessons',
+  thematicLessonsSub: '(Topic-based)',
+  lessonsSkills: (l, s) => `${l} lessons • ${s} skills`,
+  part: (n) => `PART ${n}`,
+  specialSection: 'SPECIAL SECTION',
+  vocabBank: 'VOCABULARY BANK',
+  vocabTable: 'Vocabulary Table',
+  goal: 'Goal',
+  completeAllLessons: 'Complete all lessons',
+  completeAllTopics: 'Complete all topics',
+  startFromHere: 'Start from here!',
+  currentlyLearning: 'Currently learning',
+  completed: 'Completed',
+  startLesson: 'Start',
+  lesson: 'Lesson',
+  selectSkill: 'Select a skill',
+  pronunciation: 'Pronunciation',
+  listenRepeat: 'Listen and Repeat',
+  readingPractice: 'Reading Practice',
+  grammar: 'Grammar',
+  recognitionSubstitution: 'Recognition and Substitution',
+  dictationWriting: 'Dictation Writing',
+  doneComplete: 'Done',
+  skill: 'Skill',
+  pronPractice: 'Pronunciation Practice',
+  soundCombinations: 'Sound Combinations',
+  tones: 'Tones',
+  readCharacters: 'Read Characters',
+  dialoguePractice: 'Dialogue Practice',
+  selectLessonVocab: 'Select a lesson to view vocabulary',
+  searchWords: 'Search words...',
+  wordTypeLegend: 'Word Type Legend',
+  noun: 'Noun',
+  verb: 'Verb',
+  adjective: 'Adjective',
+  adverb: 'Adverb',
+  all: 'All',
+  words: 'words',
+  noWordsFound: 'No words found',
+  lifeTopics: 'LIFE TOPICS',
+  aiObjectRecognition: 'AI Object Recognition & Vietnamese Pronunciation',
+  viewAll: 'View all',
+  fruits: 'Fruits',
+  animals: 'Animals',
+  scanAI: 'Scan AI',
+  items: (n) => `${n} items`,
+  note: 'Note',
+  noteRedText: 'Any words highlighted in red cannot be pronounced.',
+  learnAlphabet: 'Learn the alphabet & pronunciation',
+  vietnameseAlphabet: 'The Vietnamese Alphabet',
+  clickToHear: 'Click on a letter to hear the sound',
+};
+
+const ko: UILabels = {
+  vietnameseCourse: '베트남어 학습 과정',
+  learningProgram: '학습 프로그램',
+  coreCurriculum: '기초 커리큘럼',
+  chooseSection: '원하는 학습 파트를 선택하세요',
+  phoneticsWriting: '음성 및 문자 쓰기',
+  phoneticsWritingSub: '(문자 체계)',
+  pronunciationDrills: '발음 훈련',
+  pronunciationDrillsSub: '(소리 및 성조)',
+  thematicLessons: '주제별 학습',
+  thematicLessonsSub: '(주제 기반)',
+  lessonsSkills: (l, s) => `${l}강 • ${s}개 영역`,
+  part: (n) => `${n}단계`,
+  specialSection: '특별 섹션',
+  vocabBank: '단어장',
+  vocabTable: '어휘표',
+  goal: '목표',
+  completeAllLessons: '모든 수업 완료',
+  completeAllTopics: '모든 주제 완료',
+  startFromHere: '여기서 시작!',
+  currentlyLearning: '학습 중',
+  completed: '완료됨',
+  startLesson: '시작',
+  lesson: '수업',
+  selectSkill: '기술을 선택하세요',
+  pronunciation: '발음',
+  listenRepeat: '듣기 및 반복',
+  readingPractice: '읽기 연습',
+  grammar: '문법',
+  recognitionSubstitution: '인식 및 대체',
+  dictationWriting: '받아쓰기',
+  doneComplete: '완료',
+  skill: '기술',
+  pronPractice: '발음 연습',
+  soundCombinations: '음조합',
+  tones: '성조',
+  readCharacters: '문자 읽기',
+  dialoguePractice: '대화 연습',
+  selectLessonVocab: '어휘를 보려면 수업을 선택하세요',
+  searchWords: '단어 검색...',
+  wordTypeLegend: '품사 범례',
+  noun: '명사',
+  verb: '동사',
+  adjective: '형용사',
+  adverb: '부사',
+  all: '전체',
+  words: '단어',
+  noWordsFound: '단어를 찾을 수 없습니다',
+  lifeTopics: '생활 주제',
+  aiObjectRecognition: 'AI 객체 인식 & 베트남어 발음',
+  viewAll: '모두 보기',
+  fruits: '과일',
+  animals: '동물',
+  scanAI: 'AI 스캔',
+  items: (n) => `${n}개`,
+  note: '참고',
+  noteRedText: '빨간색으로 강조된 단어는 발음할 수 없습니다.',
+  learnAlphabet: '알파벳 & 발음 학습',
+  vietnameseAlphabet: '베트남어 알파벳',
+  clickToHear: '글자를 클릭하면 소리를 들을 수 있습니다',
+};
+
+const zhCN: UILabels = {
+  vietnameseCourse: '越南语语言课程',
+  learningProgram: '学习项目',
+  coreCurriculum: '基础课程体系',
+  chooseSection: '选择适合你的学习部分',
+  phoneticsWriting: '语音与书写',
+  phoneticsWritingSub: '(书写系统)',
+  pronunciationDrills: '发音训练',
+  pronunciationDrillsSub: '(语音与声调)',
+  thematicLessons: '主题课程',
+  thematicLessonsSub: '(按主题)',
+  lessonsSkills: (l, s) => `${l} 课时 • ${s} 项技能`,
+  part: (n) => `第 ${n} 部分`,
+  specialSection: '特色板块',
+  vocabBank: '词汇表',
+  vocabTable: '词汇表',
+  goal: '目标',
+  completeAllLessons: '完成所有课程',
+  completeAllTopics: '完成所有主题',
+  startFromHere: '从这里开始！',
+  currentlyLearning: '正在学习',
+  completed: '已完成',
+  startLesson: '开始',
+  lesson: '课程',
+  selectSkill: '选择一项技能',
+  pronunciation: '发音',
+  listenRepeat: '听力与跟读',
+  readingPractice: '阅读练习',
+  grammar: '语法',
+  recognitionSubstitution: '识别与替换',
+  dictationWriting: '听写练习',
+  doneComplete: '完成',
+  skill: '技能',
+  pronPractice: '发音练习',
+  soundCombinations: '拼音组合',
+  tones: '声调',
+  readCharacters: '阅读文字',
+  dialoguePractice: '对话练习',
+  selectLessonVocab: '选择课程查看词汇',
+  searchWords: '搜索词汇...',
+  wordTypeLegend: '词性说明',
+  noun: '名词',
+  verb: '动词',
+  adjective: '形容词',
+  adverb: '副词',
+  all: '全部',
+  words: '个词',
+  noWordsFound: '未找到词汇',
+  lifeTopics: '生活主题',
+  aiObjectRecognition: 'AI 物体识别与越南语发音',
+  viewAll: '查看全部',
+  fruits: '水果',
+  animals: '动物',
+  scanAI: 'AI 扫描',
+  items: (n) => `${n} 个`,
+  note: '备注',
+  noteRedText: '红色标记的字母无法发音。',
+  learnAlphabet: '学习字母表和发音',
+  vietnameseAlphabet: '越南语字母表',
+  clickToHear: '点击字母听发音',
+};
+
+const ja: UILabels = {
+  vietnameseCourse: 'ベトナム語学習コース',
+  learningProgram: '学習プログラム',
+  coreCurriculum: '基礎カリキュラム',
+  chooseSection: '自分に合ったセクションを選んでください',
+  phoneticsWriting: '音声と文字表記',
+  phoneticsWritingSub: '(文字体系)',
+  pronunciationDrills: '発音トレーニング',
+  pronunciationDrillsSub: '(音と声調)',
+  thematicLessons: 'テーマ別レッスン',
+  thematicLessonsSub: '(テーマ別)',
+  lessonsSkills: (l, s) => `${l}レッスン • ${s}スキル`,
+  part: (n) => `第${n}部`,
+  specialSection: '特別セクション',
+  vocabBank: '単語一覧',
+  vocabTable: '語彙表',
+  goal: '目標',
+  completeAllLessons: 'すべてのレッスンを完了',
+  completeAllTopics: 'すべてのテーマを完了',
+  startFromHere: 'ここから始めよう！',
+  currentlyLearning: '学習中',
+  completed: '完了済み',
+  startLesson: '開始',
+  lesson: 'レッスン',
+  selectSkill: 'スキルを選んでください',
+  pronunciation: '発音',
+  listenRepeat: '聞いて繰り返す',
+  readingPractice: '読解練習',
+  grammar: '文法',
+  recognitionSubstitution: '認識と置換',
+  dictationWriting: '書き取り',
+  doneComplete: '完了',
+  skill: 'スキル',
+  pronPractice: '発音練習',
+  soundCombinations: '音の組み合わせ',
+  tones: '声調',
+  readCharacters: '文字を読む',
+  dialoguePractice: '会話練習',
+  selectLessonVocab: 'レッスンを選んで語彙を表示',
+  searchWords: '単語を検索...',
+  wordTypeLegend: '品詞の凡例',
+  noun: '名詞',
+  verb: '動詞',
+  adjective: '形容詞',
+  adverb: '副詞',
+  all: 'すべて',
+  words: '単語',
+  noWordsFound: '単語が見つかりません',
+  lifeTopics: '生活テーマ',
+  aiObjectRecognition: 'AI物体認識＆ベトナム語発音',
+  viewAll: 'すべて見る',
+  fruits: 'フルーツ',
+  animals: '動物',
+  scanAI: 'AIスキャン',
+  items: (n) => `${n}個`,
+  note: '注意',
+  noteRedText: '赤で強調された文字は発音できません。',
+  learnAlphabet: 'アルファベットと発音を学ぶ',
+  vietnameseAlphabet: 'ベトナム語アルファベット',
+  clickToHear: '文字をクリックして音声を聞く',
+};
+
+const fr: UILabels = {
+  vietnameseCourse: 'Cours de langue vietnamienne',
+  learningProgram: "Programme d'apprentissage",
+  coreCurriculum: 'Parcours fondamental',
+  chooseSection: 'Choisissez la section qui vous convient',
+  phoneticsWriting: 'Phonétique et écriture',
+  phoneticsWritingSub: "(Système d'écriture)",
+  pronunciationDrills: 'Exercices de prononciation',
+  pronunciationDrillsSub: '(Sons et tons)',
+  thematicLessons: 'Leçons thématiques',
+  thematicLessonsSub: '(Par thème)',
+  lessonsSkills: (l, s) => `${l} leçons • ${s} compétences`,
+  part: (n) => `PARTIE ${n}`,
+  specialSection: 'SECTION SPÉCIALE',
+  vocabBank: 'LISTE DE VOCABULAIRE',
+  vocabTable: 'Tableau de vocabulaire',
+  goal: 'Objectif',
+  completeAllLessons: 'Terminer toutes les leçons',
+  completeAllTopics: 'Terminer tous les thèmes',
+  startFromHere: "C'est parti !",
+  currentlyLearning: 'En cours',
+  completed: 'Terminé',
+  startLesson: 'Commencer',
+  lesson: 'Leçon',
+  selectSkill: 'Choisissez une compétence',
+  pronunciation: 'Prononciation',
+  listenRepeat: 'Écouter et répéter',
+  readingPractice: 'Exercice de lecture',
+  grammar: 'Grammaire',
+  recognitionSubstitution: 'Reconnaissance et substitution',
+  dictationWriting: 'Dictée',
+  doneComplete: 'Terminé',
+  skill: 'Compétence',
+  pronPractice: 'Pratique de prononciation',
+  soundCombinations: 'Combinaisons sonores',
+  tones: 'Tons',
+  readCharacters: 'Lire les caractères',
+  dialoguePractice: 'Pratique du dialogue',
+  selectLessonVocab: 'Sélectionnez une leçon pour voir le vocabulaire',
+  searchWords: 'Rechercher des mots...',
+  wordTypeLegend: 'Légende des types de mots',
+  noun: 'Nom',
+  verb: 'Verbe',
+  adjective: 'Adjectif',
+  adverb: 'Adverbe',
+  all: 'Tout',
+  words: 'mots',
+  noWordsFound: 'Aucun mot trouvé',
+  lifeTopics: 'SUJETS DE LA VIE',
+  aiObjectRecognition: "Reconnaissance d'objets IA & prononciation vietnamienne",
+  viewAll: 'Voir tout',
+  fruits: 'Fruits',
+  animals: 'Animaux',
+  scanAI: 'Scanner IA',
+  items: (n) => `${n} éléments`,
+  note: 'Remarque',
+  noteRedText: 'Les mots surlignés en rouge ne peuvent pas être prononcés.',
+  learnAlphabet: "Apprendre l'alphabet et la prononciation",
+  vietnameseAlphabet: 'Alphabet vietnamien',
+  clickToHear: "Cliquez sur une lettre pour entendre le son",
+};
+
+const de: UILabels = {
+  vietnameseCourse: 'Vietnamesisch-Sprachkurs',
+  learningProgram: 'Lernprogramm',
+  coreCurriculum: 'Grundlagen-Lehrplan',
+  chooseSection: 'Wählen Sie den passenden Abschnitt',
+  phoneticsWriting: 'Phonetik und Schrift',
+  phoneticsWritingSub: '(Schriftsystem)',
+  pronunciationDrills: 'Ausspracheübungen',
+  pronunciationDrillsSub: '(Laute & Töne)',
+  thematicLessons: 'Thematische Lektionen',
+  thematicLessonsSub: '(Themenbezogen)',
+  lessonsSkills: (l, s) => `${l} Lektionen • ${s} Fähigkeiten`,
+  part: (n) => `TEIL ${n}`,
+  specialSection: 'SPEZIELLER ABSCHNITT',
+  vocabBank: 'WORTSCHATZLISTE',
+  vocabTable: 'Vokabeltabelle',
+  goal: 'Ziel',
+  completeAllLessons: 'Alle Lektionen abschließen',
+  completeAllTopics: 'Alle Themen abschließen',
+  startFromHere: 'Hier starten!',
+  currentlyLearning: 'Aktuell lernend',
+  completed: 'Abgeschlossen',
+  startLesson: 'Starten',
+  lesson: 'Lektion',
+  selectSkill: 'Wählen Sie eine Fähigkeit',
+  pronunciation: 'Aussprache',
+  listenRepeat: 'Hören und Wiederholen',
+  readingPractice: 'Leseübung',
+  grammar: 'Grammatik',
+  recognitionSubstitution: 'Erkennung und Ersetzung',
+  dictationWriting: 'Diktat',
+  doneComplete: 'Fertig',
+  skill: 'Fähigkeit',
+  pronPractice: 'Ausspracheübung',
+  soundCombinations: 'Lautkombinationen',
+  tones: 'Töne',
+  readCharacters: 'Zeichen lesen',
+  dialoguePractice: 'Dialogübung',
+  selectLessonVocab: 'Lektion wählen, um Vokabeln anzuzeigen',
+  searchWords: 'Wörter suchen...',
+  wordTypeLegend: 'Wortart-Legende',
+  noun: 'Substantiv',
+  verb: 'Verb',
+  adjective: 'Adjektiv',
+  adverb: 'Adverb',
+  all: 'Alle',
+  words: 'Wörter',
+  noWordsFound: 'Keine Wörter gefunden',
+  lifeTopics: 'LEBENSTHEMEN',
+  aiObjectRecognition: 'KI-Objekterkennung & Vietnamesische Aussprache',
+  viewAll: 'Alle anzeigen',
+  fruits: 'Früchte',
+  animals: 'Tiere',
+  scanAI: 'KI-Scan',
+  items: (n) => `${n} Elemente`,
+  note: 'Hinweis',
+  noteRedText: 'Rot markierte Wörter können nicht ausgesprochen werden.',
+  learnAlphabet: 'Alphabet & Aussprache lernen',
+  vietnameseAlphabet: 'Vietnamesisches Alphabet',
+  clickToHear: 'Klicken Sie auf einen Buchstaben, um den Klang zu hören',
+};
+
+const ru: UILabels = {
+  vietnameseCourse: 'Курс вьетнамского языка',
+  learningProgram: 'Программа обучения',
+  coreCurriculum: 'Базовый курс',
+  chooseSection: 'Выберите подходящий раздел',
+  phoneticsWriting: 'Фонетика и письмо',
+  phoneticsWritingSub: '(Система письма)',
+  pronunciationDrills: 'Упражнения по произношению',
+  pronunciationDrillsSub: '(Звуки и тоны)',
+  thematicLessons: 'Тематические уроки',
+  thematicLessonsSub: '(По темам)',
+  lessonsSkills: (l, s) => `${l} уроков • ${s} навыков`,
+  part: (n) => `ЧАСТЬ ${n}`,
+  specialSection: 'СПЕЦИАЛЬНЫЙ РАЗДЕЛ',
+  vocabBank: 'СЛОВАРНЫЙ ЗАПАС',
+  vocabTable: 'Таблица словаря',
+  goal: 'Цель',
+  completeAllLessons: 'Завершить все уроки',
+  completeAllTopics: 'Завершить все темы',
+  startFromHere: 'Начните здесь!',
+  currentlyLearning: 'Сейчас изучается',
+  completed: 'Завершено',
+  startLesson: 'Начать',
+  lesson: 'Урок',
+  selectSkill: 'Выберите навык',
+  pronunciation: 'Произношение',
+  listenRepeat: 'Слушай и повторяй',
+  readingPractice: 'Практика чтения',
+  grammar: 'Грамматика',
+  recognitionSubstitution: 'Распознавание и замена',
+  dictationWriting: 'Диктант',
+  doneComplete: 'Готово',
+  skill: 'Навык',
+  pronPractice: 'Практика произношения',
+  soundCombinations: 'Звуковые комбинации',
+  tones: 'Тоны',
+  readCharacters: 'Чтение символов',
+  dialoguePractice: 'Практика диалога',
+  selectLessonVocab: 'Выберите урок для просмотра словаря',
+  searchWords: 'Поиск слов...',
+  wordTypeLegend: 'Обозначения частей речи',
+  noun: 'Существительное',
+  verb: 'Глагол',
+  adjective: 'Прилагательное',
+  adverb: 'Наречие',
+  all: 'Все',
+  words: 'слов',
+  noWordsFound: 'Слова не найдены',
+  lifeTopics: 'ЖИЗНЕННЫЕ ТЕМЫ',
+  aiObjectRecognition: 'AI распознавание объектов и произношение вьетнамского',
+  viewAll: 'Смотреть все',
+  fruits: 'Фрукты',
+  animals: 'Животные',
+  scanAI: 'AI сканер',
+  items: (n) => `${n} элем.`,
+  note: 'Примечание',
+  noteRedText: 'Слова, выделенные красным, не могут быть произнесены.',
+  learnAlphabet: 'Изучить алфавит и произношение',
+  vietnameseAlphabet: 'Вьетнамский алфавит',
+  clickToHear: 'Нажмите на букву, чтобы услышать звук',
+};
+
+const es: UILabels = {
+  vietnameseCourse: 'Curso de idioma vietnamita',
+  learningProgram: 'Programa de aprendizaje',
+  coreCurriculum: 'Plan de estudios básico',
+  chooseSection: 'Elige la sección que más te convenga',
+  phoneticsWriting: 'Fonética y escritura',
+  phoneticsWritingSub: '(Sistema de escritura)',
+  pronunciationDrills: 'Ejercicios de pronunciación',
+  pronunciationDrillsSub: '(Sonidos y tonos)',
+  thematicLessons: 'Lecciones temáticas',
+  thematicLessonsSub: '(Por temas)',
+  lessonsSkills: (l, s) => `${l} lecciones • ${s} habilidades`,
+  part: (n) => `PARTE ${n}`,
+  specialSection: 'SECCIÓN ESPECIAL',
+  vocabBank: 'BANCO DE VOCABULARIO',
+  vocabTable: 'Tabla de vocabulario',
+  goal: 'Objetivo',
+  completeAllLessons: 'Completar todas las lecciones',
+  completeAllTopics: 'Completar todos los temas',
+  startFromHere: '¡Empieza aquí!',
+  currentlyLearning: 'Estudiando',
+  completed: 'Completado',
+  startLesson: 'Iniciar',
+  lesson: 'Lección',
+  selectSkill: 'Selecciona una habilidad',
+  pronunciation: 'Pronunciación',
+  listenRepeat: 'Escuchar y repetir',
+  readingPractice: 'Práctica de lectura',
+  grammar: 'Gramática',
+  recognitionSubstitution: 'Reconocimiento y sustitución',
+  dictationWriting: 'Escritura al dictado',
+  doneComplete: 'Hecho',
+  skill: 'Habilidad',
+  pronPractice: 'Práctica de pronunciación',
+  soundCombinations: 'Combinaciones de sonidos',
+  tones: 'Tonos',
+  readCharacters: 'Leer caracteres',
+  dialoguePractice: 'Práctica de diálogo',
+  selectLessonVocab: 'Selecciona una lección para ver el vocabulario',
+  searchWords: 'Buscar palabras...',
+  wordTypeLegend: 'Leyenda de tipos de palabras',
+  noun: 'Sustantivo',
+  verb: 'Verbo',
+  adjective: 'Adjetivo',
+  adverb: 'Adverbio',
+  all: 'Todo',
+  words: 'palabras',
+  noWordsFound: 'No se encontraron palabras',
+  lifeTopics: 'TEMAS DE LA VIDA',
+  aiObjectRecognition: 'Reconocimiento IA de objetos y pronunciación vietnamita',
+  viewAll: 'Ver todo',
+  fruits: 'Frutas',
+  animals: 'Animales',
+  scanAI: 'Escanear IA',
+  items: (n) => `${n} elementos`,
+  note: 'Nota',
+  noteRedText: 'Las palabras resaltadas en rojo no se pueden pronunciar.',
+  learnAlphabet: 'Aprende el alfabeto y la pronunciación',
+  vietnameseAlphabet: 'Alfabeto vietnamita',
+  clickToHear: 'Haz clic en una letra para escuchar el sonido',
+};
+
+export const UI_LABELS: Record<LangCode, UILabels> = {
+  vi: en, // Người Việt dùng en fallback (giao diện chính là tiếng Việt in cứng)
+  en,
+  ko,
+  'zh-CN': zhCN,
+  ja,
+  fr,
+  de,
+  ru,
+  es,
+};
+
+/** Lấy labels theo LangCode, fallback en */
+export function getUILabels(lang: LangCode): UILabels {
+  return UI_LABELS[lang] ?? en;
+}
+

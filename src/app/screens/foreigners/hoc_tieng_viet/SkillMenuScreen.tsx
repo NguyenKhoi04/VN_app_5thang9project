@@ -10,6 +10,7 @@ import {
   Animated,
 } from 'react-native';
 import { API_ENDPOINTS } from '../../../../config/api';
+import { useLocalization } from '../../locales/useLocalization';
 
 export interface SkillItem {
   id: number;
@@ -59,6 +60,7 @@ const SkillCard: React.FC<{
   themeColor: string;
   onPress: (screenName: string, kyNangId: number, targetSubTab?: string) => void;
 }> = ({ skill, themeColor, onPress }) => {
+  const { t } = useLocalization();
   const scale = useRef(new Animated.Value(1)).current;
 
   return (
@@ -76,7 +78,7 @@ const SkillCard: React.FC<{
           </View>
           <View style={styles.skillTextBox}>
             <Text style={styles.skillTitle}>{skill.title}</Text>
-            <Text style={styles.skillSub}>{skill.subtitle}</Text>
+            <Text style={styles.skillSub}>{t(skill.subtitle)}</Text>
           </View>
           <Text style={[styles.chevron, { color: themeColor }]}>›</Text>
         </Animated.View>
@@ -96,7 +98,7 @@ const SkillCard: React.FC<{
             <Text style={[styles.subDot, { color: themeColor }]}>●</Text>
             <View style={{ flex: 1 }}>
               <Text style={[styles.subLabel, { color: themeColor }]}>{sub.label}</Text>
-              <Text style={styles.subLabelEn}>{sub.labelEn}</Text>
+              <Text style={styles.subLabelEn}>{t(sub.labelEn)}</Text>
             </View>
             <Text style={[styles.chevronSmall, { color: themeColor }]}>›</Text>
           </TouchableOpacity>
@@ -117,6 +119,7 @@ const SkillMenuScreen: React.FC<SkillMenuProps> = ({
   skills = DEFAULT_SKILLS,
   onBack,
 }) => {
+  const { t, labels } = useLocalization();
   const finalBaiHocId = lessonId || baiHocId || lessonNumber;
   const [currentTitle, setCurrentTitle] = useState(lessonTitle);
   const [currentSubtitle, setCurrentSubtitle] = useState(lessonSubtitle);
@@ -151,13 +154,13 @@ const SkillMenuScreen: React.FC<SkillMenuProps> = ({
         <View style={styles.headerCenter}>
           <Text style={styles.headerBai}>Bài {currentLessonNumber}</Text>
           <Text style={styles.headerTitle} numberOfLines={2}>{currentTitle || lessonTitle || `Bài ${currentLessonNumber}`}</Text>
-          <Text style={styles.headerSub} numberOfLines={1}>{currentSubtitle || lessonSubtitle}</Text>
+          <Text style={styles.headerSub} numberOfLines={1}>{t(currentSubtitle || lessonSubtitle)}</Text>
         </View>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionLabel}>Chọn kỹ năng • Select a skill</Text>
+        <Text style={styles.sectionLabel}>Chọn kỹ năng • {labels.selectSkill}</Text>
 
         {skills.map((skill) => (
           <SkillCard
